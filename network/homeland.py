@@ -10,9 +10,20 @@ mgr = SocketManager()
 mgr.connect('localhost')
 
 mgr.send_packet(pack)
+work = True
+while work:
+    if mgr.is_packet_available():
+        ack = mgr.get_packet()
+        if ack:
+            if ack.is_valid:
+                work = False
+            else:
+                print 'bad packet, resend'
+                mgr.send_packet(pack)
+    else:
+        print 'No answer from client, keep waiting'
 
 print 'finished sending!'
-time.sleep(120)
 mgr.disconnect()
 
 

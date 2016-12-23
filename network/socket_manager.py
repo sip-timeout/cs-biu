@@ -1,4 +1,5 @@
 import socket
+import select
 
 from consts import Consts
 from packet import Packet
@@ -27,15 +28,24 @@ class SocketManager:
                 raise RuntimeError("socket connection broken")
             total_sent = total_sent + sent
 
-    def is_packet_available(self):
-        self.sock
+    def is_packet_available(self,timeout=Consts.DEFAILT_RECV_TIMEOUT):
+        ready = select.select([self.sock], [], [], timeout)
+        return ready[0]
 
-    def get_packet(self):
+    def get_packet(self,expect_payload = True):
         header_bytes = self.__get_bytes__(Consts.HEADER_SIZE)
         packet = Packet.from_bytes(header_bytes,False)
-        if packet and packet.data_length > 0:
+        if not packet:
+            if expect_payload:
+                # clean bytes in case of bad header
+                self.__get_bytes__(Consts.PAYLOAD_SIZE)
+        elif packet.data_length>0:
             payload_bytes = self.__get_bytes__(packet.data_length)
-            packet = Packet.from_bytes(header_bytes+payload_bytes)
+            packet_with_data = Packet.from_bytes(header_bytes+payload_bytes)
+            if packet_with_data:
+                packet = packet_with_data
+            else:
+                packet.is_valid = False
         return packet
 
     def __get_bytes__(self,bytes_to_get):

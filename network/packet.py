@@ -24,7 +24,7 @@ class Packet:
         packet.data_length = data_length
 
         if data_length and include_payload:
-            data = pack_bytes[12:]
+            data = pack_bytes[Consts.HEADER_SIZE:]
             crc_payload = bin(ord(list(pack_bytes)[1])).zfill(10).replace('0b', '')
             crc_payload_input_string = cls.__get_crc_input_string__(data)
 
@@ -55,7 +55,7 @@ class Packet:
             crc_payload_input_string = self.__get_crc_input_string__(payload_bytes)
             crc_payload_code = compute(crc_payload_input_string)
             crc_payload_byte = struct.pack('B', int(crc_payload_code, 2))
-            raw_bytes += payload_bytes + (Consts.MAX_PAYLOAD_SIZE-len(payload_bytes)) * '0'
+            raw_bytes += payload_bytes + (Consts.PAYLOAD_SIZE - len(payload_bytes)) * '0'
 
         return crc_header_byte + crc_payload_byte + raw_bytes
 
