@@ -1,0 +1,7 @@
+header_crc:8bits
+data_crc:8bits
+seqNum:4bytes
+isAck:1 bit
+isValid: 1 bit
+dataLengthInBytes:4bytes
+payload:400Bytes

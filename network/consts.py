@@ -1,0 +1,6 @@
+class Consts:
+    HEADER_SIZE = 12
+    DEAFULT_PORT = 11000
+    RECV_TIMEOUT = 1
+    MAX_CHUNK_SIZE = 2048
+    MAX_PAYLOAD_SIZE = 400
