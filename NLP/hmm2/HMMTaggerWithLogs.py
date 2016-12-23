@@ -304,7 +304,7 @@ def main(argv):
     eMap = mm.seperate("e.mle")
     regexpMap = mm.getRegexpMap()
     majorityTag = mm.getMajority()
-    qMap = mm.createTagsSet("q.txt")
+    qMap = mm.createTagsSet("q2.mle")
     tagsList = mm.getTags()
     words = mm.getWords()
     regexOp = mm.initRegexOp("classes.txt")

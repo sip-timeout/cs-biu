@@ -7,9 +7,15 @@ tagToIndex = {}
 unigramMap = {}
 bigramMap = {}
 trigramMap = {}
+transitionMap = {}
 wordMap = {}
 classMap = {}
 regexArr = []
+
+#lambdas
+l1 = 0.64
+l2 = 0.31
+l3 = 0.05
 
 #util funcs
 def getPair(tup):
@@ -24,11 +30,26 @@ def increaseCount(map, key):
 def mapToStrings(dict):
     return map(lambda k: '_'.join([k, str(dict[k])]),dict)
 
+def tranMapToStrings(dict):
+    return map(lambda k: '<->'.join([k, str(dict[k])]),dict)
+
 def sumArray(arr):
     return reduce(lambda x, y: x + y, arr)
 
 def wordMapToStrings(dict):
     return map(lambda k: '_'.join([k, str(dict[k])])+'@'+str(sumArray(dict[k])),dict)
+
+def getOrZero(map,key):
+    value = 0
+    if key in map:
+        value = map[key]
+    return value
+
+def safeDiv(n,d):
+    if n == 0:
+        return 0
+
+    return float(n)/float(d)
 
 #funcs
 def processLine(l):
@@ -87,16 +108,25 @@ def initClassMapping():
         regexArr.append([key,val])
         classMap[val] = [0] * len(allTags)
 
+def calcTriplet(a,b,c,allWordsCount):
+    return (l1 * safeDiv(getOrZero(trigramMap,'@'.join([a,b,c])),getOrZero(bigramMap,'@'.join([a, b]))) +
+            l2 * safeDiv(getOrZero(bigramMap,'@'.join([b, c])),getOrZero(unigramMap,b)) +
+            l3 * safeDiv(getOrZero(unigramMap,c),allWordsCount))
+
+def createTransitionMap():
+    allWordsCount = sumArray(unigramMap.values())
+    for a in allTags:
+        for b in allTags:
+            tagsWithoutStart = list(allTags)
+            tagsWithoutStart.remove('start')
+            for c in tagsWithoutStart:
+                transitionMap[' '.join([a,b,c])] = calcTriplet(a,b,c,allWordsCount)
+
+
+
 def createTransitionsFile(outputFile):
     with open(outputFile,'w') as f:
-        f.write('\n'.join(['!ALL_WORDS_COUNT!',
-                  str(sumArray(unigramMap.values())),
-                  '!SINGLE_POS_QUANTITIES!']+
-                  mapToStrings(unigramMap)+
-                  ['!BIGRAMS_QUANTITIES!']+
-                  mapToStrings(bigramMap)+
-                  ['!TRIGRAMS_QUANTITIES!']+
-                  mapToStrings(trigramMap)));
+        f.write('\n'.join(tranMapToStrings(transitionMap)))
 
 def createEmissionsFile(outputFile):
     with open(outputFile, 'w') as f:
@@ -119,6 +149,7 @@ initClassMapping()
 for l in lines:
     processLine(l)
 
+createTransitionMap()
 createTransitionsFile('q.mle')
 createEmissionsFile('e.mle')
 print('finished processing file.')
