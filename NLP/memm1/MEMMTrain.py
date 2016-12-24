@@ -143,8 +143,8 @@ for l in lines:
 for l in lines:
     processLine(l,calculateFeatures)
 
-createTrainingFile('train2.txt')
-createFeaturesFile('features.txt')
+createTrainingFile('memm-train')
+createFeaturesFile('memm-featuremap')
 createTagsFile('tags.txt')
 print featureCount
 print('finished processing file.')

@@ -1,0 +1,9 @@
+^[A-Z]{1}[\w.]+$@@@name
+^[A-Z]+$@@@allcaps
+^[\w]+ing$@@@ing
+^[\w]+ed$@@@ed
+^[\w]+tion$@@@tion
+^[0-9]+$@@@regularnumber
+^[0-9]+[.]+[0-9.]+$@@@floating
+^[0-9]+[,.]+[0-9,.]+$$@@@currency
+^[a-zA-Z]+[-]+[a-zA-Z-]+$@@@hyphened

@@ -1,0 +1,21 @@
+The following script is used to generate a training file for the liblinear library.
+
+the scripts takes as its input only the file for which we need the memm-train file.
+the script generates 3 output files:
+memm-train - used to run liblinear to generate model.
+memm-featuremap - used in later stages for tagging.
+tags.txt - used for label to english tag mapping
+
+features names are like so:
+w prefix means its a word feature.
+pt - previous tag
+ppt - previous previous tag
+nw,nnw - next and next next word
+pw, ppw - previous and prev prev word
+s - suffix
+p - prefix
+all of the regexes are by their names, e.g. hyphen etc.
+
+
+to create the model out of the training file simply run the following command:
+java -Xmx1g -cp liblinear.jar de.bwaldvogel.liblinear.Train -s 0  memm-train memm-model

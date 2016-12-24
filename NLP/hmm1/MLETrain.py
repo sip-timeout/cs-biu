@@ -122,6 +122,11 @@ def createTransitionMap():
             for c in tagsWithoutStart:
                 transitionMap[' '.join([a,b,c])] = calcTriplet(a,b,c,allWordsCount)
 
+    for key in bigramMap:
+        splitted = key.split('@')
+        if (len(splitted) >1):
+            transitionMap['### '+splitted[0]+' '+splitted[1]] = 0
+
 
 
 def createTransitionsFile(outputFile):
@@ -150,6 +155,6 @@ for l in lines:
     processLine(l)
 
 createTransitionMap()
-createTransitionsFile('q.mle')
-createEmissionsFile('e.mle')
+createTransitionsFile(sys.argv[2])
+createEmissionsFile(sys.argv[3])
 print('finished processing file.')
