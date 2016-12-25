@@ -1,0 +1,112 @@
+# Symbols in the grammar are case-sensitive.
+# 
+# This grammar uses a convention that
+#    - terminals are lowercase          (president)
+#    - preterminals are capitalized     (Noun)
+#    - other nonterminals are all-caps  (NP)
+# 
+# This convention just makes grammars more readable to humans.  Thus:
+#
+#    - When *you* are writing grammars, you should 
+#      follow this convention unless you have a good reason not to.  
+#
+#    - But the  *program* should still work with grammars that don't
+#      follow this convention.  So how can the program reliably tell
+#      the difference between terminal and nonterminal symbols?  If
+#      there is at least one rule for rewriting a symbol, then that
+#      symbol is a nonterminal and should be rewritten.
+#######################
+
+# Rules for creating full sentences.
+
+1	ROOT	S .
+1	ROOT	S !
+1	ROOT	is it true that S ?     # mixing terminals and nonterminals is ok.
+
+# The basic grammar rules.  Here's what the abbreviations stand for:
+#    S  = sentence
+#    NP = noun phrase
+#    VP = verb phrase
+#    PP = prepositional phrase
+#    Det = determiner (sometimes called "article")
+#    Prep = preposition
+#    Adj = adjective
+
+4   S   NS
+1   S   NP thought that TP
+1   S   it perplexed NP that NS
+
+1	NS	NP VP
+1   NS  DNP DVP
+1   NS  NP SingleVerb
+1   NS  NP PVP
+1   NS  NP AP
+1   NS  NP PRG
+
+1	VP	Verb NP
+
+6	NP	Det Noun
+1	NP	NP PP
+1   NP  Name
+
+1	PP	Prep NP
+
+5	Noun	Adj Noun
+
+1   DNP     NP and NP
+
+1   DVP     Verb and VP
+
+4   Adj     very Adj
+
+1   PVP     PropositionalVerb NP
+
+1   AP      is  Adj
+
+1   PRG     is ProgVerb NP
+
+1   TP      NS
+1   TP      NP is NP
+
+# Vocabulary.  Your program can see that "ate" is a terminal
+# symbol because there exists no rule for rewriting it.
+# Any symbol that can rewrite as a terminal (or a string of 
+# terminals, like "chief of staff") is called a "preterminal."  Notice
+# that a preterminal is a special kind of nonterminal.
+
+2	Verb	ate
+5	Verb	wanted
+3	Verb	kissed
+3	Verb	understood
+1	Verb	pickled
+
+1   ProgVerb   eating
+
+3	Det	the
+3	Det	a
+1	Det	every
+
+6	Noun	president
+3	Noun	sandwich
+1	Noun	pickle
+6	Noun	chief of staff
+1	Noun	floor
+1   Noun    desk
+1   Noun    proposal
+
+4	Adj	fine
+4	Adj	delicious
+3	Adj	perplexed
+1	Adj	pickled
+3   Adj lazy
+
+4	Prep	with
+1	Prep	on
+1	Prep	under
+1	Prep	in
+
+1   Name    Sally
+
+1   SingleVerb  sighed
+
+1   PropositionalVerb worked on
