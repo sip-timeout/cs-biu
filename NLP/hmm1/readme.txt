@@ -11,3 +11,6 @@ these are actually all of the pairs we saw together, and this is used for the ta
 for unknown words i used the regexes shown in classes.txt,
 the class of a word is the first regex matching it, or none if no match could be found.
 the script assumes that the classes.txt file is present on its dir.
+
+the training and model file produces are available here:
+https://drive.google.com/drive/folders/0Byo22NVEylC3XzctY0VRb25wRlU?usp=sharing
