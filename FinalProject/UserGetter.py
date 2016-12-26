@@ -1,5 +1,5 @@
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -8,6 +8,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 import time
 import re
+import json
 
 users_map = {}
 restaurants = {}
@@ -17,8 +18,20 @@ attractions = {}
 browser = webdriver.Chrome()
 
 
-def wait_by_selector(css_selector):
-    WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, css_selector)))
+def close_popup_if_exists():
+    if wait_by_selector('.ui_close_x',2):
+        close_ui = browser.find_elements_by_class_name('ui_close_x')
+        for close_ui in close_ui:
+            close_ui.click()
+
+
+def wait_by_selector(css_selector,timeout=10):
+    try:
+        WebDriverWait(browser, timeout).until(EC.visibility_of_element_located((By.CSS_SELECTOR, css_selector)))
+        return True
+
+    except TimeoutException:
+        return False
 
 def init_page(trip_url):
     browser.maximize_window()
@@ -33,9 +46,6 @@ def extract_page_users():
     def extractUserPreview(userName):
         global users_map
         user = {}
-
-        if len(browser.find_elements_by_css_selector(".reviewchart")) == 0:
-            return None
 
         user["userName"] = userName
         user["name"] = browser.find_element_by_css_selector("h3.username").text
@@ -77,7 +87,7 @@ def extract_page_users():
             if countHtml.find("Helpful") > -1:
                 user["helpful"] = getCountValue(countHtml)
             if countHtml.find("Cities") > -1:
-                user["cities"] = getCountValue(countHtml)
+                user["cityCount"] = getCountValue(countHtml)
 
         users_map[userName] = user
         return user
@@ -91,10 +101,9 @@ def extract_page_users():
         except StaleElementReferenceException:
             continue
 
-        time.sleep(0.5)
-        try:
+        if wait_by_selector('.baseNav', 3):
             elem = browser.find_element_by_partial_link_text("profile")
-        except NoSuchElementException:
+        else:
             browser.find_element_by_class_name('ui_close_x').click()
             continue
 
@@ -115,7 +124,7 @@ def scrape_user(user):
 
     def move_to_next_reviews_page():
         next_btn = browser.find_element_by_id('cs-paginate-next')
-        if str(next_btn.get_attribute('class')).find('disabled'):
+        if str(next_btn.get_attribute('class')).find('disabled') > -1:
             return False
         else:
             next_btn.click()
@@ -127,16 +136,17 @@ def scrape_user(user):
         badges = []
         for badge in browser.find_elements_by_css_selector('.badgeText'):
             badges.append(badge.text)
-        users_map[username]['badges'] = badges
-        browser.get(user_page)
+        user['badges'] = badges
+        browser.get(user['url'])
 
     def scrape_reviews(review_type, relevant_map):
         type_btn = browser.find_elements_by_css_selector('[data-filter=' + review_type + ']')
         reviews = {}
-        if type_btn > 0:
+        if len(type_btn) > 0:
             type_btn[0].click()
-
-            more_pages = False
+            wait_by_selector('.sprite-ratings')
+            time.sleep(1)
+            more_pages = True
             while more_pages:
                 ratings = map(lambda rating: rating.get_attribute('content'),browser.find_elements_by_css_selector('.sprite-ratings'))
 
@@ -149,13 +159,34 @@ def scrape_user(user):
                 more_pages = move_to_next_reviews_page()
         return reviews
 
+    def scrape_cities():
+        browser.find_element_by_css_selector('.travelMap').click()
+        listView = browser.find_element_by_css_selector('.listView')
+        listView.click()
+
+        cities = browser.find_elements_by_css_selector('.cityName')
+        last_city = ''
+        cur_city =cities[-1].text
+        while last_city!=cur_city:
+            last_city = cities[-1].text
+            browser.execute_script('arguments[0].scrollIntoView(true);', cities[-1]);
+            time.sleep(1)
+            cities = browser.find_elements_by_css_selector('.cityName')
+            cur_city=cities[-1].text
+
+        user['cities'] = map(lambda city: city.text,cities)
+
     browser.get(user['url'])
+
+    close_popup_if_exists()
+
 
     user['points'] = browser.find_element_by_css_selector('.points').text
 
     tags = []
     for tag in browser.find_elements_by_css_selector('.tagBubble'):
-        tags.append(tag.text)
+        if tag.text!='':
+            tags.append(tag.text)
     user['tags']=tags
 
     scrape_badges()
@@ -164,9 +195,7 @@ def scrape_user(user):
     user['restaurants'] = scrape_reviews('REVIEWS_RESTAURANTS', restaurants)
     user['attractions'] = scrape_reviews('REVIEWS_ATTRACTIONS', attractions)
 
-
-
-
+    scrape_cities()
 
 
 init_page('https://www.tripadvisor.com/Restaurant_Review-g293984-d2410151-Reviews-Hatraklin_Bistro_Meat_Wine-Tel_Aviv_Tel_Aviv_District.html')
@@ -174,8 +203,14 @@ extract_page_users()
 #move_to_next_page()
 
 for user in users_map.values():
-    print user
-    scrape_user(user)
+    retry =3
+    while retry > 0:
+        try:
+            scrape_user(user)
+            break
+        except Exception:
+            retry-=1
 
+print json.dumps(users_map)
 browser.quit()
 
