@@ -1,11 +1,12 @@
 """Generate.
 
 Usage:
-  generate.py <grammer> [-n <sentences>]
+  generate.py <grammer> [-n <sentences>] [-t]
 
 Options:
   -h --help     Show this screen.
   -n <sentences>  number of sentences [default: 1]
+  -t              print tree
 
 """
 
@@ -16,6 +17,7 @@ class PCFG(object):
     def __init__(self):
         self._rules = defaultdict(list)
         self._sums = defaultdict(float)
+
 
     def add_rule(self, lhs, rhs, weight):
         assert(isinstance(lhs, str))
@@ -39,12 +41,25 @@ class PCFG(object):
     def is_terminal(self, symbol): return symbol not in self._rules
 
     def gen(self, symbol):
-        if self.is_terminal(symbol): return symbol
+        if self.is_terminal(symbol):
+            self.tree+= symbol +' '
+            return symbol
         else:
+
+            self.depth+=1
             expansion = self.random_expansion(symbol)
-            return " ".join(self.gen(s) for s in expansion)
+            self.tree+='('+symbol +' '
+
+            res = " ".join(self.gen(s) for s in expansion)
+
+            self.depth -= 1
+            self.tree+=')\n  '+'\t'*self.depth
+
+            return res
 
     def random_sent(self):
+        self.depth = 0
+        self.tree = ''
         return self.gen("ROOT")
 
     def random_expansion(self, symbol):
@@ -54,7 +69,8 @@ class PCFG(object):
         p = random.random() * self._sums[symbol]
         for r,w in self._rules[symbol]:
             p = p - w
-            if p < 0: return r
+            if p < 0:
+                return r
         return r
 
 
@@ -63,6 +79,9 @@ if __name__ == '__main__':
     pcfg = PCFG.from_file(arguments['<grammer>'])
 
     n = int(arguments['-n'])
+    t = arguments['-t']
 
     for i in range(0,n):
         print pcfg.random_sent()
+        if t:
+            print pcfg.tree
