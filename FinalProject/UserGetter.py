@@ -92,7 +92,15 @@ def extract_page_users():
         users_map[userName] = user
         return user
 
+    def getReviewContent(cont):
+        if cont.value_of_css_property('line-height') == '19px':
+            return cont.text
+        else:
+            return ''
+
     elems = browser.find_elements_by_class_name('member_info')
+
+    temp_user_map = {}
     for i in range(1, 11):
 
         elem = elems[i]
@@ -110,7 +118,32 @@ def extract_page_users():
         user_object = extractUserPreview(elem.get_attribute('href').split('/')[-1])
         if user_object:
             user_object['url'] = elem.get_attribute('href')
+            temp_user_map[i] = user_object
+            # user_object['review_title']=review_titles[i-1]
+            # user_object['review_content'] = review_contents[i - 1]
         browser.find_element_by_class_name('ui_close_x').click()
+
+    browser.execute_script('scroll(250,0)')
+    for moreLink in browser.find_elements_by_css_selector('.moreLink'):
+        if moreLink.value_of_css_property('line-height') == '19px':
+            # browser.execute_script('arguments[0].scrollIntoView(true);', moreLink);
+            # actions = ActionChains(browser)
+            # actions.move_to_element(moreLink).click(moreLink).perform()
+            moreLink.click()
+            break
+
+    close_popup_if_exists()
+    # actions.move_to_element(moreLink).click(moreLink).perform()
+    moreLink.click()
+
+    time.sleep(2)
+    review_titles = filter(lambda title: title!='',map(lambda title: title.text, browser.find_elements_by_css_selector('.noQuotes')))
+    review_contents = filter(lambda cont: cont!='',map(getReviewContent, browser.find_elements_by_css_selector('.entry')))
+
+    for key in temp_user_map.keys():
+        temp_user_map[key]['review_title'] = review_titles[key - 1]
+        temp_user_map[key]['review_content'] = review_contents[key - 1]
+
 
 
 def move_to_next_page():
