@@ -6,9 +6,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 
+from lxml import etree
+from lxml.cssselect import CSSSelector
+
 import time
 import re
 import json
+import urllib2
 
 users_map = {}
 restaurants = {}
@@ -139,10 +143,12 @@ def extract_page_users():
     time.sleep(2)
     review_titles = filter(lambda title: title!='',map(lambda title: title.text, browser.find_elements_by_css_selector('.noQuotes')))
     review_contents = filter(lambda cont: cont!='',map(getReviewContent, browser.find_elements_by_css_selector('.entry')))
+    review_ratings = map(lambda rating: rating.get_attribute('alt').split(' ')[0],browser.find_elements_by_css_selector('.rating_s_fill'))
 
     for key in temp_user_map.keys():
         temp_user_map[key]['review_title'] = review_titles[key - 1]
         temp_user_map[key]['review_content'] = review_contents[key - 1]
+        temp_user_map[key]['review_rating'] = review_ratings[(key - 1)*2]
 
 
 
@@ -230,10 +236,23 @@ def scrape_user(user):
 
     scrape_cities()
 
+def scrape_restaurant(restaurant):
+    print 'scraping '+restaurant['url']
+    html = urllib2.urlopen(restaurant['url']).read()
+    parsedHtml = etree.HTML(html)
+    details = parsedHtml.cssselect('.table_section > .row')
+    for detail in details[1:]:
+        title = str.lower(detail.cssselect('.title')[0].text.replace('\n','').replace(' ','_'))
+        content = detail.cssselect('.content')[0].text.replace('\n','')
+        if content!='':
+            restaurant[title] = content
+
 
 init_page('https://www.tripadvisor.com/Restaurant_Review-g293984-d2410151-Reviews-Hatraklin_Bistro_Meat_Wine-Tel_Aviv_Tel_Aviv_District.html')
 extract_page_users()
 #move_to_next_page()
+
+print json.dumps(users_map)
 
 for user in users_map.values():
     retry =3
@@ -244,6 +263,10 @@ for user in users_map.values():
         except Exception:
             retry-=1
 
+for restaurant in restaurants.values():
+    scrape_restaurant(restaurant)
+
 print json.dumps(users_map)
+print json.dumps(restaurants)
 browser.quit()
 
