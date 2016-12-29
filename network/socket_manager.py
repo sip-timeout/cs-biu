@@ -32,12 +32,12 @@ class SocketManager:
         ready = select.select([self.sock], [], [], timeout)
         return ready[0]
 
-    def get_packet(self,expect_payload = True):
+    def get_packet(self,expect_payload=True):
         header_bytes = self.__get_bytes__(Consts.HEADER_SIZE)
         packet = Packet.from_bytes(header_bytes,False)
         if not packet:
             if expect_payload:
-                # clean bytes in case of bad header
+                # clean payload bytes in case of bad header
                 self.__get_bytes__(Consts.PAYLOAD_SIZE)
         elif packet.data_length>0:
             payload_bytes = self.__get_bytes__(packet.data_length)

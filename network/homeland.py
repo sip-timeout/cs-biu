@@ -1,29 +1,28 @@
+from consts import Consts
 from packet import Packet
 from socket_manager import SocketManager
+from window_sender import WindowSender
 
-import time
+seq_num = 1
+packets = []
+with open('input.txt','rb') as sent_file:
+    while True:
+        pack_bytes = sent_file.read(Consts.PAYLOAD_SIZE)
+        if pack_bytes != '':
+            packet = Packet(seq_num)
+            packet.set_payload(pack_bytes)
+            packets.append(packet)
+            seq_num += 1
+        else:
+            break
 
-pack = Packet(23)
-pack.set_payload('dog')
 
 mgr = SocketManager()
 mgr.connect('localhost')
 
-mgr.send_packet(pack)
-work = True
-while work:
-    if mgr.is_packet_available():
-        ack = mgr.get_packet()
-        if ack:
-            if ack.is_valid:
-                work = False
-            else:
-                print 'bad packet, resend'
-                mgr.send_packet(pack)
-    else:
-        print 'No answer from client, keep waiting'
+sender = WindowSender(Consts.WINDOW_SIZE, packets, mgr)
+sender.send_packets()
 
-print 'finished sending!'
 mgr.disconnect()
 
 

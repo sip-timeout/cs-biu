@@ -1,5 +1,6 @@
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException, \
+    ElementNotVisibleException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -21,6 +22,7 @@ attractions = {}
 
 browser = webdriver.Chrome()
 
+first_page = 0
 
 def close_popup_if_exists():
     if wait_by_selector('.ui_close_x',2):
@@ -46,7 +48,7 @@ def init_page(trip_url):
 
 
 def extract_page_users():
-
+    global first_page
     def extractUserPreview(userName):
         global users_map
         user = {}
@@ -105,7 +107,8 @@ def extract_page_users():
     elems = browser.find_elements_by_class_name('member_info')
 
     temp_user_map = {}
-    for i in range(1, 11):
+    for i in range(1-first_page, 11-first_page):
+
 
         elem = elems[i]
         try:
@@ -138,7 +141,10 @@ def extract_page_users():
 
     close_popup_if_exists()
     # actions.move_to_element(moreLink).click(moreLink).perform()
-    moreLink.click()
+    try:
+        moreLink.click()
+    except ElementNotVisibleException:
+        pass
 
     time.sleep(2)
     review_titles = filter(lambda title: title!='',map(lambda title: title.text, browser.find_elements_by_css_selector('.noQuotes')))
@@ -146,17 +152,19 @@ def extract_page_users():
     review_ratings = map(lambda rating: rating.get_attribute('alt').split(' ')[0],browser.find_elements_by_css_selector('.rating_s_fill'))
 
     for key in temp_user_map.keys():
-        temp_user_map[key]['review_title'] = review_titles[key - 1]
-        temp_user_map[key]['review_content'] = review_contents[key - 1]
-        temp_user_map[key]['review_rating'] = review_ratings[(key - 1)*2]
+        temp_user_map[key]['review_title'] = review_titles[key - 1 +first_page]
+        temp_user_map[key]['review_content'] = review_contents[key - 1 + first_page]
+        temp_user_map[key]['review_rating'] = review_ratings[(key - 1 + first_page)*2]
+
+    first_page = 1
 
 
 
 def move_to_next_page():
+    browser.execute_script('scroll(250,0)')
     browser.find_element_by_partial_link_text("Next").click()
-    time.sleep(1)
-    browser.find_element_by_class_name('ui_close_x').click()
-    browser.find_element_by_partial_link_text("Next").click()
+    close_popup_if_exists()
+    browser.execute_script('scroll(250,0)')
 
 
 def scrape_user(user):
@@ -249,8 +257,9 @@ def scrape_restaurant(restaurant):
 
 
 init_page('https://www.tripadvisor.com/Restaurant_Review-g293984-d2410151-Reviews-Hatraklin_Bistro_Meat_Wine-Tel_Aviv_Tel_Aviv_District.html')
-extract_page_users()
-#move_to_next_page()
+for i in range(0,3):
+    extract_page_users()
+    move_to_next_page()
 
 print json.dumps(users_map)
 
