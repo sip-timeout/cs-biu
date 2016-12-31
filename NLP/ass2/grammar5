@@ -19,6 +19,7 @@
 
 ######################################################################################
 # Added support for (a) phenomena
+# Added support for (d) phenomena
 ######################################################################################
 
 # Rules for creating full sentences.
@@ -26,7 +27,8 @@
 1	ROOT	S .
 1	ROOT	S !
 1	ROOT	is it true that S ?     # mixing terminals and nonterminals is ok.
-1	ROOT	did RQS ?
+1	ROOT	DRQS ?
+1	ROOT	WHQ ?
 1	ROOT	will FQS ?
 1	ROOT	is SQS	?
 1	ROOT	are	MQS ?
@@ -44,6 +46,17 @@
 1   S   NP thought that TP
 1   S   NPT thought that TP
 1   S   it perplexed NP that NS
+
+1	WHQ	Whquestion SRQS
+1	WHQ Whquestion_s DRQS
+1	WHQ	Whquestion VP
+1	WHQ	Whquestion_s FRQS
+
+1	DRQS	did RQS
+1	SRQS	did	NEQS
+1	FRQS	NP	TFR
+
+1	TFR		Verb NP
 
 1   NS	NP VP
 1	NS	NPT VP
@@ -86,6 +99,22 @@
 1	RQS	QPT PVPB
 1	RQS	QNP SingleVerbBase
 1	RQS	QPT SingleVerbBase
+
+##########################################################################
+1	NEQS Name Bverb
+1	NEQS NAT Bverb
+1	NEQS QNP Bverb
+1	NEQS QPT Bverb
+1	NEQS DNP Bverb
+1	NEQS QNP think
+1	NEQS QPT think
+1	NEQS Name PropositionalVerbBase
+1	NEQS NAT PropositionalVerbBase
+1	NEQS QNP PropositionalVerbBase
+1	NEQS QPT PropositionalVerbBase
+1	NEQS QNP SingleVerbBase
+1	NEQS QPT SingleVerbBase
+##########################################################################
 
 1	FQS	Name FVP
 1	FQS	NAT FVP
@@ -174,16 +203,16 @@
 # that a preterminal is a special kind of nonterminal.
 
 6	Verb	ate
-5	Verb	wanted
+1	Verb	wanted
 3	Verb	kissed
 3	Verb	understood
 1	Verb	pickled
 
-4	Bverb	eat
-3	Bverb	want
+1	Bverb	eat
+1	Bverb	want
 1	Bverb	kiss
 1	Bverb	understand
-2	Bverb	pickle
+1	Bverb	pickle
 
 1   ProgVerb   eating
 
@@ -231,6 +260,12 @@
 
 1   SingleVerb  sighed
 1	SingleVerbBase	sigh
+
+1	Whquestion who
+4	Whquestion what
+1	Whquestion_s where
+1	Whquestion_s when
+1	Whquestion_s why
 
 1   PropositionalVerb worked on
 1	PropositionalVerbBase work on
