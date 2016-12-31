@@ -1,0 +1,236 @@
+# Symbols in the grammar are case-sensitive.
+# 
+# This grammar uses a convention that
+#    - terminals are lowercase          (president)
+#    - preterminals are capitalized     (Noun)
+#    - other nonterminals are all-caps  (NP)
+# 
+# This convention just makes grammars more readable to humans.  Thus:
+#
+#    - When *you* are writing grammars, you should 
+#      follow this convention unless you have a good reason not to.  
+#
+#    - But the  *program* should still work with grammars that don't
+#      follow this convention.  So how can the program reliably tell
+#      the difference between terminal and nonterminal symbols?  If
+#      there is at least one rule for rewriting a symbol, then that
+#      symbol is a nonterminal and should be rewritten.
+#######################
+
+######################################################################################
+# Added support for (a) phenomena
+######################################################################################
+
+# Rules for creating full sentences.
+
+1	ROOT	S .
+1	ROOT	S !
+1	ROOT	is it true that S ?     # mixing terminals and nonterminals is ok.
+1	ROOT	did RQS ?
+1	ROOT	will FQS ?
+1	ROOT	is SQS	?
+1	ROOT	are	MQS ?
+
+# The basic grammar rules.  Here's what the abbreviations stand for:
+#    S  = sentence
+#    NP = noun phrase
+#    VP = verb phrase
+#    PP = prepositional phrase
+#    Det = determiner (sometimes called "article")
+#    Prep = preposition
+#    Adj = adjective
+
+1   S   NS
+1   S   NP thought that TP
+1   S   NPT thought that TP
+1   S   it perplexed NP that NS
+
+1   NS	NP VP
+1	NS	NPT VP
+1   NS  DNP DVP
+1   NS  NP SingleVerb
+1   NS  NPT SingleVerb
+1   NS  NP PVP
+1   NS  NPT PVP
+1   NS  NP AP
+1   NS  NPT AP
+1   NS  NP PRG
+1   NS  NPT PRG
+
+1	NPT	NP TSA
+
+1	NPO	NP OSA
+
+1	QPT	QNP TSA
+
+1	QPO QNP OSA
+
+1	NAT	Name TSA
+
+1	TSA	, Appos ,
+1	OSA	, Appos
+
+1	RQS	Name FVP
+1	RQS	NAT FVP
+1	RQS	QNP	FVP
+1	RQS	QPT	FVP
+1	RQS DNP	FVP
+1	RQS DNP BDVP
+1	RQS	it perplex NP that NS
+1	RQS	it perplex NPT that NS
+3	RQS	QNP	think that TP
+1	RQS	QPT	think that TP
+1	RQS	Name PVPB
+1	RQS	NAT PVPB
+1	RQS	QNP PVPB
+1	RQS	QPT PVPB
+1	RQS	QNP SingleVerbBase
+1	RQS	QPT SingleVerbBase
+
+1	FQS	Name FVP
+1	FQS	NAT FVP
+1	FQS	QNP FVP
+1	FQS	QPT FVP
+1	FQS DNP	FVP
+1	FQS DNP BDVP
+
+1	SQS	QNP CP
+1	SQS	QPT CP
+1	SQS Name CP
+1	SQS NAT CP
+1	SQS	Name Adj
+1	SQS	NAT Adj
+1	SQS QNP Adj
+1	SQS QPT Adj
+
+
+1	MQS DNP CP
+1	MQS DNP	Adj
+
+
+1	CP	ProgVerb
+1	CP	ProgVerb QNP
+1	CP	ProgVerb QPO
+
+1	VP	Verb NP
+1	VP	Verb NPO
+
+1	FVP	Bverb NP
+1	FVP	Bverb NPO
+
+1	QNP	DTN
+
+1	NP	DTN
+1	NP	NP PP
+6   NP  Name
+
+1	PP	Prep NP
+
+1   Noun    ANoun
+1   Noun    AnNoun
+
+4   ANoun   AAdj Noun
+4   AnNoun  AnAdj Noun
+
+1   DNP     NP and NP
+1   DNP     NPT and NP
+1   DNP     NP and NPT
+1   DNP     NPT and NPT
+
+1   DVP     Verb and VP
+
+1	BDVP	Bverb and FVP
+
+1   Adj     AAdj
+1   Adj     AnAdj
+
+4   AAdj    very Adj
+
+
+1   PVP     PropositionalVerb NP
+1   PVP     PropositionalVerb NPO
+1   PVPB     PropositionalVerbBase NP
+1   PVPB     PropositionalVerbBase NPO
+
+1   AP      is  Adj
+
+1   PRG     is ProgVerb NP
+1   PRG     is ProgVerb NPO
+
+1   TP      NS
+1   TP      NP is NP
+1   TP      NPT is NP
+1   TP      NPT is NPO
+1   TP      NP is NPO
+
+1   DTN     AllDet Noun
+1   DTN     AnDet AnNoun
+1   DTN     ADet ANoun
+
+# Vocabulary.  Your program can see that "ate" is a terminal
+# symbol because there exists no rule for rewriting it.
+# Any symbol that can rewrite as a terminal (or a string of 
+# terminals, like "chief of staff") is called a "preterminal."  Notice
+# that a preterminal is a special kind of nonterminal.
+
+6	Verb	ate
+5	Verb	wanted
+3	Verb	kissed
+3	Verb	understood
+1	Verb	pickled
+
+4	Bverb	eat
+3	Bverb	want
+1	Bverb	kiss
+1	Bverb	understand
+2	Bverb	pickle
+
+1   ProgVerb   eating
+
+1	AllDet  the
+1	AllDet  every
+1	ADet    a
+1   AnDet   an
+
+1	ANoun	president
+1	ANoun	sandwich
+1	ANoun	pickle
+1	ANoun	chief of staff
+1	ANoun	floor
+1   ANoun   desk
+1   ANoun   proposal
+
+1   AnNoun  apple
+1   AnNoun  umbrella
+1   AnNoun  omelet
+1   AnNoun  audience
+
+
+1	Appos	59 years old
+1	Appos	the boy who lived
+1	Appos	secretery of defence
+
+4	AAdj	fine
+4	AAdj	delicious
+3	AAdj	perplexed
+1	AAdj	pickled
+3   AAdj    lazy
+
+1   AnAdj   ambivalent
+1   AnAdj   amazing
+1   AnAdj   embracing
+1   AnAdj   incredible
+
+4	Prep	with
+1	Prep	on
+1	Prep	under
+1	Prep	in
+
+1   Name    Sally
+1	Name 	Harry Potter
+
+1   SingleVerb  sighed
+1	SingleVerbBase	sigh
+
+1   PropositionalVerb worked on
+1	PropositionalVerbBase work on
