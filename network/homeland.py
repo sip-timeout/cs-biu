@@ -16,6 +16,7 @@ with open('input.txt','rb') as sent_file:
         else:
             break
 
+packets[-1].set_final()
 
 mgr = SocketManager()
 mgr.connect('localhost')

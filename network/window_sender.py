@@ -8,6 +8,8 @@ class WindowSender:
         self.window = dict()
         self.cur_pack = 0
         self.socket_mgr = socket_mgr
+        self.last_packet_time = time.time()
+        self.max_packet_timeout = Consts.MAX_PACKET_TIMEOUT
 
         for i in range(0, window_size):
             packet_val = self.get_next_packet()
@@ -18,21 +20,36 @@ class WindowSender:
             packet_val = dict()
             packet_val['packet'] = self.pending_packets[self.cur_pack]
             packet_val['send_time'] = 0
+            packet_val['timeout'] = Consts.INIT_PACKET_TIMEOUT
             self.cur_pack += 1
             return packet_val
         else:
             return None
 
     def send_packets(self):
+        start_time = time.time()
         while len(self.window) > 0:
+            if time.time() - self.last_packet_time > Consts.GLOBAL_TIMEOUT:
+                print 'Global timeout reached, this means last ack was probably lost and client already exited..'
+                break
             for seq in self.window:
                 pack = self.window[seq]
-                if time.time() - pack['send_time'] > Consts.PACKET_TIMEOUT:
+                if time.time() - pack['send_time'] > max(pack['timeout'],self.max_packet_timeout):
+                    pack['timeout'] += Consts.TIMEOUT_STEP
+                    print 'Setting pack ' + str(pack['packet'].seq_num) + ' timeout to ' + str(pack['timeout'])
                     self.socket_mgr.send_packet(pack['packet'])
+                    time.sleep(Consts.TIMEOUT_RESEND_GAP)
                     print 'Timeout expired, sending packet '+ str(pack['packet'].seq_num)
                     pack['send_time'] = time.time()
             while self.socket_mgr.is_packet_available():
-                ack = self.socket_mgr.get_packet(False)
+                self.last_packet_time = time.time()
+                ack = None
+                try:
+                    ack = self.socket_mgr.get_packet(False)
+                except RuntimeError:
+                    print 'Connection closed on socket end, finishing in '+ str(time.time() - start_time)
+                    return
+
                 if ack:
                     packet_to_send = None
                     if ack.is_valid:
@@ -44,14 +61,17 @@ class WindowSender:
                                 print 'Good ack for ' + str(ack.seq_num) + ' received, sending next packet '+ str(next_pack['packet'].seq_num)
                                 packet_to_send = next_pack
                             else:
+                                print 'Last packet sent, set max timeout to initial'
+                                self.max_packet_timeout = Consts.INIT_PACKET_TIMEOUT
                                 continue
                     else:
                         print 'ack for invalid packet ' + str(ack.seq_num) + ', resend'
                         packet_to_send= self.window[ack.seq_num]
 
-                    packet_to_send['send_time'] = time.time()
-                    self.socket_mgr.send_packet(packet_to_send['packet'])
+                    if packet_to_send:
+                        packet_to_send['send_time'] = time.time()
+                        self.socket_mgr.send_packet(packet_to_send['packet'])
                 else:
                     print 'invalid ack received - throwing'
 
-        print 'Finished sending packets'
+        print 'Finished sending packets in ' + str(time.time() - start_time) + 'seconds.'

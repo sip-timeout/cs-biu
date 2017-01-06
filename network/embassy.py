@@ -8,7 +8,19 @@ print 'Connection Established'
 
 file_packets = {}
 
+
+def got_all_packets():
+    if final_seq > 0:
+        for i in range(1, final_seq+1):
+            if i not in file_packets:
+                return False
+        return True
+    else:
+        return False
+
+
 work = True
+final_seq = -1
 while work:
     pack = mgr.get_packet()
     if pack:
@@ -18,7 +30,9 @@ while work:
             if pack.is_valid:
                 print 'Received valid pack ' + str(pack.seq_num)
                 file_packets[pack.seq_num] = pack.payload
-                if pack.data_length < Consts.PAYLOAD_SIZE:
+                if pack.is_final:
+                    final_seq = pack.seq_num
+                if got_all_packets():
                     work = False
             else:
                 print 'Received invalid pack with bad data ' + str(pack.seq_num) + ', sent bad ack'

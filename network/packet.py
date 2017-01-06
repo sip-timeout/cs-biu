@@ -10,6 +10,7 @@ class Packet:
         self.is_ack = is_ack
         self.is_valid = is_valid
         self.data_length = 0
+        self.is_final = False
 
     @classmethod
     def from_bytes(cls, pack_bytes,include_payload= True):
@@ -19,8 +20,9 @@ class Packet:
         if not check(crc_header_input_string,crc_header):
             return None
 
-        seq_num, is_ack, is_valid, data_length = struct.unpack('=i??i', pack_bytes[2:Consts.HEADER_SIZE])
+        seq_num, is_ack, is_valid, is_final, data_length = struct.unpack('=i???i', pack_bytes[2:Consts.HEADER_SIZE])
         packet = cls(seq_num, is_ack, is_valid)
+        packet.set_final(is_final)
         packet.data_length = data_length
 
         if data_length and include_payload:
@@ -36,16 +38,19 @@ class Packet:
         return packet
 
 
-    def set_payload(self,data):
+    def set_payload(self, data):
         self.payload = data
         self.data_length = len(data)
+
+    def set_final(self,is_final=True):
+        self.is_final = is_final
 
 
 
     def to_bytes(self):
         crc_payload_byte = struct.pack('B', 0)
 
-        raw_bytes = struct.pack('=i??i',self.seq_num,self.is_ack,self.is_valid,self.data_length)
+        raw_bytes = struct.pack('=i???i',self.seq_num,self.is_ack,self.is_valid,self.is_final, self.data_length)
         crc_header_input_string = self.__get_crc_input_string__(raw_bytes)
         crc_header_code = compute(crc_header_input_string)
         crc_header_byte = struct.pack('B', int(crc_header_code, 2))

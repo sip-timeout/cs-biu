@@ -40,8 +40,8 @@ class SocketManager:
                 # clean payload bytes in case of bad header
                 self.__get_bytes__(Consts.PAYLOAD_SIZE)
         elif packet.data_length>0:
-            payload_bytes = self.__get_bytes__(packet.data_length)
-            packet_with_data = Packet.from_bytes(header_bytes+payload_bytes)
+            payload_bytes = self.__get_bytes__(Consts.PAYLOAD_SIZE)
+            packet_with_data = Packet.from_bytes(header_bytes+payload_bytes[0:packet.data_length])
             if packet_with_data:
                 packet = packet_with_data
             else:
