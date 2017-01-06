@@ -22,7 +22,7 @@ def got_all_packets():
 work = True
 final_seq = -1
 while work:
-    pack = mgr.get_packet()
+    pack , seq_num = mgr.get_packet()
     if pack:
         if pack.seq_num not in file_packets:
             response = Packet(pack.seq_num, True, pack.is_valid)
@@ -33,13 +33,16 @@ while work:
                 if pack.is_final:
                     final_seq = pack.seq_num
                 if got_all_packets():
+                    for i in range(0,3):
+                        mgr.send_packet(Packet(Consts.END_SEQ_NUM,True,True))
                     work = False
             else:
                 print 'Received invalid pack with bad data ' + str(pack.seq_num) + ', sent bad ack'
         else:
             mgr.send_packet(Packet(pack.seq_num,True,True))
     else:
-        print 'Received pack with bad header, throwing'
+        print 'Received pack with bad header ' + str(seq_num) + ', asking again'
+        mgr.send_packet(Packet(seq_num,True,False))
 
 mgr.disconnect()
 

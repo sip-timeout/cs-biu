@@ -34,19 +34,19 @@ class SocketManager:
 
     def get_packet(self,expect_payload=True):
         header_bytes = self.__get_bytes__(Consts.HEADER_SIZE)
-        packet = Packet.from_bytes(header_bytes,False)
+        packet, seq_num = Packet.from_bytes(header_bytes,False)
         if not packet:
             if expect_payload:
                 # clean payload bytes in case of bad header
                 self.__get_bytes__(Consts.PAYLOAD_SIZE)
         elif packet.data_length>0:
             payload_bytes = self.__get_bytes__(Consts.PAYLOAD_SIZE)
-            packet_with_data = Packet.from_bytes(header_bytes+payload_bytes[0:packet.data_length])
+            packet_with_data , seq_num = Packet.from_bytes(header_bytes+payload_bytes[0:packet.data_length])
             if packet_with_data:
                 packet = packet_with_data
             else:
                 packet.is_valid = False
-        return packet
+        return packet, seq_num
 
     def __get_bytes__(self,bytes_to_get):
         chunks = []

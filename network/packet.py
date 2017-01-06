@@ -14,28 +14,29 @@ class Packet:
 
     @classmethod
     def from_bytes(cls, pack_bytes,include_payload= True):
-        crc_header = bin(ord(list(pack_bytes)[0])).zfill(10).replace('0b', '')
-        crc_header_input_string = cls.__get_crc_input_string__(pack_bytes[2:Consts.HEADER_SIZE])
+        seq_num = struct.unpack('h',pack_bytes[0:2])[0]
+        crc_header = bin(ord(list(pack_bytes)[2])).zfill(10).replace('0b', '')
+        crc_header_input_string = cls.__get_crc_input_string__(pack_bytes[4:Consts.HEADER_SIZE])
 
         if not check(crc_header_input_string,crc_header):
-            return None
+            return None, seq_num
 
-        seq_num, is_ack, is_valid, is_final, data_length = struct.unpack('=i???i', pack_bytes[2:Consts.HEADER_SIZE])
+        is_ack, is_valid, is_final, data_length = struct.unpack('=???h', pack_bytes[4:Consts.HEADER_SIZE])
         packet = cls(seq_num, is_ack, is_valid)
         packet.set_final(is_final)
         packet.data_length = data_length
 
         if data_length and include_payload:
             data = pack_bytes[Consts.HEADER_SIZE:]
-            crc_payload = bin(ord(list(pack_bytes)[1])).zfill(10).replace('0b', '')
+            crc_payload = bin(ord(list(pack_bytes)[3])).zfill(10).replace('0b', '')
             crc_payload_input_string = cls.__get_crc_input_string__(data)
 
             if not check(crc_payload_input_string,crc_payload):
-                return None
+                return None, seq_num
 
             packet.payload = data
 
-        return packet
+        return packet, seq_num
 
 
     def set_payload(self, data):
@@ -48,9 +49,11 @@ class Packet:
 
 
     def to_bytes(self):
+
+        seq_num_bytes = struct.pack('h', self.seq_num)
         crc_payload_byte = struct.pack('B', 0)
 
-        raw_bytes = struct.pack('=i???i',self.seq_num,self.is_ack,self.is_valid,self.is_final, self.data_length)
+        raw_bytes = struct.pack('=???h',self.is_ack,self.is_valid,self.is_final, self.data_length)
         crc_header_input_string = self.__get_crc_input_string__(raw_bytes)
         crc_header_code = compute(crc_header_input_string)
         crc_header_byte = struct.pack('B', int(crc_header_code, 2))
@@ -62,7 +65,7 @@ class Packet:
             crc_payload_byte = struct.pack('B', int(crc_payload_code, 2))
             raw_bytes += payload_bytes + (Consts.PAYLOAD_SIZE - len(payload_bytes)) * '0'
 
-        return crc_header_byte + crc_payload_byte + raw_bytes
+        return seq_num_bytes + crc_header_byte + crc_payload_byte + raw_bytes
 
     @classmethod
     def __get_crc_input_string__(self, raw_bytes):
