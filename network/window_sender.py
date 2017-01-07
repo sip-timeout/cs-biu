@@ -12,7 +12,6 @@ class WindowSender:
         self.max_packet_timeout = Consts.MAX_PACKET_TIMEOUT
         self.finalize_protocol = False
         self.global_timeout = 600
-        self.timeout_resend_gap = Consts.TIMEOUT_RESEND_GAP
 
         for i in range(0, window_size):
             packet_val = self.get_next_packet()
@@ -43,7 +42,6 @@ class WindowSender:
                         print 'Timeout expire, setting pack ' + str(pack['packet'].seq_num) + ' timeout to ' + \
                               str(min(pack['timeout'], self.max_packet_timeout)) + ' and sending'
                         self.socket_mgr.send_packet(pack['packet'])
-                        time.sleep(self.timeout_resend_gap)
                         pack['send_time'] = time.time()
                         break
                 while self.socket_mgr.is_packet_available():
@@ -76,7 +74,6 @@ class WindowSender:
                                         #     self.window[key]['timeout'] = Consts.FINALIZE_TIMEOUT
                                         self.max_packet_timeout = Consts.FINALIZE_TIMEOUT
                                         self.finalize_protocol = True
-                                        self.timeout_resend_gap /= 2
                                         self.global_timeout = Consts.GLOBAL_TIMEOUT
                                     continue
                         else:
