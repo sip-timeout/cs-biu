@@ -12,6 +12,7 @@ class WindowSender:
         self.max_packet_timeout = Consts.MAX_PACKET_TIMEOUT
         self.finalize_protocol = False
         self.global_timeout = 600
+        self.timeout_resend_gap = Consts.TIMEOUT_RESEND_GAP
 
         for i in range(0, window_size):
             packet_val = self.get_next_packet()
@@ -37,13 +38,14 @@ class WindowSender:
                     break
                 for seq in self.window:
                     pack = self.window[seq]
-                    if time.time() - pack['send_time'] > max(pack['timeout'],self.max_packet_timeout):
+                    if time.time() - pack['send_time'] > min(pack['timeout'],self.max_packet_timeout):
                         pack['timeout'] += Consts.TIMEOUT_STEP
-                        print 'Setting pack ' + str(pack['packet'].seq_num) + ' timeout to ' + str(pack['timeout'])
+                        print 'Timeout expire, setting pack ' + str(pack['packet'].seq_num) + ' timeout to ' + \
+                              str(min(pack['timeout'], self.max_packet_timeout)) + ' and sending'
                         self.socket_mgr.send_packet(pack['packet'])
-                        time.sleep(Consts.TIMEOUT_RESEND_GAP)
-                        print 'Timeout expired, sending packet '+ str(pack['packet'].seq_num)
+                        time.sleep(self.timeout_resend_gap)
                         pack['send_time'] = time.time()
+                        break
                 while self.socket_mgr.is_packet_available():
                     self.last_packet_time = time.time()
                     ack = None
@@ -68,12 +70,13 @@ class WindowSender:
                                     print 'Good ack for ' + str(ack.seq_num) + ' received, sending next packet '+ str(next_pack['packet'].seq_num)
                                     packet_to_send = next_pack
                                 else:
-                                    if not self.finalize_protocol:
+                                    if not self.finalize_protocol and len(self.window) <= Consts.FINALIZE_PCTG * Consts.WINDOW_SIZE:
                                         print 'Last packet sent, set max timeout to initial'
                                         # for key in self.window:
-                                        #     self.window[key]['timeout'] = Consts.INIT_PACKET_TIMEOUT
+                                        #     self.window[key]['timeout'] = Consts.FINALIZE_TIMEOUT
                                         self.max_packet_timeout = Consts.FINALIZE_TIMEOUT
                                         self.finalize_protocol = True
+                                        self.timeout_resend_gap /= 2
                                         self.global_timeout = Consts.GLOBAL_TIMEOUT
                                     continue
                         else:
