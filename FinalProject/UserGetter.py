@@ -1,3 +1,6 @@
+from _threading_local import local
+
+from pip import locations
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException, \
     ElementNotVisibleException
@@ -128,7 +131,11 @@ def extract_page_users():
             temp_user_map[i] = user_object
             # user_object['review_title']=review_titles[i-1]
             # user_object['review_content'] = review_contents[i - 1]
-        browser.find_element_by_class_name('ui_close_x').click()
+            try:
+                browser.find_element_by_class_name('ui_close_x').click()
+            except:
+                browser.find_element_by_css_selector('div .close').click()
+                browser.find_element_by_class_name('ui_close_x').click()
 
     browser.execute_script('scroll(250,0)')
     for moreLink in browser.find_elements_by_css_selector('.moreLink'):
@@ -175,6 +182,7 @@ def scrape_user(user):
             return False
         else:
             next_btn.click()
+            time.sleep(2)
             return True
 
     def scrape_badges():
@@ -225,9 +233,6 @@ def scrape_user(user):
 
     browser.get(user['url'])
 
-    close_popup_if_exists()
-
-
     user['points'] = browser.find_element_by_css_selector('.points').text
 
     tags = []
@@ -255,9 +260,18 @@ def scrape_restaurant(restaurant):
         if content!='':
             restaurant[title] = content
 
+    for locNom in parsedHtml.cssselect('.detail'):
+        if locNom.text and locNom.text.find('Location:') > -1:
+            locations = locNom.cssselect('span')
+            if len(locations) > 0:
+                restaurant['continent'] = locations[0].text[1:]
+            if len(locations) > 1:
+                restaurant['country'] = locations[1].text[5:]
+            if len(locations) > 2:
+                restaurant['city'] = locations[2].text[5:]
 
 init_page('https://www.tripadvisor.com/Restaurant_Review-g293984-d2410151-Reviews-Hatraklin_Bistro_Meat_Wine-Tel_Aviv_Tel_Aviv_District.html')
-for i in range(0,3):
+for i in range(0,10):
     extract_page_users()
     move_to_next_page()
 
