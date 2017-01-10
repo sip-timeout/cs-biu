@@ -1,5 +1,6 @@
 class Consts:
     HEADER_SIZE = 9
+    CRC_DIVISOR = '11010101'
     TCP_HEADER_SIZE = 20
     MTU = 500
     DEAFULT_PORT = 11000
