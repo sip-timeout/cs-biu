@@ -2,6 +2,7 @@ from consts import Consts
 from packet import Packet
 from socket_manager import SocketManager
 from window_sender import WindowSender
+import sys
 
 seq_num = 1
 packets = []
@@ -19,7 +20,7 @@ with open('input.txt','rb') as sent_file:
 packets[-1].set_final()
 
 mgr = SocketManager()
-mgr.connect('localhost')
+mgr.connect(sys.argv[1])
 
 sender = WindowSender(Consts.WINDOW_SIZE, packets, mgr)
 sender.send_packets()

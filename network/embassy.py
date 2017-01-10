@@ -1,9 +1,10 @@
 from packet import Packet
 from socket_manager import SocketManager
 from consts import Consts
+import sys
 
 mgr = SocketManager()
-mgr.connect('localhost')
+mgr.connect(sys.argv[1])
 print 'Connection Established'
 
 file_packets = {}
