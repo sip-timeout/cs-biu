@@ -6,6 +6,7 @@ class AllContentCoOccurrenceCalculator(CoOccurrenceCalculatorBase):
         CoOccurrenceCalculatorBase.__init__(self)
 
     def process_sentence(self, sentence):
+        sentence = filter(lambda entry: not entry.is_function_word , sentence)
         for entry in sentence:
             other_entries = list(sentence)
             other_entries.remove(entry)
