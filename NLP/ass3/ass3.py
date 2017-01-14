@@ -18,26 +18,26 @@ def get_sentences(input_file_path):
 
 
 if __name__ == "__main__":
-    limit = 500000
+    limit = 1000000
 
-    calculators = [AllContentCoOccurrenceCalculator(), WindowContentCoOccurrenceCalculator()]
     freq_calc = WordFreqCalculator()
+    calculators = [AllContentCoOccurrenceCalculator(), WindowContentCoOccurrenceCalculator(), freq_calc]
+    needed_words = ['car', 'bus', 'hospital', 'hotel', 'gun', 'bomb', 'horse', 'fox', 'table', 'bowl', 'guitar',
+                    'piano']
 
-    first_calc = True
     while len(calculators) > 0:
         calc = calculators.pop()
         i = 1
         sentences = get_sentences('trainAll')
         for sentence in sentences:
             calc.process_sentence(sentence)
-            if first_calc:
-                freq_calc.process_sentence(sentence)
             if i % 500 == 0:
                 print 'processed sentence ' + str(i)
             i += 1
             if i > limit:
-                first_calc = False
                 break
-        calc.initialize_pmi_matrix(freq_calc.word_freq_dic)
-        print calc.get_top_similar_words('car', 20)
-        first_calc = False
+
+        if calc != freq_calc:
+            calc.initialize_pmi_matrix()
+            for word in needed_words:
+                print 'words similar to ' + word + ':' + calc.get_top_similar_words(word, 20)

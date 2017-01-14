@@ -1,4 +1,6 @@
 from co_occurrence_calculator_base import CoOccurrenceCalculatorBase
+from word_freq_calculator import WordFreqCalculator
+from consts import Consts
 
 
 class WindowContentCoOccurrenceCalculator(CoOccurrenceCalculatorBase):
@@ -11,6 +13,7 @@ class WindowContentCoOccurrenceCalculator(CoOccurrenceCalculatorBase):
     def process_sentence(self, sentence):
         sentence = filter(lambda entry: not entry.is_function_word, sentence)
         for i, entry in enumerate(sentence):
-            window_entries = self.get_window(sentence, i)
-            for window_entry in window_entries:
-                self.__add_feature_to_word__(entry.lemma, window_entry.lemma)
+            if WordFreqCalculator().word_freq_dic[entry.lemma] > Consts.WORD_FREQ_THRES:
+                window_entries = self.get_window(sentence, i)
+                for window_entry in window_entries:
+                    self.__add_feature_to_word__(entry.lemma, window_entry.lemma)
