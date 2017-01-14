@@ -18,14 +18,23 @@ def get_sentences(input_file_path):
 
 if __name__ == "__main__":
     sentences = get_sentences('trainAll')
-    limit = 10000
+    limit = 20000
 
     calculators = [AllContentCoOccurrenceCalculator(), WindowContentCoOccurrenceCalculator()]
     i = 1
     for sentence in sentences:
         for calc in calculators:
             calc.process_sentence(sentence)
-        print 'processed sentence ' + str(i)
+        if i % 500 == 0:
+            print 'processed sentence ' + str(i)
         i += 1
         if i > limit:
             break
+
+    for calc in calculators:
+        calc.initialize_pmi_matrix()
+
+    for calc in calculators:
+        print calc.get_top_similar_words('doctor',20)
+
+
