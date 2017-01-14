@@ -7,7 +7,7 @@ feature_modifiers = ['continent', 'country', 'city', 'cuisine']
 feature_types = ['visit', 'liked', 'avg']
 k=10
 
-with open('user_features.json') as users_file:
+with open('usersFeatures.json') as users_file:
     users = json.load(users_file)
 
 
@@ -47,7 +47,7 @@ def calculate_category_scores():
                     for key in user_features:
                         if user_features[key] >= thresholds['_'.join([mod,tp,'high'])]:
                             upsert(category_scores,'_'.join([key,mod,tp,'high']))
-                        if user_features[key] >= thresholds['_'.join([mod, tp, 'low'])]:
+                        if user_features[key] <= thresholds['_'.join([mod, tp, 'low'])]:
                             upsert(category_scores, '_'.join([key, mod, tp, 'low']))
 
 
@@ -66,7 +66,7 @@ def calculate_user_score(user,covered_categories):
                         if full_cat_name not in covered_categories:
                             score += category_scores[full_cat_name]
                             user_covered.append(full_cat_name)
-                    if user_features[key] >= thresholds[low_cat]:
+                    if user_features[key] <= thresholds[low_cat]:
                         full_cat_name = '_'.join([key, low_cat])
                         if full_cat_name not in covered_categories:
                             score += category_scores[full_cat_name]

@@ -289,7 +289,11 @@ for user in users_map.values():
 for restaurant in restaurants.values():
     scrape_restaurant(restaurant)
 
-print json.dumps(users_map)
-print json.dumps(restaurants)
+with open('userim.json','w') as users_file:
+    json.dump(users_map,users_file)
+
+with open('misadot.json','w') as rests_file:
+    json.dump(restaurants,rests_file)
+
 browser.quit()
 

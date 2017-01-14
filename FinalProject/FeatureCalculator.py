@@ -1,10 +1,10 @@
 import json
 
 
-with open('users.json') as users_file:
+with open('userim.json') as users_file:
     users = json.load(users_file)
 
-with open('rest.json') as rests_file:
+with open('misadot.json') as rests_file:
     rests = json.load(rests_file)
 
 
@@ -60,6 +60,8 @@ for username in users:
     user = users[username]
     calculate_rest_features(user)
 
+with open('usersFeatures.json','w') as feat_file:
+    json.dump(users,feat_file)
 
 print json.dumps(users)
 print 'Done'
