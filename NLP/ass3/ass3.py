@@ -1,7 +1,7 @@
 from corpus_entry import CorpusEntry
 from all_content_co_occurence_calculator import AllContentCoOccurrenceCalculator
 from window_content_co_occurence_calculator import WindowContentCoOccurrenceCalculator
-
+from word_freq_calculator import  WordFreqCalculator
 
 def get_sentences(input_file_path):
     cur_sentence = list()
@@ -18,9 +18,9 @@ def get_sentences(input_file_path):
 
 if __name__ == "__main__":
     sentences = get_sentences('trainAll')
-    limit = 20000
+    limit = 1000000
 
-    calculators = [AllContentCoOccurrenceCalculator(), WindowContentCoOccurrenceCalculator()]
+    calculators = [AllContentCoOccurrenceCalculator(), WindowContentCoOccurrenceCalculator(),WordFreqCalculator()]
     i = 1
     for sentence in sentences:
         for calc in calculators:
@@ -31,10 +31,10 @@ if __name__ == "__main__":
         if i > limit:
             break
 
-    for calc in calculators:
-        calc.initialize_pmi_matrix()
+    for calc in calculators[:-1]:
+        calc.initialize_pmi_matrix(calculators[-1].word_freq_dic)
 
-    for calc in calculators:
-        print calc.get_top_similar_words('doctor',20)
+    for calc in calculators[:-1]:
+        print calc.get_top_similar_words('car',20)
 
 

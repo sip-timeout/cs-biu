@@ -1,5 +1,6 @@
 from utils import Utils
 from numpy import linalg
+from consts import  Consts
 import math
 import numpy
 
@@ -25,18 +26,19 @@ class CoOccurrenceCalculatorBase:
         return max(math.log(float(self.__word_to_feat__[word][feat] * self.__total_pairs__) / (
             self.__word_to_total_count__[word] * self.__feat_to_total_count__[feat])),0)
 
-    def initialize_pmi_matrix(self):
+    def initialize_pmi_matrix(self,word_freq):
         for word in self.__word_to_feat__:
-            self.__word_to_normalized_pmi__[word] = dict()
-            word_features = self.__word_to_feat__[word]
-            pmi_vector = list()
-            for feat in word_features:
-                pmi = self.__calculate_pmi__(word, feat)
-                self.__word_to_normalized_pmi__[word][feat] = pmi
-                pmi_vector.append(pmi)
-            norm = linalg.norm(numpy.array(pmi_vector))
-            for feat in word_features:
-                self.__word_to_normalized_pmi__[word][feat] /= norm
+            if word_freq[word] > Consts.WORD_FREQ_THRES:
+                self.__word_to_normalized_pmi__[word] = dict()
+                word_features = self.__word_to_feat__[word]
+                pmi_vector = list()
+                for feat in word_features:
+                    pmi = self.__calculate_pmi__(word, feat)
+                    self.__word_to_normalized_pmi__[word][feat] = pmi
+                    pmi_vector.append(pmi)
+                norm = linalg.norm(numpy.array(pmi_vector))
+                for feat in word_features:
+                    self.__word_to_normalized_pmi__[word][feat] /= norm
 
     def get_similarity_score(self, word_a, word_b):
         sim_score = 0
