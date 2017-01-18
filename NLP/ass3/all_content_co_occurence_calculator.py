@@ -15,3 +15,6 @@ class AllContentCoOccurrenceCalculator(CoOccurrenceCalculatorBase):
                 other_entries.remove(entry)
                 for other_entry in other_entries:
                     self.__add_feature_to_word__(entry.lemma, other_entry.lemma)
+
+    def get_name(self):
+        return 'All Words'
