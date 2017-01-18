@@ -9,5 +9,6 @@ class CorpusEntry:
         # self.__dict__ = dict(zip(keys, values))
         self.lemma = values[2]
         self.cpostag = values[3]
+        self.head = values[6]
         self.deprel = values[7]
         self.is_function_word = self.cpostag in self.function_dic or self.deprel in self.function_dic
