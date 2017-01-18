@@ -45,11 +45,9 @@ class DependencyCoOccurrenceCalculator(CoOccurrenceCalculatorBase):
                     #handle a) (ii)
                     preposition_lemma = modifier
                     modifier_idx = self.get_modifier_idx(originalSentence, idx)
-                    if None != modified_idx:
+                    if None != modifier_idx:
                         modifier = originalSentence[modifier_idx - 1].lemma
                         modifier_label = originalSentence[modifier_idx - 1].deprel
                         feature = modifier + "-" + modifier_label + "->" + preposition_lemma + "-" + modifier_label + "->"
                         self.__add_feature_to_word__(modified, feature)
             idx += 1
-            
-        #todo: implement!!!
