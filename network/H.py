@@ -1,3 +1,5 @@
+# Oded Golreich 301840476
+
 import time
 import sys
 import socket
@@ -39,8 +41,8 @@ class Consts:
     MAX_PACKET_TIMEOUT = 20
     INIT_PACKET_TIMEOUT = 10
     TIMEOUT_STEP = 2
-    GLOBAL_TIMEOUT = 10
-    FINALIZE_TIMEOUT = 5
+    GLOBAL_TIMEOUT = 16
+    FINALIZE_TIMEOUT = 10
     END_SEQ_NUM = 300
     FINALIZE_PCTG = 0.7
 
