@@ -11,7 +11,7 @@ class WindowContentCoOccurrenceCalculator(CoOccurrenceCalculatorBase):
         return sentence[max(i - 2, 0):i] + sentence[i + 1:i + 3]
 
     def get_name(self):
-        return 'Window Words'
+        return 'Window_Words'
 
     def process_sentence(self, sentence):
         sentence = filter(lambda entry: not entry.is_function_word, sentence)

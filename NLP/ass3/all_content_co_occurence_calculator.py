@@ -17,4 +17,4 @@ class AllContentCoOccurrenceCalculator(CoOccurrenceCalculatorBase):
                     self.__add_feature_to_word__(entry.lemma, other_entry.lemma)
 
     def get_name(self):
-        return 'All Words'
+        return 'All_Words'
