@@ -35,6 +35,23 @@ if __name__ == "__main__":
 
     results = dict()
 
+
+    w2vE = Word2vecEvaluate()
+    d_bow5 = w2vE.evaluate("bow5.words", needed_words)
+
+    calc_entry = Utils.get_or_create(results, 'word2vec_d_bow5', dict())
+    for word in d_bow5:
+        calc_entry[word] = d_bow5[word]
+
+    d_deps = w2vE.evaluate("deps.words", needed_words)
+    calc_entry = Utils.get_or_create(results, 'word2vec_deps', dict())
+
+    for word in d_deps:
+        calc_entry[word] = d_deps[word]
+
+    w2vE = None
+    print ""
+
     while len(calculators) > 0:
         calc = calculators.pop()
         i = 1
@@ -55,21 +72,6 @@ if __name__ == "__main__":
 
     freq_calc = None
     calc = None
-
-    gc.collect()
-    print ""
-    w2vE = Word2vecEvaluate()
-    d_bow5 = w2vE.evaluate("bow5.words", needed_words)
-
-    calc_entry = Utils.get_or_create(results, 'word2vec_d_bow5', dict())
-    for word in d_bow5:
-        calc_entry[word] = d_bow5[word]
-
-    d_deps = w2vE.evaluate("deps.words", needed_words)
-    calc_entry = Utils.get_or_create(results, 'word2vec_deps', dict())
-
-    for word in d_deps:
-        calc_entry[word] = d_deps[word]
 
     for word in needed_words:
         print 'Similarities for ' + word
