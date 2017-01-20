@@ -1,0 +1,18 @@
+1)
+	(a) 
+		frequency threshold > 100
+		We didn't use any other thresholds except frequency threshold.
+	(b)
+		for dependency-calculator - 148202
+		for all-words-calculator - 8409
+		for window-based-calculator - 8409
+	(c)
+		for dependency-calculator - 786357
+		for all-words-calculator - 423462
+		for window-based-calculator - 409485
+		
+2) In word_sim.txt, manual_annotation.txt files
+
+3) TODO
+
+4) In word_sim.txt.

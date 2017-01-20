@@ -1,3 +1,26 @@
+When Examining the lists of 12 target words we came up with the following characteristics:
+	
+	for all-words-calculation:
+		The list of similar words contain mainly words that describe "users" of the target word,
+		Or words that describe actions that can be done using the target word.
+		For example: the top similar words for the target word car are, driver and race, 
+		driver uses a car.
+		it is possible to race using a car.
+		The list of similar words (with this method of calculation) will also contain "parts" 
+		of the target word. like resturant, room for target word hotel - both room and resturant are part of an hotel.
+		
+	for dependency-word-calculation:
+		The list of similar words contain mainly replacements (words that one can set instead of the target word
+		and preserve the general meaning of a sentence) to the target words.
+		For example the top similar words to the target word bomb are grenade and torpedo, 
+		the top words that similar to the target word gun are cannon and pistol.
+		
+	for window-words-calculation:
+		The list of similar words will mainely contain words that build common combinations with the target word.
+		For example the top similar words to the word hospital are psychiatric, medical ("psychiatric hospital", 
+		"hospital medical center").
+		The top similar word to the word gun is machine ("machine gun").
+
 1)Whether you judge the candidate word to be topically related to the target word
 2)Whether you judge the candidate word to be in the same semantic class as the
   target word
