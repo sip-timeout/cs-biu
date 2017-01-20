@@ -1,0 +1,99 @@
+1)Whether you judge the candidate word to be topically related to the target word
+2)Whether you judge the candidate word to be in the same semantic class as the
+  target word
+
+Y = yes
+N = no
+
+manual annotation for word car:
+
+similar words				answer to 1				answer to 2
+vehicle						Y						Y
+truck						Y						Y
+automobile					Y						Y
+motorcycle					Y						Y
+bus							Y						Y
+aircraft					Y						Y
+train						Y						Y
+boat						Y						Y
+locomotive					Y						Y
+engine						N						Y
+ship						Y						Y
+bicycle						Y						Y
+wagon						Y						Y
+driver						N						Y
+tram						Y						Y
+product						N						Y
+carriage					Y						Y
+motor						N						Y
+equipment					N						Y					
+plane						Y						Y
+race						N						N
+drive						N						N
+racing						N						N
+passenger					N						Y
+bmw							Y						Y
+crash						N						N
+wheel						N						Y
+electric					N						N
+chevrolet					Y						N
+ford						Y						Y
+trailer						Y						Y
+auto						Y						Y
+chassis						N						N
+gt							Y						Y
+lap							N						N
+accident					N						N
+ferrari						Y						Y
+toyota						Y						Y
+
+
+
+manual annotation for word bomb:
+
+similar words				answer to 1				answer to 2
+explode						N						N
+bomber						N						Y
+bombing						N						N
+explosion					N						N
+injure						N						N
+attack						N						N
+explosive					Y						Y
+aircraft					N						Y
+atomic						Y						Y
+kill						N						N
+luftwaffe					N						Y
+raid						N						N
+grenade						Y						Y
+terrorist					N						Y
+bombardment					N						N
+damage						N						N
+target						N						Y
+weapon						Y						Y
+drop						N						N
+plane						N						Y
+torpedo						Y						Y
+substituent					Y						Y	
+sshelled					N						N
+missile						Y						Y
+rocket						Y						Y
+qizhou						N						N
+ginkgo						N						N			
+cerata						N						Y
+thallium					N						Y
+fire						N						N
+munition					Y						Y
+shelling					N						N
+skyweir						N						N
+ggw							N						Y
+allied						N						N
+blast						N						N
+drop						N						N
+enemy						N						Y
+squadron					N						Y
+tank						Y						Y
+nuclear						Y						Y
+
+
+
+
