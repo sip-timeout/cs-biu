@@ -1,11 +1,16 @@
 import json
-
+import operator
 
 with open('userim.json') as users_file:
     users = json.load(users_file)
 
 with open('misadot.json') as rests_file:
     rests = json.load(rests_file)
+
+with open('restTax.json') as rest_tax_file:
+    cuisine_types = dict(json.load(rest_tax_file))
+
+unclassified_cuisines = dict()
 
 
 def upsert(map, key, value=1):
@@ -36,9 +41,15 @@ def calculate_rest_features(user):
         for rest in user['restaurants']:
             if 'cuisine' in rests[rest]:
                 for cuisine in rests[rest]['cuisine'].split(','):
+                    if cuisine in cuisine_types:
+                        cuisine = cuisine_types[cuisine]
+                    else:
+                        upsert(unclassified_cuisines, cuisine)
+
                     upsert(rest_features['cuisine_visit'],cuisine, float(1) / total_restaurants )
                     upsert(rest_features['cuisine_liked'], cuisine,float(user['restaurants'][rest]['rating']) / total_rating)
                     upsert(rest_features['cuisine_avg'], cuisine, float(user['restaurants'][rest]['rating']) / total_avg)
+
             for mod in location_modifiers:
                 if mod in rests[rest]:
                     upsert(rest_features[mod+'_visit'], rests[rest][mod], float(1) / total_restaurants)
@@ -63,5 +74,6 @@ for username in users:
 with open('usersFeatures.json','w') as feat_file:
     json.dump(users,feat_file)
 
-print json.dumps(users)
+
+print json.dumps(sorted(unclassified_cuisines.items(),key=operator.itemgetter(1),reverse=True))
 print 'Done'
