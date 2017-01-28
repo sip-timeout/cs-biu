@@ -66,12 +66,12 @@ def calculate_user_score(user, covered_categories):
                         full_cat_name = '_'.join([key, high_cat])
                         if full_cat_name not in covered_categories:
                             score += category_scores[full_cat_name]
-                            user_covered.append(full_cat_name)
+                            user_covered.append((full_cat_name, category_scores[full_cat_name]))
                     if user_features[key] <= thresholds[low_cat]:
                         full_cat_name = '_'.join([key, low_cat])
                         if full_cat_name not in covered_categories:
                             score += category_scores[full_cat_name]
-                            user_covered.append(full_cat_name)
+                            user_covered.append((full_cat_name, category_scores[full_cat_name]))
     return score, user_covered
 
 
@@ -91,14 +91,23 @@ for i in range(0, k):
         score, categories = calculate_user_score(user, covered_cats)
         if score > max_score:
             max_score = score
-            arg_max = (username, score, categories, user['review_title'], user['review_rating'])
-    selected_users.append(arg_max)
+            arg_max = [username, score, categories, user['review_title'], user['review_rating']]
+
     users.pop(arg_max[0])
-    for cat in arg_max[2]:
-        covered_cats[cat] = True
+
+    user_categories = arg_max[2]
+    for cat in user_categories:
+        covered_cats[cat[0]] = True
+
+    user_categories = sorted(user_categories,key=lambda cat: cat[1],reverse=True)[:m]
+    arg_max[2] = user_categories
+    selected_users.append(arg_max)
+
+
+
 
 print 'Selection variance:', numpy.var(map(lambda user: float(user[4]), selected_users))
 
 with open('selected_users.json', 'w') as selected_file:
     json.dump(selected_users, selected_file, indent=4, separators=(',', ': '))
-print 'Done'
+
