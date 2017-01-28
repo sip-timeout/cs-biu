@@ -1,3 +1,6 @@
+Oded Goldreich, 301840476
+Omry Darwish, 203994520
+
 1)
 	(a) 
 		frequency threshold > 100
@@ -10,9 +13,17 @@
 		for dependency-calculator - 786357
 		for all-words-calculator - 423462
 		for window-based-calculator - 409485
-		
-2) In word_sim.txt, manual_annotation.txt files
 
-3) TODO
 
-4) In word_sim.txt.
+2) In word_sim.txt, and manual_annotation.txt files. we evaluated and executed parts 2 and 4 together for both word2vec and co-occurrence.
+   for the relevant words we used all of the words collected from 5 methods, and also used it as the N in the MAP calculation.
+   code for AP calculation supplied in ap_calculator.py.
+
+3) a) In order to estimate the PMI values we created a base class that handles the calculation for pmi values for each method.
+      the different calculators used the same method in order to add each feature, which made sure that all of the side counters were
+      maintained correctly. after that we used sparse vectors ( hashmaps pointing to hashmaps) to represent each word and used these
+      vectors and side counters to evaluate the ppmi value. all of the above implementation is taking place at co_occurrence_calculator_base.py.
+   b) Also implemented at the co-occurrence base class, the calculation is simply made by multipling the sparse normalized vectors with the
+      pre-calculated ppmi values. ( see impl at get_similarity_score method)
+
+4)see section 2

@@ -40,83 +40,151 @@ aircraft					Y						Y
 train						Y						Y
 boat						Y						Y
 locomotive					Y						Y
-engine						N						Y
-ship						Y						Y
+engine						Y						N
+ship						N						Y
 bicycle						Y						Y
 wagon						Y						Y
-driver						N						Y
+driver						Y						N
 tram						Y						Y
-product						N						Y
+product						N						N
 carriage					Y						Y
-motor						N						Y
-equipment					N						Y					
-plane						Y						Y
-race						N						N
-drive						N						N
-racing						N						N
-passenger					N						Y
+motor						Y						Y
+equipment					N						N
+plane						N						Y
+race						Y						N
+drive						Y						N
+racing						Y						N
+passenger					Y						N
 bmw							Y						Y
-crash						N						N
-wheel						N						Y
+crash						Y						N
+wheel						Y						N
 electric					N						N
 chevrolet					Y						N
 ford						Y						Y
 trailer						Y						Y
 auto						Y						Y
-chassis						N						N
+chassis						Y						N
 gt							Y						Y
 lap							N						N
-accident					N						N
+accident					Y						N
 ferrari						Y						Y
 toyota						Y						Y
-
+cars                        Y                       Y
+bike                        Y                       Y
+cab                         Y                       Y
+vehicles                    Y                       Y
+airplane                    N                       Y
+helicopter                  N                       Y
+trucks                      Y                       Y
+sedan                       Y                       Y
+yacht                       N                       Y
+renault                     Y                       Y
+taxi                        Y                       Y
+driving                     Y                       N
 
 
 manual annotation for word bomb:
 
 similar words				answer to 1				answer to 2
-explode						N						N
-bomber						N						Y
-bombing						N						N
-explosion					N						N
-injure						N						N
-attack						N						N
+explode						Y						N
+bomber						Y						Y
+bombing						Y						N
+explosion					Y						N
+injure						Y						N
+attack						Y						N
 explosive					Y						Y
-aircraft					N						Y
-atomic						Y						Y
-kill						N						N
-luftwaffe					N						Y
-raid						N						N
+aircraft					N						N
+atomic						Y						N
+kill						Y						N
+luftwaffe					N						N
+raid						Y						N
 grenade						Y						Y
-terrorist					N						Y
-bombardment					N						N
-damage						N						N
-target						N						Y
+terrorist					N						N
+bombardment					Y						N
+damage						Y						N
+target						Y						N
 weapon						Y						Y
 drop						N						N
-plane						N						Y
+plane						N						N
 torpedo						Y						Y
 substituent					Y						Y	
-sshelled					N						N
+sshelled					Y						N
 missile						Y						Y
 rocket						Y						Y
 qizhou						N						N
 ginkgo						N						N			
-cerata						N						Y
-thallium					N						Y
-fire						N						N
+cerata						Y						N
+thallium					Y						N
+fire						Y						N
 munition					Y						Y
-shelling					N						N
+shelling					Y						Y
 skyweir						N						N
 ggw							N						Y
 allied						N						N
-blast						N						N
+blast						Y						N
 drop						N						N
-enemy						N						Y
-squadron					N						Y
-tank						Y						Y
+enemy						Y						N
+squadron					N						N
+tank						Y						N
 nuclear						Y						Y
+bombs                       Y                       Y
+bullet                      N                       Y
+missiles                    Y                       Y
+bombed                      Y                       N
+poison                      N                       N
+cannon                      Y                       N
+gun                         N                       N
+device                      N                       Y
+ambush                      N                       N
+reactor                     Y                       N
+exploded                    Y                       N
+explosives                  Y                       Y
+bombers                     Y                       Y
+weapons                     Y                       Y
 
+calculated ap's:
+car_semantic
+Dependency:0.4433048209
+word2vec_deps:0.552440862826
+Window_Words:0.164024728711
+All_Words:0.10202085711
+word2vec_d_bow5:0.389036249698
 
+car_topical
+Dependency:0.377387565408
+word2vec_deps:0.400186471679
+Window_Words:0.45659730088
+All_Words:0.459556411354
+word2vec_d_bow5:0.487804878049
+
+bomb_semantic
+Dependency:0.388528669043
+word2vec_deps:0.369342993608
+Window_Words:0.239624542125
+All_Words:0.150702075702
+word2vec_d_bow5:0.340294146643
+
+bomb_topical
+Dependency:0.404475035628
+word2vec_deps:0.362269267359
+Window_Words:0.336372267043
+All_Words:0.36151944246
+word2vec_d_bow5:0.492644456213
+
+maps:
+
+semantic:
+Dependency:0.4159
+word2vec_deps:0.46085
+Window_Words:0.2018
+All_Words:0.12635
+word2vec_d_bow5:0.3646
+
+topical:
+Dependency:0.39085
+word2vec_deps:0.38115
+Window_Words:0.3964
+All_Words:0.4105
+word2vec_d_bow5:0.4902
 
 
