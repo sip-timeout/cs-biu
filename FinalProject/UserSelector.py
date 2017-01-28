@@ -8,6 +8,9 @@ feature_types = ['visit', 'liked', 'avg']
 k = 10
 m = 5
 
+case_name = raw_input('insert scenario name:')
+collected_vars = []
+
 with open('usersFeatures.json') as users_file:
     users = json.load(users_file)
 
@@ -102,12 +105,16 @@ for i in range(0, k):
     user_categories = sorted(user_categories,key=lambda cat: cat[1],reverse=True)[:m]
     arg_max[2] = user_categories
     selected_users.append(arg_max)
+    collected_vars.append(numpy.var(map(lambda user: float(user[4]), selected_users)))
 
 
 
 
 print 'Selection variance:', numpy.var(map(lambda user: float(user[4]), selected_users))
 
-with open('selected_users.json', 'w') as selected_file:
+with open(case_name+'.json', 'w') as selected_file:
     json.dump(selected_users, selected_file, indent=4, separators=(',', ': '))
+
+with open(case_name+'.var', 'w') as var_file:
+    json.dump(collected_vars, var_file, indent=4, separators=(',', ': '))
 
