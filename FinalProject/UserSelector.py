@@ -1,21 +1,27 @@
 import json
 import numpy
+import itertools
+import  random
 
 thresholds = dict()
 category_scores = dict()
 feature_modifiers = ['continent', 'country', 'city', 'cuisine']
 feature_types = ['visit', 'liked', 'avg']
-k = 10
+
+random_users_num = 30
+k = 5
 m = 5
 
-case_name = raw_input('insert scenario name:')
+#case_name = raw_input('insert scenario name:')
+case_name = 'bla'
 collected_vars = []
 
-test = True
+
 
 with open('usersFeatures.json') as users_file:
     users = json.load(users_file)
 
+user_list = random.sample(users.values(),random_users_num)
 
 def upsert(map, key, value=1):
     if key in map:
@@ -30,8 +36,7 @@ def calculate_thresholds():
         for tp in feature_types:
             threshold_arrs[mod + '_' + tp] = []
 
-    for username in users:
-        user = users[username]
+    for user in user_list:
         if 'restaurants' in user and len(user['restaurants']) > 3:
             for mod in feature_modifiers:
                 for tp in feature_types:
@@ -44,8 +49,7 @@ def calculate_thresholds():
 
 
 def calculate_category_scores():
-    for username in users:
-        user = users[username]
+    for user in user_list:
         if 'restaurants' in user and len(user['restaurants']) > 3:
             for mod in feature_modifiers:
                 for tp in feature_types:
@@ -83,7 +87,7 @@ def calculate_user_score(user, covered_categories):
 calculate_thresholds()
 calculate_category_scores()
 
-print 'Total variance:', numpy.var(map(lambda username: float(users[username]['review_rating']), users))
+print 'Total variance:', numpy.var(map(lambda user: float(user['review_rating']), user_list))
 
 selected_users = []
 covered_cats = dict()
@@ -91,12 +95,11 @@ for i in range(0, k):
     max_score = -1
     arg_max = None
 
-    for username in users:
-        user = users[username]
+    for user in user_list:
         score, categories = calculate_user_score(user, covered_cats)
         if score > max_score:
             max_score = score
-            arg_max = [username, score, categories, user['review_title'], user['review_rating']]
+            arg_max = [user['userName'], score, categories, user['review_title'], user['review_rating']]
 
     users.pop(arg_max[0])
 
@@ -113,6 +116,31 @@ for i in range(0, k):
 
 
 print 'Selection variance:', numpy.var(map(lambda user: float(user[4]), selected_users))
+
+generator = itertools.combinations(user_list,k)
+
+i = 0
+max_comb_score = 0
+max_comb = None
+for comb in generator:
+    i+=1
+    if i % 10000 == 0:
+        print i
+    covered_cats = dict()
+    comb_score = 0
+    for user in comb:
+        score, categories = calculate_user_score(user, covered_cats)
+        for cat in categories:
+            covered_cats[cat[0]] = True
+        comb_score += score
+    if comb_score > max_comb_score:
+        max_comb_score = comb_score
+        max_comb = comb
+
+
+
+
+print 'optimal selection variance:', numpy.var(map(lambda user: float(user['review_rating']), max_comb))
 
 with open(case_name+'.json', 'w') as selected_file:
     json.dump(selected_users, selected_file, indent=4, separators=(',', ': '))
