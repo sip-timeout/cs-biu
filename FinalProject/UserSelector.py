@@ -11,6 +11,8 @@ m = 5
 case_name = raw_input('insert scenario name:')
 collected_vars = []
 
+test = True
+
 with open('usersFeatures.json') as users_file:
     users = json.load(users_file)
 
