@@ -3,7 +3,7 @@ from corpus_entry import CorpusEntry
 
 class InputReader:
     def __init__(self, input_file):
-        self.input_file = input_file
+        self.input_file_path = input_file
 
     def get_sentences_generator(self):
         sent = dict()

@@ -34,7 +34,7 @@ class FeatureManager(object):
             feat_name = self.id_to_feat[feat_id]
         return
 
-    def __del__(self):
+    def export(self):
         if not self.tag_mode:
             with open(Consts.FEAT_TO_ID_FILE_NAME,'w') as fi_file:
                 json.dump(self.feat_to_id,fi_file)
