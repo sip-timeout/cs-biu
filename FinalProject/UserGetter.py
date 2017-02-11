@@ -65,7 +65,12 @@ def extract_page_users():
             pass
 
         for desc in browser.find_elements_by_css_selector(".memberdescription li"):
-            descTXT = str(desc.text).lower()
+            try:
+                descTXT = str(desc.text).lower()
+            except UnicodeEncodeError:
+                browser.find_element_by_class_name('ui_close_x').click()
+                return None
+
             if descTXT.find('since') > -1:
                 user["joinDate"] = descTXT.split(' ')[-1]
             if descTXT.find('from') > -1:
@@ -122,7 +127,9 @@ def extract_page_users():
         if wait_by_selector('.baseNav', 3):
             elem = browser.find_element_by_partial_link_text("profile")
         else:
-            browser.find_element_by_class_name('ui_close_x').click()
+            close_elems = browser.find_elements_by_class_name('ui_close_x')
+            if len(close_elems) > 0:
+                close_elems[0].click()
             continue
 
         user_object = extractUserPreview(elem.get_attribute('href').split('/')[-1])
@@ -270,7 +277,7 @@ def scrape_restaurant(restaurant):
             if len(locations) > 2:
                 restaurant['city'] = locations[2].text[5:]
 
-init_page('https://www.tripadvisor.com/Restaurant_Review-g293984-d2410151-Reviews-Hatraklin_Bistro_Meat_Wine-Tel_Aviv_Tel_Aviv_District.html')
+init_page('https://www.tripadvisor.com/Restaurant_Review-g187870-d1320357-Reviews-Osteria_ai_40_Ladroni-Venice_Veneto.html')
 for i in range(0,10):
     extract_page_users()
     move_to_next_page()
