@@ -16,3 +16,5 @@ class CorpusEntry:
         self.bio = values[7]
         self.ent_type = values[8]
         self.is_function_word = self.cpostag in self.function_dic or self.deprel in self.function_dic
+
+        self.position = int(self.id) - 1
