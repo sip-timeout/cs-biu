@@ -1,5 +1,5 @@
 from feature_manager import FeatureManager
-
+from utils import Utils
 
 class FC_Base:
     def __init__(self):
@@ -7,8 +7,8 @@ class FC_Base:
 
     def process(self, sent):
         for candidate in sent['candidates']:
-            candidate['features'] = list()
+            features = Utils.get_or_create(candidate,'features',list())
             for feat in self.get_features(sent, candidate['ent1'],candidate['ent2']):
                 feat_id = FeatureManager().get_feat_id(feat)
                 if feat_id:
-                    candidate['features'].append(feat_id)
+                    features.append(feat_id)

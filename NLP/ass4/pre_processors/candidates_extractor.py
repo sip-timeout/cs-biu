@@ -1,5 +1,5 @@
 import itertools
-
+from consts import Consts
 
 class CandidatesExtractor:
     def __init__(self):
@@ -8,6 +8,6 @@ class CandidatesExtractor:
     def preprocess(self, sent):
         candidates = list()
         for duo in itertools.permutations(sent['entities'], 2):
-            candidates.append({'ent1': duo[0], 'ent2': duo[1]})
+            candidates.append({'ent1': duo[0], 'ent2': duo[1],'train_class': Consts.NONE_ID})
 
         sent['candidates'] = candidates
