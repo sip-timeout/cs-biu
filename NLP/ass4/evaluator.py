@@ -35,5 +35,5 @@ for rel_type in class_map.values():
     recall = counters['correct'][rel_type] / counters['total'][rel_type]
     precision = counters['correct'][rel_type] / counters['made'][rel_type]
     f1 = (2*(precision*recall)) / (precision+recall)
-    print '%s: Precision:%f, Recall:%f, F1:%f' % (rel_type,precision,recall,f1)
+    print '%s - Precision:%f, Recall:%f, F1:%f' % (rel_type,precision,recall,f1)
 
