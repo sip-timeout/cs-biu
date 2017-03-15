@@ -15,8 +15,8 @@ from result_file_maker import ResultFileMaker
 import utils
 
 FeatureManager(tag_mode=True)
-
-pre_processors = [EntityExtractor(), CandidatesExtractor()]
+ex = CandidatesExtractor()
+pre_processors = [EntityExtractor(),ex]
 feature_calcs = [EntityBasedFC(), BOWFeatures(), OverLapFeatures()]
 
 input_file = sys.argv[1]
@@ -32,11 +32,9 @@ for sent in sentences:
     for calc in feature_calcs:
         calc.process(sent)
 
-all_cands = list(itertools.chain.from_iterable(map(lambda sent: sent['candidates'], sentences)))
 
-ex = CandidatesExtractor()
-possible_set = utils.load_obj('candidates')
-all_cands = ex.extract_candidates(all_cands , possible_set)
+
+all_cands = ex.filter_candidates(sentences)
 
 TrainFileMaker(Consts.FEATURE_FILE_NAME).make(all_cands)
 

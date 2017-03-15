@@ -15,7 +15,8 @@ from train_file_maker import TrainFileMaker
 import utils
 
 ann_creator = AnnotationsCreator(sys.argv[2])
-pre_processors = [EntityExtractor(), CandidatesExtractor(), ann_creator]
+ex = CandidatesExtractor()
+pre_processors = [EntityExtractor(), ex, ann_creator]
 feature_calcs = [EntityBasedFC(), BOWFeatures(), OverLapFeatures()]
 
 input_file = sys.argv[1]
@@ -31,12 +32,9 @@ for sent in sentences:
     for calc in feature_calcs:
         calc.process(sent)
 
-all_cands = itertools.chain.from_iterable(map(lambda sent: sent['candidates'], sentences))
-all_cands = [ cand for cand in all_cands]
-ex = CandidatesExtractor()
-possible_set = ex.extract_possible_candidates_tags(all_cands)
-utils.save_obj(possible_set, 'candidates')
-all_cands = ex.extract_candidates(all_cands , possible_set)
+ex.make_candidates(sentences)
+all_cands = ex.filter_candidates(sentences)
+
 TrainFileMaker(Consts.TRAINING_FILE_NAME).make(all_cands)
 FeatureManager().export()
 
