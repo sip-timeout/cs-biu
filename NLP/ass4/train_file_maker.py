@@ -12,3 +12,5 @@ class TrainFileMaker:
                 line += vector_string
 
                 output_file.writelines([line+'\n'])
+
+

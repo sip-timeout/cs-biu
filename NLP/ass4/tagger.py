@@ -12,6 +12,7 @@ from input_reader import InputReader
 from feature_manager import FeatureManager
 from train_file_maker import TrainFileMaker
 from result_file_maker import ResultFileMaker
+import utils
 
 FeatureManager(tag_mode=True)
 
@@ -32,6 +33,10 @@ for sent in sentences:
         calc.process(sent)
 
 all_cands = list(itertools.chain.from_iterable(map(lambda sent: sent['candidates'], sentences)))
+
+ex = CandidatesExtractor()
+possible_set = utils.load_obj('candidates')
+all_cands = ex.extract_candidates(all_cands , possible_set)
 
 TrainFileMaker(Consts.FEATURE_FILE_NAME).make(all_cands)
 

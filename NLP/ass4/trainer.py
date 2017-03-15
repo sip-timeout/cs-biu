@@ -12,6 +12,7 @@ from feature_calculators.overlap_features import OverLapFeatures
 from input_reader import InputReader
 from feature_manager import FeatureManager
 from train_file_maker import TrainFileMaker
+import utils
 
 ann_creator = AnnotationsCreator(sys.argv[2])
 pre_processors = [EntityExtractor(), CandidatesExtractor(), ann_creator]
@@ -31,7 +32,11 @@ for sent in sentences:
         calc.process(sent)
 
 all_cands = itertools.chain.from_iterable(map(lambda sent: sent['candidates'], sentences))
-
+all_cands = [ cand for cand in all_cands]
+ex = CandidatesExtractor()
+possible_set = ex.extract_possible_candidates_tags(all_cands)
+utils.save_obj(possible_set, 'candidates')
+all_cands = ex.extract_candidates(all_cands , possible_set)
 TrainFileMaker(Consts.TRAINING_FILE_NAME).make(all_cands)
 FeatureManager().export()
 

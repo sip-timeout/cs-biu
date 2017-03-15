@@ -11,7 +11,7 @@ class ResultFileMaker:
                 output_file.write(sent['id']+':'+sent['text']+'\n')
 
                 for cand in sent['candidates']:
-                    if cand['class'] != Consts.NONE_ID:
+                    if 'class' in cand and  cand['class'] != Consts.NONE_ID:
                         output_file.write('\t'.join([cand['ent1']['text'],self.class_map[cand['class']],cand['ent2']['text']])+'\n')
 
                 output_file.write('\n')
