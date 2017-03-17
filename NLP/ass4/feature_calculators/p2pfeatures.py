@@ -29,13 +29,16 @@ class P2PFeatures(FC_Base):
         id_2 = int(ent2['entries'][0].id)
 
         idx_list = []
+        head_word_idx = None
         #check if ent2 is a descendent of ent1
         if id_1 in path_2:
+            head_word_idx = id_1
             for i in path_2:
                 idx_list.append(i)
                 if i == id_1:
                     break
         elif id_2 in path_1:
+            head_word_idx = id_2
             for i in path_1:
                 idx_list.append(i)
                 if i == id_2:
@@ -45,6 +48,7 @@ class P2PFeatures(FC_Base):
             for i in path_1:
                 idx_list.append(i)
                 if i in path_2:
+                    head_word_idx = i
                     idx2 = []
                     for j in path_2:
                         if i != j:
@@ -59,6 +63,20 @@ class P2PFeatures(FC_Base):
         #create the feature
         ptp = "PTP_"
         dtd = "DTD_"
+        ptphw = "PTPHW_"
+        ptphr = "PTPHR_"
+        if head_word_idx == 0:
+            ptphw += "ROOT"
+            ptphr += "ROOT"
+        else:
+            e = get_entry(head_word_idx, sent)
+            head_idx = int(e.head)
+            if head_idx == 0:
+               ptphw += "ROOT"
+               ptphr += "ROOT"
+            else:
+                ptphw += (get_entry(head_idx, sent)).word
+                ptphr += (get_entry(head_idx, sent)).deprel
         for i in idx_list:
             e = get_entry(i, sent)
             if i == 0:
@@ -66,6 +84,10 @@ class P2PFeatures(FC_Base):
             else:
                 ptp += e.cpostag + "_"
                 dtd += e.deprel + "_"
+                ptphw += e.cpostag + "_"
+                ptphr += e.cpostag + "_"
         features.append(ptp)
+        features.append(ptphw)
+        features.append(ptphr)
         features.append(dtd)
         return features
