@@ -1,0 +1,128 @@
+1)
+	TODO: add id!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	Omri Darvish - 203994520
+	Oded Goldreich - 301840476
+	Daniel Glickman - 
+
+	
+2)	
+	We used a machine learning approach in order to solve the problem.
+	We considered the problem as a multi-class problem consists of three classes:
+		a) work for
+		b) lives in
+		c) none
+	We trained our model using the given data set, in order to establish an hypothesis that will later be used to predict the correct
+	class of each possible pair of words that appear in a given sentence.
+	Given a new sentence, we identify the relation occurs in it by first extracting all the possible pairs of words in the sentence (all the words
+	that appear in the sentence are possible except function words), then, for each pair, predict the relevant class using the hypothesis
+	we trained.
+	
+	we used the TRAIN.annotations and the Corpus.TRAIN.processed files as the training set and the  DEV.annotations and 
+	Corpus.DEV.processed as the validation set.
+	
+	Training:
+		Our infrastructure consists of three major parts:
+			(a) pre processing - in this part the system processes all the needed data in order to perform the learning, data such as annotations
+			   extraction (preparing the correct answers), candidates extraction (i.e extraction of all the possible pair of words
+			   from a given sentence in the training set) the possible pairs are all the words that appear in the sentence except function words,
+			   entity linguistic data extraction (i.e extraction of the data from the processed corpus) this data is needed to examine the features that 
+			   will be discussed next.
+			
+			(b) features calculation - in this part we examine all the possible pairs of words (that been extracted in the pre processing part)
+				and extract various of features that will assist us to establish the hypothesis, the feature we are looking at are:
+				
+				- Entity based features:
+					1) The first mention type (the type is extracted from the processed corpus in the pre processing part)
+					2) The second mention type.
+					3) The types of both first and second mentions.
+					
+				- Bag of words based features (Taken from Exploring Various Knowledge in Relation Extraction/ZHOU GuoDong SU Jian ZHANG Jie ZHANG Min ):
+					1) WBNULL- feature that signals that no word is between the two mentions.
+					2) WBFL- includes the only word between the two mentions.
+					3) WBF- includes the first word between the first mention and the second mention.
+					4) WBL- includes the last word between the first and the second mentions.
+					5) WBO- includes all the other words between the two mentions (except the first and the last).
+					6) BM1F- includes the first word before the first mention.
+					7) BM1L- includes the second word before the first mention.
+					8) AM2F- includes first word after the second mention.
+					9) AM2L- includes second word after the second mention.
+					10) WM1- bag of words in the first mention.
+					11) WM2- bag of words in the second mention.
+					12) HM1- the head word of the first mention.
+					13) HM2- the head word of the second mention.
+					
+				- Overlap (Taken from Exploring Various Knowledge in Relation Extraction/ZHOU GuoDong SU Jian ZHANG Jie ZHANG Min ):
+					1) WB- number of words in between the two mentions.
+					2) MB- number of other mentions in between the two mentions.
+					
+				- Base phrase chunking features:
+					1)ET1DW1- includes the entity type and the dependent words for the first mention (as extracted in the pre processing part).
+					2)ET2DW2- includes the entity type and the dependent words for the second mention.
+					3)H1DW1- includes the head word and the dependent word for the first mention.
+					4)H2DW2- includes the head word and the dependent word for the second mention.
+					5)ET12SameNP- includes the types of both first and second entities and a flag marking rather or not they are both in
+								  the same NP chunk.
+								  
+				- We also noticed that most of the entities types are irrelevant for the relationships we are looking for (lives in, work for),
+				  for example a pair of types (location,location) doesn't match any of the relationships we are looking for.
+				  As a result we decided to filter the types and features according to the types we observed in the data set and
+				  train the model using only the filtered features.
+				
+			(c) Training the model using liblinear package based on the features above:
+					The liblinear package is a software package used for performing linear classifier learning, it supports both train tool and
+					predict tool, in this part we are focusing on the train tool.
+					After the features that described before had been calculated they are converted into input file corresponding with the format
+					that the liblinear training tool supports, then we are using the liblinear train tool with the input file on order to train
+					the model and get the classifier we will use to predict the relations in the sentence.
+	
+	Prediction:
+		The prediction is done by performing steps (a) and (b) from above on the data set (i.e data extraction and features calculation),
+		converting the features calculated into input file that corresponding with the liblinear predict tool and predicting using the liblinear
+		predict tool with the converted input file. the prediction of the liblinear consists of one of the three classes mentioned before
+		and we use this prediction in order to classify the relation between each pair of words in each sentence (the pairs are extracted in step (a)
+		as described in the training part).
+
+3)
+	Given the relation x live_in/work_at y, we consider x to be the subject and y to be the object!
+	
+	- We started by comparing the two entities in a exact match method which led to lots of missed couples, for example the couple (Mr Jackson, Jackson)
+	was missed,. As a result we decided to change the comparing method to containment method.
+	
+	- Common recall errors- We noticed that the recall errors major classes are:
+		1) The relation's subject in mentioned before the relation's object.
+		2) The relation's object appears inside a quote.
+		3) The object of the relation is unrecognised (i.e rare place name / company name).
+		4) The object of the relation is inside an adjective clause.
+		5) The object of the relation is mentioned after a co reference of the subject of the relation in the sentence.
+		
+	- Common precision errors - We noticed that the precision errors major classes are:
+		1) Some key words potentially leads to error - words such as 'City', 'Company', 'Country' 'U.S.' etc. automatically assigned to be in a relation
+		   with humans mentions in the sentence.
+		2) Confusion of humans names with companies/places names.
+		
+	Causes:
+		1) Not enough features that takes the sentence structure in account.
+		2) Not enough words had been seen in the training time.
+		3) Too many features that takes in account the words (comparing to other features).
+		
+
+4)
+	TODO: add results to the tables!!!!!!!!!!!!!!!!
+	
+			Dev Recall		Dev Prec		Dev F1
+Work For	
+
+Live In
+
+AVG		
+		
+			Test Recall		Test Prec		Test F1
+Work For	
+
+Live In
+
+AVG			
+
+		
+				
+	
