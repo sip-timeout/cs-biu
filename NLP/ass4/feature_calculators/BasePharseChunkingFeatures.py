@@ -1,6 +1,5 @@
 from fc_base import FC_Base
 from reading_utils import *
-from random import randint
 
 class BasePharseChunkingFeatures(FC_Base):
     def __init__(self):
