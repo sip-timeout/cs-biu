@@ -1,5 +1,5 @@
 1)
-
+	TODO: add id!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	Omri Darvish - 203994520
 	Oded Goldreich - 301840476
 	Daniel Glickman - 311241194
@@ -64,7 +64,11 @@
 								  the same NP chunk.
 								  
 				- Parse Tree:
-					1) PTP - path of phrase labels connecting M1 and M2 in the parse tree.
+					1) PTP - path of phrase labels connecting the first and second mentions parse tree.
+					2) PTPHW - path of phrase labels connecting the first and second mentions parse tree combined with the head word of
+					           of the top phrase in the path.
+					3) PTPHR -	path of phrase labels connecting the first and second mentions parse tree combined with the head relation to the root
+					           of the top phrase in the path.
 								  
 				- We also noticed that most of the entities types are irrelevant for the relationships we are looking for (lives in, work for),
 				  for example a pair of types (location,location) doesn't match any of the relationships we are looking for.
