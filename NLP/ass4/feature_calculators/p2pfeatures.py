@@ -56,20 +56,16 @@ class P2PFeatures(FC_Base):
                         idx2.reverse()
                         idx_list = idx_list + idx2
                         break
-        ptp = "PTP_" # + ent1['entries'][0].word + "_"
-        tpt = "TPT_"
+        #create the feature
+        ptp = "PTP_"
         dtd = "DTD_"
         for i in idx_list:
             e = get_entry(i, sent)
             if i == 0:
-                #ptp += "ROOT_"
                 pass
             else:
                 ptp += e.cpostag + "_"
-                tpt += e.ent_type + "_"
                 dtd += e.deprel + "_"
-        #ptp += ent2['entries'][0].word
         features.append(ptp)
-        #features.append(tpt)
         features.append(dtd)
         return features
