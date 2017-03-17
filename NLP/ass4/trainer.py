@@ -12,9 +12,9 @@ from feature_calculators.overlap_features import OverLapFeatures
 from input_reader import InputReader
 from feature_manager import FeatureManager
 from train_file_maker import TrainFileMaker
-import utils
 
-ann_creator = AnnotationsCreator(sys.argv[2])
+
+ann_creator = AnnotationsCreator(sys.argv[2] , True)
 ex = CandidatesExtractor()
 pre_processors = [EntityExtractor(), ex, ann_creator]
 feature_calcs = [EntityBasedFC(), BOWFeatures(), OverLapFeatures()]
@@ -34,6 +34,7 @@ for sent in sentences:
 
 ex.make_candidates(sentences)
 all_cands = ex.filter_candidates(sentences)
+
 
 TrainFileMaker(Consts.TRAINING_FILE_NAME).make(all_cands)
 FeatureManager().export()

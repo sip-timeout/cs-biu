@@ -3,9 +3,9 @@ from consts import Consts
 
 
 class AnnotationsCreator:
-    def __init__(self, annotations_file):
+    def __init__(self, annotations_file , train_mode = False):
         self.sentences_annotations = {}
-        self.create_annotations(annotations_file)
+        self.create_annotations(annotations_file , train_mode)
 
     def either_contained(self, str1, str2):
         return str1 in str2 or str2 in str1
@@ -18,7 +18,8 @@ class AnnotationsCreator:
         else:
             return Consts.NONE_ID
 
-    def create_annotations(self, annotations_file):
+    def create_annotations(self, annotations_file , train_mode ):
+        last_id = None
         with open(annotations_file) as input_file:
             for line in input_file:
                 line = line.rstrip('\n')
@@ -26,6 +27,9 @@ class AnnotationsCreator:
                 ann_parts = line.split('\t')
 
                 sent_id = ann_parts[0]
+                if sent_id == last_id and train_mode:
+                    continue
+                last_id = sent_id
                 annotation = {'ent1': ann_parts[1], 'ent2': ann_parts[3], 'type': self.get_relation_type(ann_parts[2])}
 
                 sent_annot = Utils.get_or_create(self.sentences_annotations, sent_id, list())

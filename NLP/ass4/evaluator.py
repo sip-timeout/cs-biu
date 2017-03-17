@@ -20,6 +20,7 @@ with open(input_file_path) as input_file:
         if line.startswith('sent'):
             sent_id = line[:line.find(':')]
         elif line != '':
+
             prediction = line.split('\t')
             counters['made'][prediction[1]] += 1
             for anot in filter(lambda annot: annot['type'] != Consts.NONE_ID,
@@ -29,11 +30,16 @@ with open(input_file_path) as input_file:
                         and ann_creator.either_contained(prediction[2], anot['ent2']) \
                         and prediction[1] == class_map[anot['type']]:
                     counters['correct'][prediction[1]] += 1
+                else : print line
 
+avg = 0.0
 for rel_type in class_map.values():
     precision = counters['correct'][rel_type] / counters['made'][rel_type]
     recall = counters['correct'][rel_type] / counters['total'][rel_type]
     precision = counters['correct'][rel_type] / counters['made'][rel_type]
     f1 = (2*(precision*recall)) / (precision+recall)
+    avg += f1
     print '%s - Precision:%f, Recall:%f, F1:%f' % (rel_type,precision,recall,f1)
+
+print avg/2
 
