@@ -1,5 +1,8 @@
+import os
+from chunk_obj import ChunkObj
 #functions to excess sentence and entity data
 
+chunks_dict = dict()
 
 # returns index of entry in sentence(starting from zero)
 # if first is false , will return index of last word of entry(e.g index of 'america' in entry 'united states of america'
@@ -25,3 +28,20 @@ def get_head( entity):
                 is_head = False ; break
         if is_head:
             return word.lemma
+
+
+
+def get_entry(idx, sent):
+    for e in sent['entries']:
+        if int(e.id) == idx:
+            return e
+
+
+
+def getDependentWords(idx, sent):
+    d = []
+    for e in sent['entries']:
+        if e.head == idx:
+            d.append(e.word)
+    return d
+        
