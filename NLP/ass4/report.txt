@@ -63,6 +63,9 @@
 					5)ET12SameNP- includes the types of both first and second entities and a flag marking rather or not they are both in
 								  the same NP chunk.
 								  
+				- Parse Tree:
+					1) PTP - path of phrase labels connecting M1 and M2 in the parse tree.
+								  
 				- We also noticed that most of the entities types are irrelevant for the relationships we are looking for (lives in, work for),
 				  for example a pair of types (location,location) doesn't match any of the relationships we are looking for.
 				  As a result we decided to filter the types and features according to the types we observed in the data set and
