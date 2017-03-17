@@ -1,5 +1,4 @@
 import os
-from chunk_obj import ChunkObj
 #functions to excess sentence and entity data
 
 chunks_dict = dict()
