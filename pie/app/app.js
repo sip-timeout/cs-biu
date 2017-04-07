@@ -1,6 +1,6 @@
 (function () {
     angular
-        .module('app', ['ngMaterial', 'users', 'ngRoute'])
+        .module('app', ['ngMaterial', 'poi', 'ngRoute','ngResource'])
         .config(function ($mdThemingProvider, $mdIconProvider, $routeProvider) {
 
             $mdIconProvider
@@ -16,7 +16,9 @@
             $mdThemingProvider.theme('default')
 
             $routeProvider.when("/restaurant", {
-                template: "<button>oded</button>"
+                templateUrl: "src/poi/poi.html",
+                controller: "poiController",
+                controllerAs: "pois"
             }).otherwise({
                 template: "<button>shit</button>"
             });

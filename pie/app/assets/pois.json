@@ -1,0 +1,397 @@
+[
+    {
+        "cuisines": [
+            "Chinese",
+            "Asian",
+            "Vegetarian Friendly",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-i/0d/86/0e/5c/summer-pavilion-main.jpg",
+        "name": "Summer Pavilion",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d796940-Reviews-Summer_Pavilion-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "French",
+            "Vegetarian Friendly",
+            "Vegan Options",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/0c/a6/3d/45/creperie-entre-nous.jpg",
+        "name": "Creperie Entre-Nous",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d1193730-Reviews-Creperie_Entre_Nous-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Italian",
+            "Vegetarian Friendly",
+            "Vegan Options",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/0e/96/eb/52/appetisers.jpg",
+        "name": "Fratini La Trattoria",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d4930299-Reviews-Fratini_La_Trattoria-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "French",
+            "European",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-s/03/d8/3d/69/restaurant-andre.jpg",
+        "name": "Restaurant Andre",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d2077234-Reviews-Restaurant_Andre-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "French",
+            "European",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/07/48/fa/6e/rhubarb.jpg",
+        "name": "Rhubarb",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d7060741-Reviews-Rhubarb-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Asian",
+            "Singaporean",
+            "Chinese",
+            "Japanese",
+            "Indian",
+            "Seafood",
+            "European",
+            "Malaysian",
+            "Gluten Free Options",
+            "Vegetarian Friendly"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/09/09/6c/6d/colony.jpg",
+        "name": "Colony",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d8571637-Reviews-Colony-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "French",
+            "Bar",
+            "Cafe",
+            "European",
+            "Healthy",
+            "Vegetarian Friendly",
+            "Vegan Options",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/09/c5/ae/93/our-historical-facade.jpg",
+        "name": "My Awesome Cafe",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d6405257-Reviews-My_Awesome_Cafe-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Indian",
+            "Asian",
+            "Vegetarian Friendly",
+            "Vegan Options",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/02/f6/25/f2/the-curry-culture.jpg",
+        "name": "The Curry Culture",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d3512529-Reviews-The_Curry_Culture-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Indian",
+            "Asian",
+            "Healthy",
+            "Vegetarian Friendly",
+            "Vegan Options",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/04/bd/3b/2c/mtr-singapore.jpg",
+        "name": "MTR Restaurant",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d4304406-Reviews-MTR_Restaurant-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Chinese",
+            "Fast Food",
+            "Asian",
+            "Singaporean",
+            "Malaysian",
+            "Vegetarian Friendly"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-o/03/4a/93/85/kallang-airport-food.jpg",
+        "name": "Old Airport Rd Food Centre",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d1146830-Reviews-Old_Airport_Rd_Food_Centre-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "European",
+            "Fusion",
+            "Vegetarian Friendly"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-s/04/56/fe/e0/nox-dine-in-the-dark.jpg",
+        "name": "NOX - Dine in the Dark",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d4611806-Reviews-NOX_Dine_in_the_Dark-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "American",
+            "Steakhouse",
+            "European"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/03/ca/89/38/cut-by-wolfgang-puck.jpg",
+        "name": "Cut by Wolfgang Puck",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d2002823-Reviews-Cut_by_Wolfgang_Puck-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Italian",
+            "European",
+            "Wine Bar"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-s/06/91/09/6b/getlstd-property-photo.jpg",
+        "name": "Wine Connection Bistro at HillV2",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d7082243-Reviews-Wine_Connection_Bistro_at_HillV2-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Chinese",
+            "Asian",
+            "Singaporean",
+            "Gluten Free Options",
+            "Vegetarian Friendly"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/06/b0/99/45/peach-blossoms-marina.jpg",
+        "name": "Peach Blossoms (Marina Mandarin)",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d1007702-Reviews-Peach_Blossoms_Marina_Mandarin-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "French",
+            "Seafood",
+            "Mediterranean",
+            "Grill",
+            "Vegetarian Friendly"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-s/0a/8d/5b/7f/artemis.jpg",
+        "name": "Artemis",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d9564584-Reviews-Artemis-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Italian",
+            "Mediterranean",
+            "European",
+            "International",
+            "Vegetarian Friendly",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/03/0b/d1/d7/antipasti-buffet.jpg",
+        "name": "Basilico",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d1466538-Reviews-Basilico-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Seafood",
+            "Asian",
+            "Singaporean",
+            "International",
+            "Halal",
+            "Vegetarian Friendly"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/06/b0/97/f4/aquamarine-marina-mandarin.jpg",
+        "name": "Aquamarine @ Marina Mandarin",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d929185-Reviews-Aquamarine_Marina_Mandarin-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "American",
+            "European",
+            "Asian",
+            "International",
+            "Vegetarian Friendly",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/09/35/4a/e8/spago.jpg",
+        "name": "Spago by Wolfgang Puck",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d8683187-Reviews-Spago_by_Wolfgang_Puck-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "International",
+            "Sushi",
+            "Singaporean",
+            "Vegetarian Friendly",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/05/79/29/23/edge.jpg",
+        "name": "Edge",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d3567913-Reviews-Edge-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Mediterranean",
+            "European",
+            "Greek",
+            "Vegetarian Friendly",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/0a/eb/50/47/blu-kouzina.jpg",
+        "name": "Blu Kouzina",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d10188367-Reviews-Blu_Kouzina-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Asian",
+            "Singaporean",
+            "Vegetarian Friendly"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-i/0b/cd/bf/75/national-kitchen.jpg",
+        "name": "The National Kitchen by Violet Oon at the National Gallery",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d9596660-Reviews-The_National_Kitchen_by_Violet_Oon_at_the_National_Gallery-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Chinese",
+            "Indian",
+            "Seafood",
+            "Sushi",
+            "Asian",
+            "Middle Eastern",
+            "Singaporean",
+            "International",
+            "Halal",
+            "Gluten Free Options",
+            "Vegetarian Friendly"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/01/fc/06/f5/carousel-buffet-seafood.jpg",
+        "name": "Carousel Buffet, Royal Plaza on Scotts",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d794086-Reviews-Carousel_Buffet_Royal_Plaza_on_Scotts-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Italian",
+            "European",
+            "Vegetarian Friendly",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/0c/8c/2d/e9/tagliolini-aglio-olio.jpg",
+        "name": "Ristorante Amarone",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d3351111-Reviews-Ristorante_Amarone-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Chinese",
+            "Asian",
+            "Taiwanese",
+            "Vegetarian Friendly",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/03/d7/12/f6/din-tai-fung.jpg",
+        "name": "Din Tai Fung",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d3855842-Reviews-Din_Tai_Fung-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "European",
+            "Wine Bar",
+            "Vegetarian Friendly",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/03/df/8f/5a/skyve-elementary-bistro.jpg",
+        "name": "Skyve Wine Bistro",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d3473502-Reviews-Skyve_Wine_Bistro-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "French",
+            "Bar",
+            "Pizza",
+            "Mediterranean",
+            "European",
+            "Wine Bar",
+            "New Zealand",
+            "Singaporean",
+            "International",
+            "Vegetarian Friendly"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/05/38/2a/71/wine-connection-tapas.jpg",
+        "name": "Wine Connection Tapas Bar & Bistro",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d1901137-Reviews-Wine_Connection_Tapas_Bar_Bistro-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Lebanese",
+            "Mediterranean",
+            "Turkish",
+            "Middle Eastern",
+            "Vegetarian Friendly",
+            "Halal"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/0c/be/33/6a/pistachio-restaurant.jpg",
+        "name": "Pistachio Grill",
+        "rating": "5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d10460729-Reviews-Pistachio_Grill-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Mediterranean",
+            "European",
+            "Spanish"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-s/06/f7/c9/d7/yummy-octopus.jpg",
+        "name": "FOC Restaurant",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d7165932-Reviews-FOC_Restaurant-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Asian",
+            "Singaporean",
+            "Fusion",
+            "Vegetarian Friendly"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/08/d2/9f/b2/sky-on-57.jpg",
+        "name": "Sky on 57",
+        "rating": "4",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d2010882-Reviews-Sky_on_57-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Seafood",
+            "International",
+            "Asian",
+            "Singaporean",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/09/58/db/07/10-at-claymore.jpg",
+        "name": "10 at Claymore",
+        "rating": "4.5",
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d2103189-Reviews-10_at_Claymore-Singapore.html"
+    }
+]

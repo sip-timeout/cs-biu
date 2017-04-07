@@ -26,7 +26,7 @@
         // Load all registered users
 
         userService
-            .loadAllUsers()
+            .loadAllPois()
             .then(function (users) {
                 self.users = [].concat(users);
                 self.selected = users[0];
