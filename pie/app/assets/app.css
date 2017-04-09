@@ -47,12 +47,11 @@ md-sidenav md-list {
 /* Primary content area */
 
 #content {
-    overflow: hidden;
+    overflow: auto;
 }
 
 #content {
     padding-left: 40px;
-    padding-right: 40px;
     padding-top: 5px;
 }
 
@@ -92,7 +91,6 @@ md-button.menuBtn > md-icon {
 
 #content img {
     display: block;
-    height: auto;
     max-width: 500px;
 }
 
@@ -134,4 +132,8 @@ span.name {
     font-weight: bold;
     font-size: 1.1em;
     padding-left: 5px;
+}
+
+.wrapper{
+    height: 100%;
 }
