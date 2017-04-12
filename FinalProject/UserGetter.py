@@ -27,14 +27,15 @@ browser = webdriver.Chrome()
 
 first_page = 0
 
+
 def close_popup_if_exists():
-    if wait_by_selector('.ui_close_x',2):
+    if wait_by_selector('.ui_close_x', 2):
         close_ui = browser.find_elements_by_class_name('ui_close_x')
         for close_ui in close_ui:
             close_ui.click()
 
 
-def wait_by_selector(css_selector,timeout=10):
+def wait_by_selector(css_selector, timeout=10):
     try:
         WebDriverWait(browser, timeout).until(EC.visibility_of_element_located((By.CSS_SELECTOR, css_selector)))
         return True
@@ -42,16 +43,20 @@ def wait_by_selector(css_selector,timeout=10):
     except TimeoutException:
         return False
 
+
 def init_page(trip_url):
+    global first_page
+    first_page = 0
     browser.maximize_window()
     browser.get(trip_url)
-    elem = browser.find_element_by_tag_name('a')
-    elem.click()
+    # elem = browser.find_element_by_tag_name('a')
+    # elem.click()
     wait_by_selector('.member_info')
 
 
-def extract_page_users():
+def extract_page_users(poi_name):
     global first_page
+
     def extractUserPreview(userName):
         global users_map
         user = {}
@@ -89,6 +94,8 @@ def extract_page_users():
 
         user["reviewDist"] = revDist
 
+        user['restName'] = poi_name
+
         def getCountValue(countHTML):
             startidx = countHTML.find('>') + 1
             endidx = countHTML.find('<', startidx)
@@ -115,14 +122,21 @@ def extract_page_users():
     elems = browser.find_elements_by_class_name('member_info')
 
     temp_user_map = {}
-    for i in range(1-first_page, 11-first_page):
-
+    for i in range(1 - first_page, 11 - first_page):
 
         elem = elems[i]
         try:
             elem.click()
-        except StaleElementReferenceException:
+        except:
+            print 'shit shit shit'
+            close_popup_if_exists()
             continue
+
+
+
+        member_info_html = elem.get_attribute('outerHTML')
+        parsed_html = etree.HTML(member_info_html)
+        user_img_url = parsed_html.cssselect('img')[0].attrib['src']
 
         if wait_by_selector('.baseNav', 3):
             elem = browser.find_element_by_partial_link_text("profile")
@@ -135,6 +149,7 @@ def extract_page_users():
         user_object = extractUserPreview(elem.get_attribute('href').split('/')[-1])
         if user_object:
             user_object['url'] = elem.get_attribute('href')
+            user_object['img_url'] = user_img_url
             temp_user_map[i] = user_object
             # user_object['review_title']=review_titles[i-1]
             # user_object['review_content'] = review_contents[i - 1]
@@ -161,17 +176,19 @@ def extract_page_users():
         pass
 
     time.sleep(2)
-    review_titles = filter(lambda title: title!='',map(lambda title: title.text, browser.find_elements_by_css_selector('.noQuotes')))
-    review_contents = filter(lambda cont: cont!='',map(getReviewContent, browser.find_elements_by_css_selector('.entry')))
-    review_ratings = map(lambda rating: rating.get_attribute('alt').split(' ')[0],browser.find_elements_by_css_selector('.rating_s_fill'))
+    review_titles = filter(lambda title: title != '',
+                           map(lambda title: title.text, browser.find_elements_by_css_selector('.noQuotes')))
+    review_contents = filter(lambda cont: cont != '',
+                             map(getReviewContent, browser.find_elements_by_css_selector('.entry')))
+    review_ratings = map(lambda rating: rating.get_attribute('alt').split(' ')[0],
+                         browser.find_elements_by_css_selector('.rating_s_fill'))
 
     for key in temp_user_map.keys():
-        temp_user_map[key]['review_title'] = review_titles[key - 1 +first_page]
+        temp_user_map[key]['review_title'] = review_titles[key - 1 + first_page]
         temp_user_map[key]['review_content'] = review_contents[key - 1 + first_page]
-        temp_user_map[key]['review_rating'] = review_ratings[(key - 1 + first_page)*2]
+        temp_user_map[key]['review_rating'] = review_ratings[(key - 1 + first_page) * 2]
 
     first_page = 1
-
 
 
 def move_to_next_page():
@@ -182,7 +199,6 @@ def move_to_next_page():
 
 
 def scrape_user(user):
-
     def move_to_next_reviews_page():
         next_btn = browser.find_element_by_id('cs-paginate-next')
         if str(next_btn.get_attribute('class')).find('disabled') > -1:
@@ -210,13 +226,14 @@ def scrape_user(user):
             time.sleep(1)
             more_pages = True
             while more_pages:
-                ratings = map(lambda rating: rating.get_attribute('content'),browser.find_elements_by_css_selector('.sprite-ratings'))
+                ratings = map(lambda rating: rating.get_attribute('content'),
+                              browser.find_elements_by_css_selector('.sprite-ratings'))
 
-                i=0
-                for review in  browser.find_elements_by_css_selector('.cs-review-location > a'):
-                    reviews[review.text] = { 'rating': ratings[i]}
-                    i+=1
-                    relevant_map[review.text] = {'url':review.get_attribute('href')}
+                i = 0
+                for review in browser.find_elements_by_css_selector('.cs-review-location > a'):
+                    reviews[review.text] = {'rating': ratings[i]}
+                    i += 1
+                    relevant_map[review.text] = {'url': review.get_attribute('href')}
 
                 more_pages = move_to_next_reviews_page()
         return reviews
@@ -228,15 +245,15 @@ def scrape_user(user):
 
         cities = browser.find_elements_by_css_selector('.cityName')
         last_city = ''
-        cur_city =cities[-1].text
-        while last_city!=cur_city:
+        cur_city = cities[-1].text
+        while last_city != cur_city:
             last_city = cities[-1].text
             browser.execute_script('arguments[0].scrollIntoView(true);', cities[-1]);
             time.sleep(1)
             cities = browser.find_elements_by_css_selector('.cityName')
-            cur_city=cities[-1].text
+            cur_city = cities[-1].text
 
-        user['cities'] = map(lambda city: city.text,cities)
+        user['cities'] = map(lambda city: city.text, cities)
 
     browser.get(user['url'])
 
@@ -244,27 +261,28 @@ def scrape_user(user):
 
     tags = []
     for tag in browser.find_elements_by_css_selector('.tagBubble'):
-        if tag.text!='':
+        if tag.text != '':
             tags.append(tag.text)
-    user['tags']=tags
+    user['tags'] = tags
 
     scrape_badges()
 
-    user['hotels'] = scrape_reviews('REVIEWS_HOTELS',hotels)
+    user['hotels'] = scrape_reviews('REVIEWS_HOTELS', hotels)
     user['restaurants'] = scrape_reviews('REVIEWS_RESTAURANTS', restaurants)
     user['attractions'] = scrape_reviews('REVIEWS_ATTRACTIONS', attractions)
 
     scrape_cities()
 
+
 def scrape_restaurant(restaurant):
-    print 'scraping '+restaurant['url']
+    print 'scraping ' + restaurant['url']
     html = urllib2.urlopen(restaurant['url']).read()
     parsedHtml = etree.HTML(html)
     details = parsedHtml.cssselect('.table_section > .row')
     for detail in details[1:]:
-        title = str.lower(detail.cssselect('.title')[0].text.replace('\n','').replace(' ','_'))
-        content = detail.cssselect('.content')[0].text.replace('\n','')
-        if content!='':
+        title = str.lower(detail.cssselect('.title')[0].text.replace('\n', '').replace(' ', '_'))
+        content = detail.cssselect('.content')[0].text.replace('\n', '')
+        if content != '':
             restaurant[title] = content
 
     for locNom in parsedHtml.cssselect('.detail'):
@@ -277,30 +295,47 @@ def scrape_restaurant(restaurant):
             if len(locations) > 2:
                 restaurant['city'] = locations[2].text[5:]
 
-init_page('https://www.tripadvisor.com/Restaurant_Review-g187870-d1320357-Reviews-Osteria_ai_40_Ladroni-Venice_Veneto.html')
-for i in range(0,10):
-    extract_page_users()
-    move_to_next_page()
 
-print json.dumps(users_map)
+def scrape_poi(url, name):
+    init_page(url)
+    for i in range(0, 10):
+        extract_page_users(name)
+        move_to_next_page()
 
-for user in users_map.values():
-    retry =3
-    while retry > 0:
+
+def main():
+    with open('pois.json', 'r') as pois_file:
+        pois = json.load(pois_file)[:5]
+
+    for poi in pois:
+        scrape_poi(poi['url'], poi['name'])
+
+    print json.dumps(users_map)
+
+    for user in users_map.values():
+        retry = 3
+        while retry > 0:
+            try:
+                scrape_user(user)
+                break
+            except Exception:
+                retry -= 1
+
+    for restaurant in restaurants.values():
         try:
-            scrape_user(user)
-            break
-        except Exception:
-            retry-=1
+            scrape_restaurant(restaurant)
+        except:
+            print 'couldnt parse ' + restaurant['url']
+            pass
 
-for restaurant in restaurants.values():
-    scrape_restaurant(restaurant)
+    with open('users.json', 'w') as users_file:
+        json.dump(users_map, users_file)
 
-with open('userim.json','w') as users_file:
-    json.dump(users_map,users_file)
+    with open('rests.json', 'w') as rests_file:
+        json.dump(restaurants, rests_file)
 
-with open('misadot.json','w') as rests_file:
-    json.dump(restaurants,rests_file)
+    browser.quit()
 
-browser.quit()
 
+if __name__ == "__main__":
+    main()

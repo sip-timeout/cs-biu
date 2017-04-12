@@ -7,6 +7,7 @@ feature_modifiers = ['continent', 'country', 'city', 'cuisine']
 feature_types = ['visit', 'liked', 'avg']
 k = 10
 m = 5
+buckets_num = 4
 
 case_name = raw_input('insert scenario name:')
 collected_vars = []
@@ -37,9 +38,17 @@ def calculate_thresholds():
                         threshold_arrs[mod + '_' + tp].append(val)
 
     for key in threshold_arrs:
-        thresholds[key + '_high'] = numpy.percentile(threshold_arrs[key], 65)
-        thresholds[key + '_low'] = numpy.percentile(threshold_arrs[key], 35)
+        sorted_arr = sorted(threshold_arrs[key])
+        buck_size = len(sorted_arr) / buckets_num
+        for i in range(1,buckets_num):
+            thresholds[key+'_'+str(i)] = sorted_arr[i*buck_size]
+        thresholds[key+'_'+str(buckets_num)] = sorted_arr[-1]
 
+def get_bucket(score,cat):
+    for i in range(1,buckets_num+1):
+        buck_name = cat + '_' + str(i)
+        if score <= thresholds[buck_name]:
+            return buck_name
 
 def calculate_category_scores():
     for username in users:
@@ -47,12 +56,11 @@ def calculate_category_scores():
         if 'restaurants' in user and len(user['restaurants']) > 3:
             for mod in feature_modifiers:
                 for tp in feature_types:
-                    user_features = user['rest_features'][mod + '_' + tp]
+                    cat_name = mod + '_' + tp
+                    user_features = user['rest_features'][cat_name]
                     for key in user_features:
-                        if user_features[key] >= thresholds['_'.join([mod, tp, 'high'])]:
-                            upsert(category_scores, '_'.join([key, mod, tp, 'high']))
-                        if user_features[key] <= thresholds['_'.join([mod, tp, 'low'])]:
-                            upsert(category_scores, '_'.join([key, mod, tp, 'low']))
+                        buck_name = get_bucket(user_features[key],cat_name)
+                        upsert(category_scores,'_'.join([key,buck_name]))
 
 
 def calculate_user_score(user, covered_categories):
@@ -61,20 +69,14 @@ def calculate_user_score(user, covered_categories):
     if 'restaurants' in user and len(user['restaurants']) > 3:
         for mod in feature_modifiers:
             for tp in feature_types:
-                user_features = user['rest_features'][mod + '_' + tp]
+                cat_name = mod + '_' + tp
+                user_features = user['rest_features'][cat_name]
                 for key in user_features:
-                    high_cat = '_'.join([mod, tp, 'high'])
-                    low_cat = '_'.join([mod, tp, 'low'])
-                    if user_features[key] >= thresholds[high_cat]:
-                        full_cat_name = '_'.join([key, high_cat])
-                        if full_cat_name not in covered_categories:
-                            score += category_scores[full_cat_name]
-                            user_covered.append((full_cat_name, category_scores[full_cat_name]))
-                    if user_features[key] <= thresholds[low_cat]:
-                        full_cat_name = '_'.join([key, low_cat])
-                        if full_cat_name not in covered_categories:
-                            score += category_scores[full_cat_name]
-                            user_covered.append((full_cat_name, category_scores[full_cat_name]))
+                    buck_name = get_bucket(user_features[key],cat_name)
+                    full_cat_name = '_'.join([key, buck_name])
+                    if full_cat_name not in covered_cats:
+                        score += category_scores[full_cat_name]
+                        user_covered.append((full_cat_name, category_scores[full_cat_name]))
     return score, user_covered
 
 

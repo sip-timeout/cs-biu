@@ -1,10 +1,10 @@
 import json
 import operator
 
-with open('userim.json') as users_file:
+with open('users.json') as users_file:
     users = json.load(users_file)
 
-with open('misadot.json') as rests_file:
+with open('rests.json') as rests_file:
     rests = json.load(rests_file)
 
 with open('restTax.json') as rest_tax_file:

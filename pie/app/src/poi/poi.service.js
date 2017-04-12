@@ -6,14 +6,10 @@
 
 
     function poiService($q, $resource) {
-        var res = $resource('assets/pois.json', {}, {'get': {'isArray': true}});
+        var res = $resource('http://localhost:5000/rests', {}, {'get': {'isArray': true}});
 
         // Promise-based API
-        return {
-            loadAllPois: function () {
-                return res.get();
-            }
-        };
+        return res;
     }
 
 })();
