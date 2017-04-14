@@ -4,7 +4,7 @@
         .controller('poiController', ['poiService', PoiController]);
     function PoiController(poiService) {
         var vm = this;
-        vm.pois = poiService.get();
+        vm.pois = poiService.loadAllPois();
 
     }
 

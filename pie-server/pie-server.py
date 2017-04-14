@@ -11,9 +11,9 @@ CORS(app)
 def get_rests():
     return jsonify(FileManager.get_pois()[:5])
 
-@app.route('/users/<rest_name>')
+@app.route('/selection/<rest_name>')
 def get_restaurant_users(rest_name):
-    return jsonify(UserSelector.get_users(rest_name))
+    return jsonify(UserSelector.get_selection(rest_name))
 
 @app.route('/')
 def index():

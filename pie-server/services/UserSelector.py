@@ -2,7 +2,8 @@ import json
 import numpy
 from services import FeatureCalculator
 
-def get_users(restaurant_name):
+
+def get_selection(restaurant_name):
     thresholds = dict()
     category_scores = dict()
     feature_modifiers = ['continent', 'country', 'city', 'cuisine']
@@ -75,12 +76,29 @@ def get_users(restaurant_name):
                             user_covered.append((full_cat_name, category_scores[full_cat_name]))
         return score, user_covered
 
+    def get_category_coverage(top_k):
+        ordered_total_cats = sorted(category_scores.keys(), key=lambda cat: category_scores[cat], reverse=True)
+        selection_cats = set(reduce(lambda x, y: x + y[2], selected_users, []))
+        selection_dict = dict((k[0], 1) for k in selection_cats)
+        category_coverage = [[cat,cat in selection_dict] for cat in ordered_total_cats[:top_k]]
+        coverage_rate = float(len([1 for cat in category_coverage if cat[1]])) / top_k
+
+        return category_coverage,coverage_rate
+
+    def get_selection_obj():
+        selection_users = [{'score': user[1], 'categories': user[2][:m], 'user': user[-1]} for user in selected_users]
+        selection_variance = numpy.var(map(lambda user: float(user[4]), selected_users))
+        category_coverage,coverage = get_category_coverage(200)
+
+        return {'users': selection_users, 'top_category_coverage': category_coverage,'category_coverage_rate':coverage ,'variance': selection_variance,
+                'total_variance': total_variance}
+
     calculate_thresholds()
     calculate_category_scores()
 
-    rest_users = {k: v for k, v in users.iteritems() if v['restName']==restaurant_name}
+    rest_users = {k: v for k, v in users.iteritems() if v['restName'] == restaurant_name}
 
-    print 'Total variance:', numpy.var(map(lambda username: float(rest_users[username]['review_rating']), rest_users))
+    total_variance = numpy.var(map(lambda username: float(rest_users[username]['review_rating']), rest_users))
 
     selected_users = []
     covered_cats = dict()
@@ -93,7 +111,7 @@ def get_users(restaurant_name):
             score, categories = calculate_user_score(user, covered_cats)
             if score > max_score:
                 max_score = score
-                arg_max = [username, score, categories, user['review_title'], user['review_rating'],user]
+                arg_max = [username, score, categories, user['review_title'], user['review_rating'], user]
 
         rest_users.pop(arg_max[0])
 
@@ -101,16 +119,12 @@ def get_users(restaurant_name):
         for cat in user_categories:
             covered_cats[cat[0]] = True
 
-        user_categories = sorted(user_categories, key=lambda cat: cat[1], reverse=True)[:m]
+        user_categories = sorted(user_categories, key=lambda cat: cat[1], reverse=True)
         arg_max[2] = user_categories
         selected_users.append(arg_max)
         collected_vars.append(numpy.var(map(lambda user: float(user[4]), selected_users)))
 
     print 'Selection variance:', numpy.var(map(lambda user: float(user[4]), selected_users))
 
-    return [{'score':user[1],'categories':user[2],'user':user[-1]} for user in selected_users]
-    # with open(case_name + '.json', 'w') as selected_file:
-    #     json.dump(selected_users, selected_file, indent=4, separators=(',', ': '))
-    #
-    # with open(case_name + '.var', 'w') as var_file:
-    #     json.dump(collected_vars, var_file, indent=4, separators=(',', ': '))
+    # return [{'score': user[1], 'categories': user[2], 'user': user[-1]} for user in selected_users]
+    return get_selection_obj()

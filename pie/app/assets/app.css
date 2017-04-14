@@ -137,3 +137,8 @@ span.name {
 .wrapper{
     height: 100%;
 }
+
+
+md-whiteframe{
+    background-color: white;
+}

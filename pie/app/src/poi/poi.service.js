@@ -9,7 +9,9 @@
         var res = $resource('http://localhost:5000/rests', {}, {'get': {'isArray': true}});
 
         // Promise-based API
-        return res;
+        return {
+            loadAllPois: res.get
+        };
     }
 
 })();
