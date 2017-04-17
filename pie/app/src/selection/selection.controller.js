@@ -5,8 +5,12 @@
 
     function selectionController(selectionService,$routeParams) {
         var vm = this;
-        vm.selection=  selectionService.getRestaurantUsers($routeParams['restName']);
+        vm.restName = $routeParams['restName'];
+        vm.selection=  selectionService.getRestaurantUsers(vm.restName);
 
+        vm.selectCategory = function (category) {
+            vm.selectedCategory = category;
+        };
     }
 
 })();

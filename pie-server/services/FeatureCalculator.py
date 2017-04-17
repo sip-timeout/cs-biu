@@ -2,7 +2,14 @@ import json
 import operator
 from model import FileManager
 
+cached_users = None
+
 def calculate_features():
+    global cached_users
+
+    if cached_users:
+        print 'return users from cache'
+        return cached_users
 
     users = FileManager.get_users()
     rests = FileManager.get_rests()
@@ -74,4 +81,5 @@ def calculate_features():
 
 
     # print json.dumps(sorted(unclassified_cuisines.items(),key=operator.itemgetter(1),reverse=True))
+    cached_users = users
     return users

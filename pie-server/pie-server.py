@@ -15,6 +15,10 @@ def get_rests():
 def get_restaurant_users(rest_name):
     return jsonify(UserSelector.get_selection(rest_name))
 
+@app.route('/selection/<rest_name>/category_analysis/<category_name>')
+def get_category_analysis(rest_name,category_name):
+    return jsonify(UserSelector.get_category_analysis(category_name,rest_name))
+
 @app.route('/')
 def index():
     return jsonify({'a':5 })

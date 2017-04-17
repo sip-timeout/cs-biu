@@ -6,12 +6,16 @@
 
 
     function selectionService($q, $resource) {
-        var res = $resource('http://localhost:5000/selection/:restName');
+        var selectionRes = $resource('http://localhost:5000/selection/:restName');
+        var categoryRes = $resource('http://localhost:5000/selection/:restName/category_analysis/:categoryName');
 
         // Promise-based API
         return {
             getRestaurantUsers:function (restName) {
-                return res.get({restName:restName});
+                return selectionRes.get({restName:restName});
+            },
+            getCategoryAnalysis:function (restName,categoryName) {
+                return categoryRes.get({restName:restName,categoryName:categoryName});
             }
         };
     }

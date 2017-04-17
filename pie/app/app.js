@@ -1,6 +1,6 @@
 (function () {
     angular
-        .module('app', ['ngMaterial', 'poi','selection','ngRoute','ngResource'])
+        .module('app', ['ngMaterial', 'poi','selection','ngRoute','ngResource','chart.js'])
         .config(function ($mdThemingProvider, $mdIconProvider, $routeProvider) {
 
             $mdIconProvider

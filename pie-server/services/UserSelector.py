@@ -2,24 +2,39 @@ import json
 import numpy
 from services import FeatureCalculator
 
+thresholds = None
+category_scores = None
+feature_modifiers = ['continent', 'country', 'city', 'cuisine']
+feature_types = ['visit', 'liked', 'avg']
+buckets_num = 4
 
-def get_selection(restaurant_name):
-    thresholds = dict()
-    category_scores = dict()
-    feature_modifiers = ['continent', 'country', 'city', 'cuisine']
-    feature_types = ['visit', 'liked', 'avg']
-    k = 10
-    m = 5
-    buckets_num = 4
-    collected_vars = []
+
+def upsert(map, key, value=1):
+    if key in map:
+        map[key] += value
+    else:
+        map[key] = value
+
+
+def get_bucket(score, cat):
+    for i in range(1, buckets_num + 1):
+        buck_name = cat + '_' + str(i)
+        if score <= thresholds[buck_name]:
+            return buck_name
+
+
+def ensure_category_scores():
+    global thresholds
+    global category_scores
+
+    if thresholds:
+        print 'return thresholds from cache'
+        return
+    else:
+        thresholds = dict()
+        category_scores = dict()
 
     users = FeatureCalculator.calculate_features()
-
-    def upsert(map, key, value=1):
-        if key in map:
-            map[key] += value
-        else:
-            map[key] = value
 
     def calculate_thresholds():
         threshold_arrs = dict()
@@ -42,12 +57,6 @@ def get_selection(restaurant_name):
                 thresholds[key + '_' + str(i)] = sorted_arr[i * buck_size]
             thresholds[key + '_' + str(buckets_num)] = sorted_arr[-1]
 
-    def get_bucket(score, cat):
-        for i in range(1, buckets_num + 1):
-            buck_name = cat + '_' + str(i)
-            if score <= thresholds[buck_name]:
-                return buck_name
-
     def calculate_category_scores():
         for username in users:
             user = users[username]
@@ -59,6 +68,18 @@ def get_selection(restaurant_name):
                         for key in user_features:
                             buck_name = get_bucket(user_features[key], cat_name)
                             upsert(category_scores, '_'.join([key, buck_name]))
+
+    calculate_thresholds()
+    calculate_category_scores()
+
+
+def get_selection(restaurant_name):
+    k = 10
+    m = 5
+    collected_vars = []
+    users = FeatureCalculator.calculate_features()
+
+    ensure_category_scores()
 
     def calculate_user_score(user, covered_categories):
         score = 0
@@ -80,26 +101,22 @@ def get_selection(restaurant_name):
         ordered_total_cats = sorted(category_scores.keys(), key=lambda cat: category_scores[cat], reverse=True)
         selection_cats = set(reduce(lambda x, y: x + y[2], selected_users, []))
         selection_dict = dict((k[0], 1) for k in selection_cats)
-        category_coverage = [[cat,cat in selection_dict] for cat in ordered_total_cats[:top_k]]
+        category_coverage = [[cat, cat in selection_dict] for cat in ordered_total_cats[:top_k]]
         coverage_rate = float(len([1 for cat in category_coverage if cat[1]])) / top_k
 
-        return category_coverage,coverage_rate
+        return category_coverage, coverage_rate
 
     def get_selection_obj():
         selection_users = [{'score': user[1], 'categories': user[2][:m], 'user': user[-1]} for user in selected_users]
         selection_variance = numpy.var(map(lambda user: float(user[4]), selected_users))
-        category_coverage,coverage = get_category_coverage(200)
+        category_coverage, coverage = get_category_coverage(200)
 
-        return {'users': selection_users, 'top_category_coverage': category_coverage,'category_coverage_rate':coverage ,'variance': selection_variance,
+        return {'users': selection_users, 'top_category_coverage': category_coverage,
+                'category_coverage_rate': coverage, 'variance': selection_variance,
                 'total_variance': total_variance}
 
-    calculate_thresholds()
-    calculate_category_scores()
-
     rest_users = {k: v for k, v in users.iteritems() if v['restName'] == restaurant_name}
-
     total_variance = numpy.var(map(lambda username: float(rest_users[username]['review_rating']), rest_users))
-
     selected_users = []
     covered_cats = dict()
     for i in range(0, k):
@@ -128,3 +145,32 @@ def get_selection(restaurant_name):
 
     # return [{'score': user[1], 'categories': user[2], 'user': user[-1]} for user in selected_users]
     return get_selection_obj()
+
+
+def get_category_analysis(category_name, restaurant_name):
+    users = FeatureCalculator.calculate_features()
+    selection = get_selection(restaurant_name)
+    specification, mod, tp, bucket = category_name.split('_')
+    cat_name = '_'.join([mod, tp])
+
+    selection_users = [user['user']['userName'] for user in selection['users']]
+    total_users_dist = [0] * buckets_num
+    selection_users_dist = [0] * buckets_num
+
+    def get_normalized_dist(dist_arr):
+        arr_sum = sum(dist_arr)
+        return [(float(elem) / arr_sum)*100 for elem in dist_arr]
+
+    for user_name, user in users.iteritems():
+        if 'restaurants' in user and len(user['restaurants']) > 3:
+            user_features = user['rest_features']
+            if user['restName'] == restaurant_name:
+                if cat_name in user_features and specification in user_features[cat_name]:
+                    bucket = get_bucket(user_features[cat_name][specification], cat_name)
+                    buck_num = int(bucket[-1])
+                    total_users_dist[buck_num - 1] += 1
+                    if user_name in selection_users:
+                        selection_users_dist[buck_num - 1] += 1
+
+    return {'total_dist': get_normalized_dist(total_users_dist),
+            'selection_dist': get_normalized_dist(selection_users_dist)}

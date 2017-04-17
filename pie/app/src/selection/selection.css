@@ -8,9 +8,9 @@
 
 .coverage-category-chip{
     font-size: 10px;
-
     text-overflow: ellipsis;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .small-chip{
@@ -24,14 +24,14 @@
 
 .selection-content{
     padding-left: 15px;
+    padding-right: 15px;
 }
 .selection-content > md-whiteframe{
     margin-top: 5px;
-    margin-right: 15px;
 }
 
 .in-selection{
-    background-color: #99B898;
+    background-color: #55E9BC;
 }
 
 .not-in-selection{
