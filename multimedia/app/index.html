@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <title>Angular Material - Starter App</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no"/>
+
+    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Rubik:400,500,700,400italic'>
+    <link rel="stylesheet" href="../node_modules/angular-material/angular-material.css"/>
+    <link rel="stylesheet" href="assets/app.css"/>
+
+    <style type="text/css">
+        /**
+         * Hide when Angular is not yet loaded and initialized
+         */
+        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+            display: none !important;
+        }
+    </style>
+
+</head>
+
+<body ng-app="app" layout="column" ng-controller="AppController as vm" ng-cloak>
+
+<md-toolbar layout="row">
+    <md-button class="menu" ng-click="vm.toggleMenu()">
+        <md-icon md-svg-icon="menu"></md-icon>
+    </md-button>
+    <span>
+    <md-icon md-svg-icon="logo" class="logo"></md-icon>
+        </span>
+    <h1>פאי </h1>
+</md-toolbar>
+
+<div flex layout="row">
+
+    <md-sidenav md-is-locked-open="vm.menuOpen" md-component-id="left" class="md-whiteframe-z2 sidebar" >
+        <md-list>
+            <md-list-item ng-repeat="stage in vm.stages">
+                <md-button ng-click="vm.selectStage(stage)" ng-class="{'selected' : stage === vm.selected }">
+                    <span class="sidebar-item">
+                    {{stage.displayName}}
+                        </span>
+                </md-button>
+                <!--<md-button>-->
+                <!--<span class="sidebar-item" ng-class="{'selected' : stage === vm.selected }" ng-click="vm.selectStage(stage)">-->
+                    <!--{{stage.displayName}}-->
+                    <!--</span>-->
+                <!--</md-button>-->
+            </md-list-item>
+        </md-list>
+    </md-sidenav>
+
+    <md-content class="wrapper" flex id="content" ng-view>
+        <!--<md-icon md-svg-icon="{{ul.selected.avatar}}" class="avatar"></md-icon>
+        <h2>{{ul.selected.name}}</h2>
+        <p>{{ul.selected.content}}</p>
+
+        <md-button class="share" md-no-ink ng-click="ul.makeContact(ul.selected)" aria-label="Share with {{ ul.selected.name }}">
+          <md-icon md-svg-icon="share"></md-icon>
+        </md-button>-->
+
+        <!--<div class="wrapper" ng-view></div>-->
+    </md-content>
+
+</div>
+
+<script src="../node_modules/angular/angular.js"></script>
+<script src="../node_modules/angular-animate/angular-animate.js"></script>
+<script src="../node_modules/angular-aria/angular-aria.js"></script>
+<script src="../node_modules/angular-route/angular-route.js"></script>
+<script src="../node_modules/chart.js/dist/Chart.js"></script>
+<script src="../node_modules/angular-chart.js/dist/angular-chart.js"></script>
+<script src="../node_modules/angular-resource/angular-resource.js"></script>
+<script src="../node_modules/lodash/lodash.js"></script>
+<script type="text/javascript" src="../node_modules/angular-material/angular-material.js"></script>
+
+
+<script src="./src/poi/poi.js"></script>
+<script src="./src/poi/poi.service.js"></script>
+<script src="./src/poi/poi.controller.js"></script>
+<link rel="stylesheet" href="./src/poi/poi.css"/>
+
+<script src="./src/selection/selection.js"></script>
+<script src="./src/selection/selection.service.js"></script>
+<script src="./src/selection/selection.controller.js"></script>
+<script src="./src/selection/category.filter.js"></script>
+<script src="./src/selection/coverageChip.directive.js"></script>
+<link rel="stylesheet" href="./src/selection/selection.css"/>
+
+<script src="./src/selection/components/categoryAnalysis/categoryAnalysis.directive.js"></script>
+
+<script src="./app.js"></script>
+<script src="app.controller.js"></script>
+
+</body>
+</html>
