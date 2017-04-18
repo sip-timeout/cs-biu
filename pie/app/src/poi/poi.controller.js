@@ -1,10 +1,14 @@
 (function () {
     "use strict";
     angular.module('poi')
-        .controller('poiController', ['poiService', PoiController]);
-    function PoiController(poiService) {
+        .controller('poiController', ['poiService','$location', PoiController]);
+    function PoiController(poiService,$location) {
         var vm = this;
         vm.pois = poiService.loadAllPois();
+
+        vm.gotoPoi = function (poiName) {
+            $location.path("/"+poiName+"/selection");
+        };
 
     }
 

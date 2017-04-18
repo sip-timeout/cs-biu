@@ -18,13 +18,13 @@
             $routeProvider.when("/restaurant", {
                 templateUrl: "src/poi/poi.html",
                 controller: "poiController",
-                controllerAs: "pois"
+                controllerAs: "ctrl"
             }).when("/:restName/selection", {
                 templateUrl: "src/selection/selection.html",
                 controller: "selectionController",
                 controllerAs: "ctrl"
             }).otherwise({
-                template: "<button>shit</button>"
+                redirectTo: "/restaurant"
             });
 
 

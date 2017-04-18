@@ -1,6 +1,6 @@
 <div layout="row" class="wrapper" layout-padding layout-wrap layout-fill>
 
-    <md-card ng-repeat="poi in pois.pois">
+    <md-card ng-repeat="poi in ctrl.pois">
         <md-card-title>
             <md-card-title-text>
                 <span class="poi-title">{{poi.name}}</span>
@@ -16,7 +16,7 @@
         </md-card-title>
 
         <md-card-actions layout="row" layout-align="end center" class="layout-align-end-center layout-row">
-            <md-button class="md-icon-button">
+            <md-button class="md-icon-button" ng-click="ctrl.gotoPoi(poi.name)">
                 <md-icon md-svg-icon="share"></md-icon>
             </md-button>
         </md-card-actions>

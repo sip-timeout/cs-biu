@@ -21,7 +21,7 @@
         vm.selected = vm.stages[0];
         vm.toggleMenu = toggleMenu;
         vm.selectStage = selectStage;
-        vm.menuOpen = true;
+        vm.menuOpen = false;
 
         function toggleMenu() {
             vm.menuOpen = !vm.menuOpen;
