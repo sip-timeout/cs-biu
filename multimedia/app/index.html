@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
+
     <title>Angular Material - Starter App</title>
 
     <meta charset="utf-8">
@@ -37,18 +38,18 @@
 
 <div flex layout="row">
 
-    <md-sidenav md-is-locked-open="vm.menuOpen" md-component-id="left" class="md-whiteframe-z2 sidebar" >
+    <md-sidenav md-is-locked-open="vm.menuOpen" md-component-id="left" class="md-whiteframe-z2 sidebar">
         <md-list>
             <md-list-item ng-repeat="stage in vm.stages">
-                <md-button ng-click="vm.selectStage(stage)" ng-class="{'selected' : stage === vm.selected }">
+                <md-button ng-click="vm.selectStage(stage)" ng-class="{'selected' : vm.isSelected(stage) }">
                     <span class="sidebar-item">
                     {{stage.displayName}}
                         </span>
                 </md-button>
                 <!--<md-button>-->
                 <!--<span class="sidebar-item" ng-class="{'selected' : stage === vm.selected }" ng-click="vm.selectStage(stage)">-->
-                    <!--{{stage.displayName}}-->
-                    <!--</span>-->
+                <!--{{stage.displayName}}-->
+                <!--</span>-->
                 <!--</md-button>-->
             </md-list-item>
         </md-list>
@@ -76,13 +77,17 @@
 <script src="../node_modules/angular-chart.js/dist/angular-chart.js"></script>
 <script src="../node_modules/angular-resource/angular-resource.js"></script>
 <script src="../node_modules/lodash/lodash.js"></script>
+<script src="../node_modules/photoswipe/dist/photoswipe.js"></script>
+<script src="../node_modules/photoswipe/dist/photoswipe-ui-default.js"></script>
+<script src="angular-photoswipe.js"></script>
 <script type="text/javascript" src="../node_modules/angular-material/angular-material.js"></script>
 
 
-<script src="./src/poi/poi.js"></script>
-<script src="./src/poi/poi.service.js"></script>
-<script src="./src/poi/poi.controller.js"></script>
-<link rel="stylesheet" href="./src/poi/poi.css"/>
+<script src="./src/puppy/puppy.js"></script>
+<script src="./src/puppy/puppy.controller.js"></script>
+<link rel="stylesheet" href="./src/puppy/puppy.css"/>
+<link rel="stylesheet" href="../node_modules/photoswipe/dist/photoswipe.css">
+<link rel="stylesheet" href="../node_modules/photoswipe/dist/default-skin/default-skin.css">
 
 <script src="./src/selection/selection.js"></script>
 <script src="./src/selection/selection.service.js"></script>

@@ -154,3 +154,15 @@ md-whiteframe{
     background-color: white;
 }
 
+.img-caption{
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.graph-head{
+    text-align: center;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}

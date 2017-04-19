@@ -1,7 +1,7 @@
 (function () {
     angular
-        .module('app', ['ngMaterial', 'poi','selection','ngRoute','ngResource','chart.js'])
-        .config(function ($mdThemingProvider, $mdIconProvider, $routeProvider) {
+        .module('app', ['ngMaterial', 'puppy','ngRoute','ngResource','chart.js'])
+        .config(function ($mdThemingProvider, $mdIconProvider, $routeProvider,$locationProvider) {
 
             $mdIconProvider
                 .defaultIconSet("./assets/svg/avatars.svg", 128)
@@ -15,16 +15,23 @@
 
             $mdThemingProvider.theme('default')
 
+
             $routeProvider.when("/adoption", {
                 templateUrl: "src/adoption/adoption.html"
-            }).when("/:restName/selection", {
-                templateUrl: "src/selection/selection.html",
-                controller: "selectionController",
-                controllerAs: "ctrl"
+            }).when("/puppy", {
+                templateUrl: "src/puppy/puppy.html",
+                controller: "puppyController",
+                controllerAs: "vm"
+            }).when("/puppy", {
+                templateUrl: "src/puppy/puppy.html",
+                controller: "puppyController",
+                controllerAs: "vm"
             }).otherwise({
                 redirectTo:'/adoption'
             });
 
 
         });
+
+
 })();

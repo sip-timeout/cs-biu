@@ -24,15 +24,12 @@
             {
                 displayName: "אילוף",
                 route: "/training"
-            },
-            {
-                displayName: "עמותת SOS חיות",
-                route: "/sos"
             }
         ];
         vm.selected = vm.stages[0];
         vm.toggleMenu = toggleMenu;
         vm.selectStage = selectStage;
+        vm.isSelected = isSelected;
         vm.menuOpen = true;
 
         function toggleMenu() {
@@ -46,6 +43,10 @@
         function selectStage(stage) {
             vm.selected = stage
             $location.path(stage.route);
+        }
+
+        function isSelected(stage){
+            return $location.path() === stage.route;
         }
 
 
