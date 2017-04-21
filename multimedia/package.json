@@ -1,8 +1,8 @@
 {
-  "name": "material-start",
+  "name": "multimedia",
   "private": true,
-  "version": "0.0.4",
-  "description": "A starter project for AngularJS Material",
+  "version": "0.0.1",
+  "description": "My project",
   "repository": "https://github.com/angular/material-start",
   "licenses": [
     {
