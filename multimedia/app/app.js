@@ -22,10 +22,8 @@
                 templateUrl: "src/puppy/puppy.html",
                 controller: "puppyController",
                 controllerAs: "vm"
-            }).when("/puppy", {
-                templateUrl: "src/puppy/puppy.html",
-                controller: "puppyController",
-                controllerAs: "vm"
+            }).when("/training", {
+                templateUrl: "src/training/training.html"
             }).otherwise({
                 redirectTo:'/adoption'
             });

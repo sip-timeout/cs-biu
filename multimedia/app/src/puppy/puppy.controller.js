@@ -12,28 +12,28 @@
         };
 
         vm.slides = [{
-            src: 'http://lorempixel.com/500/500/nature',
+            src: 'src/puppy/assets/p1.jpg',
             w: 500, h: 500
         }, {
-            src: 'http://lorempixel.com/500/500/abstract',
+            src: 'src/puppy/assets/p2.jpg',
             w: 500, h: 500
         }, {
-            src: 'http://lorempixel.com/500/500/sports',
+            src: 'src/puppy/assets/p3.jpg',
             w: 500, h: 500
         }, {
-            src: 'http://lorempixel.com/500/500/city',
+            src: 'src/puppy/assets/p4.jpg',
             w: 500, h: 500
         }, {
-            src: 'http://lorempixel.com/500/500/food',
+            src: 'src/puppy/assets/p5.jpg',
             w: 500, h: 500
         }, {
-            src: 'http://lorempixel.com/500/500/animals',
+            src: 'src/puppy/assets/p6.jpg',
             w: 500, h: 500
         }, {
-            src: 'http://lorempixel.com/500/500/business',
+            src: 'src/puppy/assets/p7.jpg',
             w: 500, h: 500
         }, {
-            src: 'http://lorempixel.com/500/500/fashion',
+            src: 'src/puppy/assets/p8.jpg',
             w: 500, h: 500
         }];
 
