@@ -8,6 +8,18 @@ browser = webdriver.Chrome()
 
 
 def extract_pois(rest_page):
+
+    def get_topics(url):
+        browser.get(url)
+        browser.execute_script('scroll(0,document.body.scrollHeight)')
+        topics = []
+        topic_elements = browser.find_elements_by_css_selector('span.ui_tagcloud')
+        for topic in topic_elements:
+            topics.append(topic.get_attribute('data-content'))
+
+        return topics[1:]
+
+
     browser.get(rest_page)
     browser.execute_script('scroll(0,document.body.scrollHeight)')
     time.sleep(3)
@@ -26,11 +38,15 @@ def extract_pois(rest_page):
         poi_obj['name'] = img.attrib['alt']
         poi_obj['img'] = img.attrib['src']
 
-        review = poi.cssselect('.sprite-ratings')[0]
+        # print poi.attrib['outerHTML']
+        review = poi.cssselect('.ui_bubble_rating')[0]
         poi_obj['rating'] = review.attrib['alt'][:review.attrib['alt'].find(' ')]
 
         cuisines = poi.cssselect('.cuisine')
         poi_obj['cuisines'] = [cuisine.text for cuisine in cuisines]
+
+        poi_obj['topics'] = get_topics(poi_obj['url'])
+
         poi_objects.append(poi_obj)
 
     return poi_objects

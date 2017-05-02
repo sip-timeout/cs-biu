@@ -265,13 +265,13 @@ def scrape_user(user):
             tags.append(tag.text)
     user['tags'] = tags
 
-    scrape_badges()
+    # scrape_badges()
 
-    user['hotels'] = scrape_reviews('REVIEWS_HOTELS', hotels)
+    # user['hotels'] = scrape_reviews('REVIEWS_HOTELS', hotels)
     user['restaurants'] = scrape_reviews('REVIEWS_RESTAURANTS', restaurants)
-    user['attractions'] = scrape_reviews('REVIEWS_ATTRACTIONS', attractions)
+    # user['attractions'] = scrape_reviews('REVIEWS_ATTRACTIONS', attractions)
 
-    scrape_cities()
+    # scrape_cities()
 
 
 def scrape_restaurant(restaurant):
