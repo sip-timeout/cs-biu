@@ -1,6 +1,5 @@
 .user-name{
     padding-top: 22px;
-    padding-left: 10px;
 }
 .chips-container{
     width: 250px;
@@ -37,4 +36,17 @@
 .not-in-selection{
     background-color:#FF847C
 ;
+}
+
+.prediction-wrapper{
+    text-align: center;
+}
+
+.prediction-container{
+    margin-bottom: 10px;
+    margin-right: 15px;
+}
+
+.review-content{
+    max-width: 300px;
 }

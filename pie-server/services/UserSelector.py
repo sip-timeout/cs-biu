@@ -1,6 +1,8 @@
 import json
+import random
 import numpy
 from services import FeatureCalculator
+from model import FileManager
 
 thresholds = None
 category_scores = None
@@ -159,7 +161,7 @@ def get_category_analysis(category_name, restaurant_name):
 
     def get_normalized_dist(dist_arr):
         arr_sum = sum(dist_arr)
-        return [(float(elem) / arr_sum)*100 for elem in dist_arr]
+        return [(float(elem) / arr_sum) * 100 for elem in dist_arr]
 
     for user_name, user in users.iteritems():
         if 'restaurants' in user and len(user['restaurants']) > 3:
@@ -174,3 +176,58 @@ def get_category_analysis(category_name, restaurant_name):
 
     return {'total_dist': get_normalized_dist(total_users_dist),
             'selection_dist': get_normalized_dist(selection_users_dist)}
+
+
+def get_prediction(restaurant_name):
+    def get_topic_coverage(rest_users, selection_users):
+        def is_topic_in_array(topic, arr):
+            sub_topics = topic.split(' ')
+            for user in arr:
+                found = True
+                review_text = user['review_title'].lower() + '###' + user['review_content'].lower()
+                for sub_topic in sub_topics:
+                    if review_text.find(sub_topic) < 0:
+                        found = False
+                        break
+                if found:
+                    return True
+            return False
+
+        poi_topics = next(poi['topics'] for poi in FileManager.get_pois() if poi['name'] == restaurant_name)
+        topic_coverage = {k: {} for k in poi_topics}
+        for topic in poi_topics:
+            topic_coverage[topic]['total'] = is_topic_in_array(topic, rest_users)
+            topic_coverage[topic]['selection'] = is_topic_in_array(topic, selection_users)
+
+        coverage = [[topic, v['selection']] for topic, v in topic_coverage.iteritems() if v['total']]
+        coverage_rate = float(len([1 for topic in coverage if topic[1]])) / len(coverage)
+        return coverage, coverage_rate
+
+    def get_rating_dist(rating_arr):
+        dist = [0.0] * 10
+        for rat in rating_arr:
+            dist[int(rat * 2) - 1] += 1.0 / len(rating_arr)
+        return dist
+
+    users = FeatureCalculator.calculate_features()
+
+    rest_users = [user for user in users.values() if user['restName'] == restaurant_name]
+    selection_users = [user['user'] for user in get_selection(restaurant_name)['users']]
+    random_users = random.sample(rest_users, len(selection_users))
+    total_ratings = [float(user['review_rating']) for user in rest_users]
+    selection_ratings = [float(user['review_rating']) for user in selection_users]
+    random_ratings = [float(user['review_rating']) for user in random_users]
+
+    topic_coverage, coverage_rate = get_topic_coverage(rest_users, selection_users)
+    random_topic_coverage, random_coverage_rate = get_topic_coverage(rest_users, random_users)
+    return {'total_variance': numpy.var(total_ratings),
+            'selection_variance': numpy.var(selection_ratings),
+            'random_variance': numpy.var(random_ratings),
+            'topic_coverage': topic_coverage,
+            'topic_coverage_rate':coverage_rate,
+            'random_topic_coverage': random_topic_coverage,
+            'random_topic_coverage_rate': random_coverage_rate,
+            'total_dist': get_rating_dist(total_ratings),
+            'selection_dist': get_rating_dist(selection_ratings),
+            'random_dist': get_rating_dist(random_ratings)
+            }

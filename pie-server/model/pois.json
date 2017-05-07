@@ -9,6 +9,28 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-i/0d/86/0e/5c/summer-pavilion-main.jpg",
         "name": "Summer Pavilion",
         "rating": "4.5",
+        "topics": [
+            "dim sum",
+            "lobster meat",
+            "smoked duck",
+            "soup",
+            "sea perch",
+            "noodles",
+            "abalone",
+            "bamboo clams",
+            "char siew",
+            "michelin star",
+            "ritz carlton",
+            "cantonese cuisine",
+            "chinese tea",
+            "chef kong",
+            "service staff",
+            "modern twist",
+            "jasmine tea",
+            "chinese new year",
+            "assistant manager",
+            "fine dining"
+        ],
         "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d796940-Reviews-Summer_Pavilion-Singapore.html"
     },
     {
@@ -19,9 +41,31 @@
             "Gluten Free Options"
         ],
         "img": "https://media-cdn.tripadvisor.com/media/photo-f/0c/a6/3d/45/creperie-entre-nous.jpg",
-        "name": "Creperie Entre-Nous",
+        "name": "Entre-Nous creperie",
         "rating": "4.5",
-        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d1193730-Reviews-Creperie_Entre_Nous-Singapore.html"
+        "topics": [
+            "sweet crepes",
+            "galettes",
+            "emmental cheese",
+            "ham",
+            "french onion soup",
+            "vanilla ice cream",
+            "great crepes",
+            "raffles hotel",
+            "authentic french",
+            "seah street",
+            "buckwheat flour",
+            "gluten free",
+            "dry cider",
+            "cooked apples",
+            "toy museum",
+            "real taste",
+            "the real deal",
+            "warm service",
+            "hit the spot",
+            "crispy"
+        ],
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d1193730-Reviews-Entre_Nous_creperie-Singapore.html"
     },
     {
         "cuisines": [
@@ -33,6 +77,28 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-f/0e/96/eb/52/appetisers.jpg",
         "name": "Fratini La Trattoria",
         "rating": "4.5",
+        "topics": [
+            "truffle pasta",
+            "tiramisu",
+            "chocolate salami",
+            "omakase",
+            "seafood",
+            "scallops",
+            "lamb",
+            "degustation menu",
+            "crawfish",
+            "chef gabriel",
+            "cold appetizers",
+            "italian food",
+            "dining experience",
+            "wonderful evening",
+            "wine selection",
+            "birthday dinner",
+            "small portions",
+            "attentive service",
+            "dish",
+            "courses"
+        ],
         "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d4930299-Reviews-Fratini_La_Trattoria-Singapore.html"
     },
     {
@@ -44,6 +110,28 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-s/03/d8/3d/69/restaurant-andre.jpg",
         "name": "Restaurant Andre",
         "rating": "4.5",
+        "topics": [
+            "degustation menu",
+            "foie gras",
+            "amuse bouche",
+            "petit fours",
+            "truffles",
+            "chef andre",
+            "wine pairing",
+            "food journey",
+            "pre dessert",
+            "molecular gastronomy",
+            "culinary journey",
+            "dining experience",
+            "great chef",
+            "michelin star",
+            "black truffle",
+            "worth every dollar",
+            "fine dining",
+            "special occasion",
+            "taste buds",
+            "visit singapore"
+        ],
         "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d2077234-Reviews-Restaurant_Andre-Singapore.html"
     },
     {
@@ -55,7 +143,65 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-f/07/48/fa/6e/rhubarb.jpg",
         "name": "Rhubarb",
         "rating": "4.5",
+        "topics": [
+            "foie gras",
+            "rhubarb dessert",
+            "confit leg",
+            "ballotine",
+            "chef's menu",
+            "petit fours",
+            "amuse bouche",
+            "hamachi",
+            "wagyu",
+            "cod",
+            "pork belly",
+            "ice cream",
+            "cheese plate",
+            "macaroons",
+            "chef paul",
+            "duxton hill",
+            "white onion",
+            "le restaurant",
+            "french meal",
+            "french fine dining"
+        ],
         "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d7060741-Reviews-Rhubarb-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Lebanese",
+            "Mediterranean",
+            "Turkish",
+            "Middle Eastern",
+            "Vegetarian Friendly",
+            "Halal"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/0c/be/33/6a/pistachio-restaurant.jpg",
+        "name": "Pistachio Grill",
+        "rating": "5",
+        "topics": [
+            "saffron rice",
+            "pita bread",
+            "mixed grill",
+            "black mussels",
+            "tomahawk steak",
+            "chocolate lava cake",
+            "skewers",
+            "tagine",
+            "turkish coffee",
+            "filo pastry",
+            "chicken and beef",
+            "baklava",
+            "baba ganoush",
+            "cakes",
+            "salad",
+            "ribs",
+            "chef khaled",
+            "zhongshan mall",
+            "mediterranean food",
+            "middle eastern restaurant"
+        ],
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d10460729-Reviews-Pistachio_Grill-Singapore.html"
     },
     {
         "cuisines": [
@@ -73,7 +219,62 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-f/09/09/6c/6d/colony.jpg",
         "name": "Colony",
         "rating": "4.5",
+        "topics": [
+            "brunch",
+            "oysters",
+            "laksa",
+            "sashimi",
+            "crepe suzette",
+            "cold cuts",
+            "cake",
+            "fresh seafood",
+            "king crab",
+            "chicken rice",
+            "salads",
+            "ice cream",
+            "pastry",
+            "ham",
+            "ritz carlton",
+            "live stations",
+            "food stations",
+            "dining experience",
+            "food spread",
+            "buffet restaurant"
+        ],
         "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d8571637-Reviews-Colony-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "French",
+            "European",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/07/48/fa/6e/rhubarb.jpg",
+        "name": "Rhubarb",
+        "rating": "4.5",
+        "topics": [
+            "foie gras",
+            "rhubarb dessert",
+            "confit leg",
+            "ballotine",
+            "chef's menu",
+            "petit fours",
+            "amuse bouche",
+            "hamachi",
+            "wagyu",
+            "cod",
+            "pork belly",
+            "ice cream",
+            "cheese plate",
+            "macaroons",
+            "chef paul",
+            "duxton hill",
+            "white onion",
+            "le restaurant",
+            "french meal",
+            "french fine dining"
+        ],
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d7060741-Reviews-Rhubarb-Singapore.html"
     },
     {
         "cuisines": [
@@ -89,6 +290,28 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-f/09/c5/ae/93/our-historical-facade.jpg",
         "name": "My Awesome Cafe",
         "rating": "4.5",
+        "topics": [
+            "brunch",
+            "salad",
+            "bread",
+            "duck rillettes",
+            "sandwiches",
+            "brie",
+            "cold cuts",
+            "coconut ice cream",
+            "lasagna",
+            "telok ayer",
+            "awesome sandwich",
+            "school desks",
+            "healthy food",
+            "super tasty",
+            "great vibe",
+            "awesome food",
+            "nice coffee",
+            "fresh ingredients",
+            "love this place",
+            "quick lunch"
+        ],
         "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d6405257-Reviews-My_Awesome_Cafe-Singapore.html"
     },
     {
@@ -102,6 +325,28 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-f/02/f6/25/f2/the-curry-culture.jpg",
         "name": "The Curry Culture",
         "rating": "4.5",
+        "topics": [
+            "curry",
+            "butter chicken",
+            "papdi chaat",
+            "tandoori platter",
+            "dal makhani",
+            "poppadoms",
+            "mango",
+            "cuppage terrace",
+            "indian food",
+            "orchard road",
+            "best indian",
+            "spice level",
+            "orchard rd",
+            "north indian",
+            "little india",
+            "visited this restaurant",
+            "visiting singapore",
+            "attentive service",
+            "nice food",
+            "spicy"
+        ],
         "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d3512529-Reviews-The_Curry_Culture-Singapore.html"
     },
     {
@@ -116,6 +361,28 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-f/04/bd/3b/2c/mtr-singapore.jpg",
         "name": "MTR Restaurant",
         "rating": "4.5",
+        "topics": [
+            "rava idli",
+            "curd rice",
+            "tiffin",
+            "masala tea",
+            "thali",
+            "mango",
+            "potatoes",
+            "south indian food",
+            "little india",
+            "bisi bele bath",
+            "perumal temple",
+            "serangoon road",
+            "set dosa",
+            "authentic karnataka",
+            "vegetarian food",
+            "bangalore style",
+            "farrer park",
+            "authentic taste",
+            "best indian",
+            "higher side"
+        ],
         "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d4304406-Reviews-MTR_Restaurant-Singapore.html"
     },
     {
@@ -130,6 +397,28 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-o/03/4a/93/85/kallang-airport-food.jpg",
         "name": "Old Airport Rd Food Centre",
         "rating": "4.5",
+        "topics": [
+            "rojak",
+            "prawn noodles",
+            "char kway teow",
+            "kway chap",
+            "bbq chicken wings",
+            "soya bean",
+            "carrot cake",
+            "chee cheong fun",
+            "oyster omelette",
+            "seafood",
+            "bee hoon",
+            "hawker centre",
+            "hawker food",
+            "toa payoh",
+            "big prawn",
+            "famous hawker",
+            "long queue",
+            "albert street",
+            "circle line",
+            "wang wang"
+        ],
         "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d1146830-Reviews-Old_Airport_Rd_Food_Centre-Singapore.html"
     },
     {
@@ -141,69 +430,29 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-s/04/56/fe/e0/nox-dine-in-the-dark.jpg",
         "name": "NOX - Dine in the Dark",
         "rating": "4.5",
+        "topics": [
+            "three course meal",
+            "mains and desserts",
+            "complete darkness",
+            "interesting experience",
+            "dark room",
+            "dining experience",
+            "our waiter",
+            "pitch darkness",
+            "guessing game",
+            "sensory experience",
+            "led upstairs",
+            "eye opening experience",
+            "blind waiters",
+            "taste buds",
+            "small dishes",
+            "wine pairing",
+            "water glass",
+            "date night",
+            "drinks menu",
+            "food taste"
+        ],
         "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d4611806-Reviews-NOX_Dine_in_the_Dark-Singapore.html"
-    },
-    {
-        "cuisines": [
-            "American",
-            "Steakhouse",
-            "European"
-        ],
-        "img": "https://media-cdn.tripadvisor.com/media/photo-f/03/ca/89/38/cut-by-wolfgang-puck.jpg",
-        "name": "Cut by Wolfgang Puck",
-        "rating": "4.5",
-        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d2002823-Reviews-Cut_by_Wolfgang_Puck-Singapore.html"
-    },
-    {
-        "cuisines": [
-            "Italian",
-            "European",
-            "Wine Bar"
-        ],
-        "img": "https://media-cdn.tripadvisor.com/media/photo-s/06/91/09/6b/getlstd-property-photo.jpg",
-        "name": "Wine Connection Bistro at HillV2",
-        "rating": "4.5",
-        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d7082243-Reviews-Wine_Connection_Bistro_at_HillV2-Singapore.html"
-    },
-    {
-        "cuisines": [
-            "Chinese",
-            "Asian",
-            "Singaporean",
-            "Gluten Free Options",
-            "Vegetarian Friendly"
-        ],
-        "img": "https://media-cdn.tripadvisor.com/media/photo-f/06/b0/99/45/peach-blossoms-marina.jpg",
-        "name": "Peach Blossoms (Marina Mandarin)",
-        "rating": "4.5",
-        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d1007702-Reviews-Peach_Blossoms_Marina_Mandarin-Singapore.html"
-    },
-    {
-        "cuisines": [
-            "French",
-            "Seafood",
-            "Mediterranean",
-            "Grill",
-            "Vegetarian Friendly"
-        ],
-        "img": "https://media-cdn.tripadvisor.com/media/photo-s/0a/8d/5b/7f/artemis.jpg",
-        "name": "Artemis",
-        "rating": "4.5",
-        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d9564584-Reviews-Artemis-Singapore.html"
-    },
-    {
-        "cuisines": [
-            "Italian",
-            "Mediterranean",
-            "European",
-            "International",
-            "Vegetarian Friendly",
-            "Gluten Free Options"
-        ],
-        "img": "https://media-cdn.tripadvisor.com/media/photo-f/03/0b/d1/d7/antipasti-buffet.jpg",
-        "name": "Basilico",
-        "rating": "4.5",
-        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d1466538-Reviews-Basilico-Singapore.html"
     },
     {
         "cuisines": [
@@ -217,7 +466,165 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-f/06/b0/97/f4/aquamarine-marina-mandarin.jpg",
         "name": "Aquamarine @ Marina Mandarin",
         "rating": "4.5",
+        "topics": [
+            "seafood",
+            "durian pengat",
+            "slipper lobster",
+            "dessert spread",
+            "prawns",
+            "cake",
+            "alaskan crab",
+            "pudding",
+            "chawanmushi",
+            "wagyu beef",
+            "crawfish",
+            "mr zul",
+            "halal buffet",
+            "japanese section",
+            "buffet dinner",
+            "company dinner",
+            "great spread",
+            "food variety",
+            "hotel buffet",
+            "used plates"
+        ],
         "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d929185-Reviews-Aquamarine_Marina_Mandarin-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Chinese",
+            "Asian",
+            "Singaporean",
+            "Gluten Free Options",
+            "Vegetarian Friendly"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/06/b0/99/45/peach-blossoms-marina.jpg",
+        "name": "Peach Blossoms (Marina Mandarin)",
+        "rating": "4.5",
+        "topics": [
+            "dim sum",
+            "peking duck",
+            "baked lobster",
+            "wasabi prawn",
+            "yu sheng",
+            "soft shell crab",
+            "abalone",
+            "custard buns",
+            "hor fun",
+            "cake",
+            "char siew",
+            "assistant manager",
+            "chinese wine",
+            "birthday dinner",
+            "an enjoyable dining experience",
+            "service staff",
+            "wonderful dinner",
+            "big plate",
+            "wonderful ambience",
+            "buffet lunch"
+        ],
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d1007702-Reviews-Peach_Blossoms_Marina_Mandarin-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Italian",
+            "Mediterranean",
+            "European",
+            "International",
+            "Vegetarian Friendly",
+            "Gluten Free Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/03/0b/d1/d7/antipasti-buffet.jpg",
+        "name": "Basilico",
+        "rating": "4.5",
+        "topics": [
+            "brunch",
+            "antipasti",
+            "cold cuts",
+            "pasta",
+            "gelato",
+            "salads",
+            "salami",
+            "bread",
+            "roast beef",
+            "foie gras",
+            "sorbet",
+            "ice cream",
+            "sea bass",
+            "italian buffet",
+            "regent hotel",
+            "semi buffet",
+            "main course",
+            "cheese room",
+            "free flow prosecco",
+            "buffet spread"
+        ],
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d1466538-Reviews-Basilico-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "American",
+            "Steakhouse",
+            "European"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/03/ca/89/38/cut-by-wolfgang-puck.jpg",
+        "name": "Cut by Wolfgang Puck",
+        "rating": "4.5",
+        "topics": [
+            "steak",
+            "american wagyu",
+            "blue crab",
+            "chocolate souffle",
+            "broccolini",
+            "onion rings",
+            "breadsticks",
+            "baked alaska",
+            "usda prime",
+            "bone marrow",
+            "potatoes",
+            "cooked to perfection",
+            "marina bay sands",
+            "special occasion",
+            "side dishes",
+            "celebrity chef",
+            "shopping mall",
+            "wine list",
+            "great cocktails",
+            "service was impeccable"
+        ],
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d2002823-Reviews-Cut_by_Wolfgang_Puck-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "Italian",
+            "European",
+            "Wine Bar"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-s/06/91/09/6b/getlstd-property-photo.jpg",
+        "name": "Wine Connection Bistro at HillV2",
+        "rating": "4.5",
+        "topics": [
+            "gambas",
+            "fettuccine",
+            "apple crumble",
+            "pizza",
+            "lava cake",
+            "tenderloin",
+            "cheese plate",
+            "great service",
+            "nice ambience",
+            "service crew",
+            "prices are reasonable",
+            "birthday celebration",
+            "set lunch",
+            "quality of food",
+            "dining experience",
+            "hillview",
+            "chill",
+            "ambient",
+            "branch"
+        ],
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d7082243-Reviews-Wine_Connection_Bistro_at_HillV2-Singapore.html"
     },
     {
         "cuisines": [
@@ -231,20 +638,63 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-f/09/35/4a/e8/spago.jpg",
         "name": "Spago by Wolfgang Puck",
         "rating": "4.5",
+        "topics": [
+            "tuna tartare",
+            "agnolotti",
+            "souffle",
+            "laksa",
+            "kaya toast",
+            "sliders",
+            "hamachi",
+            "black cod",
+            "spring rolls",
+            "finger food",
+            "infinity pool",
+            "marina bay sands",
+            "city skyline",
+            "food and wine",
+            "fine dining",
+            "special occasion",
+            "business dinner",
+            "birthday celebration",
+            "dining experience",
+            "mbs"
+        ],
         "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d8683187-Reviews-Spago_by_Wolfgang_Puck-Singapore.html"
     },
     {
         "cuisines": [
-            "International",
-            "Sushi",
-            "Singaporean",
-            "Vegetarian Friendly",
-            "Gluten Free Options"
+            "French",
+            "Seafood",
+            "Mediterranean",
+            "Vegetarian Friendly"
         ],
-        "img": "https://media-cdn.tripadvisor.com/media/photo-f/05/79/29/23/edge.jpg",
-        "name": "Edge",
+        "img": "https://media-cdn.tripadvisor.com/media/photo-s/0a/8d/5b/7f/artemis.jpg",
+        "name": "Artemis",
         "rating": "4.5",
-        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d3567913-Reviews-Edge-Singapore.html"
+        "topics": [
+            "tomato water",
+            "lamb rump",
+            "octopus salad",
+            "alaskan crab",
+            "black cod",
+            "sea bass",
+            "pineapple",
+            "bread",
+            "panna cotta",
+            "chef fernando",
+            "business lunch",
+            "table by the window",
+            "marina bay",
+            "complimentary dessert",
+            "set lunch",
+            "business district",
+            "sky bar",
+            "cbd area",
+            "great drinks",
+            "birthday celebration"
+        ],
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d9564584-Reviews-Artemis-Singapore.html"
     },
     {
         "cuisines": [
@@ -257,18 +707,29 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-f/0a/eb/50/47/blu-kouzina.jpg",
         "name": "Blu Kouzina",
         "rating": "4.5",
-        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d10188367-Reviews-Blu_Kouzina-Singapore.html"
-    },
-    {
-        "cuisines": [
-            "Asian",
-            "Singaporean",
-            "Vegetarian Friendly"
+        "topics": [
+            "greek salad",
+            "meat platter",
+            "moussaka",
+            "baklava",
+            "fried cheese",
+            "filo pastry",
+            "octopus",
+            "sardines",
+            "sea bream",
+            "bread",
+            "potatoes",
+            "bukit timah",
+            "olive oil",
+            "great greek food",
+            "greek restaurants",
+            "dempsey hill",
+            "feta",
+            "ouzo",
+            "fava",
+            "horiatiki"
         ],
-        "img": "https://media-cdn.tripadvisor.com/media/photo-i/0b/cd/bf/75/national-kitchen.jpg",
-        "name": "The National Kitchen by Violet Oon at the National Gallery",
-        "rating": "4.5",
-        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d9596660-Reviews-The_National_Kitchen_by_Violet_Oon_at_the_National_Gallery-Singapore.html"
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d10188367-Reviews-Blu_Kouzina-Singapore.html"
     },
     {
         "cuisines": [
@@ -287,19 +748,97 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-f/01/fc/06/f5/carousel-buffet-seafood.jpg",
         "name": "Carousel Buffet, Royal Plaza on Scotts",
         "rating": "4.5",
+        "topics": [
+            "seafood",
+            "cupcakes",
+            "bread pudding",
+            "fondue",
+            "fresh oysters",
+            "prawns",
+            "creme brulee",
+            "ice cream",
+            "salmon",
+            "crawfish",
+            "birthday song",
+            "hi tea",
+            "high tea",
+            "buffet spread",
+            "international buffet",
+            "wide variety of food",
+            "halal food",
+            "service staff",
+            "special occasion",
+            "quality of food"
+        ],
         "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d794086-Reviews-Carousel_Buffet_Royal_Plaza_on_Scotts-Singapore.html"
     },
     {
         "cuisines": [
-            "Italian",
-            "European",
+            "Asian",
+            "Singaporean",
+            "Vegetarian Friendly"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-i/0b/cd/bf/75/national-kitchen.jpg",
+        "name": "The National Kitchen by Violet Oon at the National Gallery",
+        "rating": "4.5",
+        "topics": [
+            "beef rendang",
+            "ngoh hiang",
+            "coronation chicken",
+            "kueh pie tee",
+            "roti jala",
+            "ayam",
+            "chap chye",
+            "assam fish",
+            "coconut ice cream",
+            "mee siam",
+            "tapioca",
+            "beancurd skin",
+            "cod",
+            "meatballs",
+            "chilli",
+            "cake",
+            "peranakan food",
+            "peranakan style",
+            "gula melaka",
+            "beautiful restaurant"
+        ],
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d9596660-Reviews-The_National_Kitchen_by_Violet_Oon_at_the_National_Gallery-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "International",
+            "Sushi",
+            "Singaporean",
             "Vegetarian Friendly",
             "Gluten Free Options"
         ],
-        "img": "https://media-cdn.tripadvisor.com/media/photo-f/0c/8c/2d/e9/tagliolini-aglio-olio.jpg",
-        "name": "Ristorante Amarone",
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/05/79/29/23/edge.jpg",
+        "name": "Edge",
         "rating": "4.5",
-        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d3351111-Reviews-Ristorante_Amarone-Singapore.html"
+        "topics": [
+            "brunch",
+            "seafood",
+            "durian pengat",
+            "dessert spread",
+            "satay",
+            "alaskan crab",
+            "crawfish",
+            "fresh oysters",
+            "ice cream",
+            "wagyu",
+            "scallops",
+            "pan pacific",
+            "veuve clicquot",
+            "international buffet",
+            "dessert section",
+            "dessert station",
+            "table number",
+            "buffet restaurant",
+            "singapore flyer",
+            "food spread"
+        ],
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d3567913-Reviews-Edge-Singapore.html"
     },
     {
         "cuisines": [
@@ -312,19 +851,29 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-f/03/d7/12/f6/din-tai-fung.jpg",
         "name": "Din Tai Fung",
         "rating": "4.5",
-        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d3855842-Reviews-Din_Tai_Fung-Singapore.html"
-    },
-    {
-        "cuisines": [
-            "European",
-            "Wine Bar",
-            "Vegetarian Friendly",
-            "Gluten Free Options"
+        "topics": [
+            "dumplings",
+            "xiao long bao",
+            "dim sum",
+            "pork",
+            "oriental salad",
+            "steam buns",
+            "garlic spinach",
+            "drunken chicken",
+            "xiaolongbao",
+            "dou miao",
+            "truffles",
+            "prawns",
+            "raffles city",
+            "worth the wait",
+            "order form",
+            "jasmine tea",
+            "minute wait",
+            "wait for a table",
+            "shopping centre",
+            "hong kong"
         ],
-        "img": "https://media-cdn.tripadvisor.com/media/photo-f/03/df/8f/5a/skyve-elementary-bistro.jpg",
-        "name": "Skyve Wine Bistro",
-        "rating": "4.5",
-        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d3473502-Reviews-Skyve_Wine_Bistro-Singapore.html"
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d3855842-Reviews-Din_Tai_Fung-Singapore.html"
     },
     {
         "cuisines": [
@@ -342,21 +891,61 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-f/05/38/2a/71/wine-connection-tapas.jpg",
         "name": "Wine Connection Tapas Bar & Bistro",
         "rating": "4.5",
+        "topics": [
+            "tapas",
+            "pizza",
+            "cheese plate",
+            "gambas",
+            "parma ham",
+            "steak",
+            "robertson walk",
+            "great service",
+            "by the glass",
+            "nice food",
+            "jude",
+            "neel",
+            "moscato",
+            "chill",
+            "supervisor",
+            "beers",
+            "quay",
+            "gathering"
+        ],
         "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d1901137-Reviews-Wine_Connection_Tapas_Bar_Bistro-Singapore.html"
     },
     {
         "cuisines": [
-            "Lebanese",
-            "Mediterranean",
-            "Turkish",
-            "Middle Eastern",
+            "European",
+            "Wine Bar",
             "Vegetarian Friendly",
-            "Halal"
+            "Gluten Free Options"
         ],
-        "img": "https://media-cdn.tripadvisor.com/media/photo-f/0c/be/33/6a/pistachio-restaurant.jpg",
-        "name": "Pistachio Grill",
-        "rating": "5",
-        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d10460729-Reviews-Pistachio_Grill-Singapore.html"
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/03/df/8f/5a/skyve-elementary-bistro.jpg",
+        "name": "Skyve Wine Bistro",
+        "rating": "4.5",
+        "topics": [
+            "brunch",
+            "duck confit",
+            "pork rack",
+            "oysters",
+            "truffle fries",
+            "beef burger",
+            "cod",
+            "brownie",
+            "eggs benedict",
+            "truffles",
+            "sous vide",
+            "complimentary dessert",
+            "nice ambience",
+            "birthday celebration",
+            "service crew",
+            "special occasion",
+            "awesome food",
+            "dining experience",
+            "newton",
+            "chill"
+        ],
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d3473502-Reviews-Skyve_Wine_Bistro-Singapore.html"
     },
     {
         "cuisines": [
@@ -367,7 +956,63 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-s/06/f7/c9/d7/yummy-octopus.jpg",
         "name": "FOC Restaurant",
         "rating": "4.5",
+        "topics": [
+            "octopus",
+            "paella",
+            "tapas",
+            "mushroom croquettes",
+            "patatas bravas",
+            "watermelon gazpacho",
+            "rum baba",
+            "sliders",
+            "french toast",
+            "beef steak",
+            "ham",
+            "suckling pig",
+            "chocolate burger",
+            "spanish restaurant",
+            "crema catalana",
+            "great spanish food",
+            "bar seats",
+            "hong kong street",
+            "cocktail menu",
+            "open kitchen"
+        ],
         "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d7165932-Reviews-FOC_Restaurant-Singapore.html"
+    },
+    {
+        "cuisines": [
+            "French",
+            "European",
+            "Vegetarian Friendly",
+            "Vegan Options"
+        ],
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/02/62/23/c5/jaan.jpg",
+        "name": "Jaan",
+        "rating": "4.5",
+        "topics": [
+            "amuse bouche",
+            "petit fours",
+            "course degustation menu",
+            "smoked egg",
+            "mignardises",
+            "heirloom tomatoes",
+            "brie",
+            "chocolate dessert",
+            "bread",
+            "caviar",
+            "lamb",
+            "scallops",
+            "chef julien",
+            "wine pairing",
+            "degustation lunch",
+            "special occasion",
+            "window table",
+            "dry ice",
+            "fine dining",
+            "palate cleanser"
+        ],
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d807776-Reviews-Jaan-Singapore.html"
     },
     {
         "cuisines": [
@@ -379,19 +1024,64 @@
         "img": "https://media-cdn.tripadvisor.com/media/photo-f/08/d2/9f/b2/sky-on-57.jpg",
         "name": "Sky on 57",
         "rating": "4",
+        "topics": [
+            "foie gras",
+            "mushroom cappuccino",
+            "maine lobster",
+            "xiao long bao",
+            "suckling pig",
+            "tasting menu",
+            "truffles",
+            "wagyu beef",
+            "laksa",
+            "marina bay sands",
+            "chef justin",
+            "flight bar",
+            "observation deck",
+            "high tea",
+            "infinity pool",
+            "window table",
+            "special occasion",
+            "fine dining",
+            "light show",
+            "singapore sling"
+        ],
         "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d2010882-Reviews-Sky_on_57-Singapore.html"
     },
     {
         "cuisines": [
-            "Seafood",
-            "International",
+            "Chinese",
             "Asian",
-            "Singaporean",
+            "Taiwanese",
+            "Vegetarian Friendly",
+            "Vegan Options",
             "Gluten Free Options"
         ],
-        "img": "https://media-cdn.tripadvisor.com/media/photo-f/09/58/db/07/10-at-claymore.jpg",
-        "name": "10 at Claymore",
-        "rating": "4.5",
-        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d2103189-Reviews-10_at_Claymore-Singapore.html"
+        "img": "https://media-cdn.tripadvisor.com/media/photo-f/01/cf/15/d4/fried-rice-with-egg-and.jpg",
+        "name": "Din Tai Fung (Paragon Branch)",
+        "rating": "4",
+        "topics": [
+            "dumplings",
+            "xiao long bao",
+            "dim sum",
+            "oriental salad",
+            "xiaolongbao",
+            "hot and sour soup",
+            "pork",
+            "dou miao",
+            "shrimp",
+            "truffles",
+            "pastry",
+            "jasmine tea",
+            "worth the wait",
+            "special sauce",
+            "their specialty",
+            "chinese food",
+            "wait for a table",
+            "open kitchen",
+            "long queue",
+            "hong kong"
+        ],
+        "url": "http://www.tripadvisor.com/Restaurant_Review-g294265-d794014-Reviews-Din_Tai_Fung_Paragon_Branch-Singapore.html"
     }
 ]
