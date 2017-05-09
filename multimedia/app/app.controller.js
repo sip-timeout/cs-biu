@@ -24,6 +24,10 @@
             {
                 displayName: "אילוף",
                 route: "/training"
+            },
+            {
+                displayName: "קריירת שירה",
+                route: "/singing"
             }
         ];
         vm.selected = vm.stages[0];

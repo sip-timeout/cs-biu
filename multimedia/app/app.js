@@ -1,6 +1,6 @@
 (function () {
     angular
-        .module('app', ['ngMaterial', 'puppy','ngRoute','ngResource','chart.js'])
+        .module('app', ['ngMaterial', 'puppy','ngRoute','ngResource','chart.js','audio.player'])
         .config(function ($mdThemingProvider, $mdIconProvider, $routeProvider,$locationProvider) {
 
             $mdIconProvider
@@ -20,6 +20,8 @@
                 controllerAs: "vm"
             }).when("/training", {
                 templateUrl: "src/training/training.html"
+            }).when("/singing", {
+                templateUrl: "src/singing/singing.html"
             }).otherwise({
                 redirectTo:'/adoption'
             });
