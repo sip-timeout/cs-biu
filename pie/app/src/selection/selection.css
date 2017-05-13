@@ -50,3 +50,8 @@
 .review-content{
     max-width: 300px;
 }
+
+.selected-cat{
+    font-weight: bold;
+    font-size: medium;
+}

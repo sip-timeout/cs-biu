@@ -10,6 +10,7 @@
         vm.prediction = selectionService.getPrediction(vm.restName);
         vm.predictionMode = false;
         vm.predictionLabels = _.range(0.5,5.5,0.5);
+        
 
         vm.selectCategory = function (category) {
             vm.selectedCategory = category;
