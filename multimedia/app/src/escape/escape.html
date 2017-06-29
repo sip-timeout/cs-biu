@@ -1,0 +1,14 @@
+<div>
+    <h2>עזרו לכלבה קאלי לברוח ממלתועתיה של הכלבה פאי!</h2>
+  <p>
+       ( נסו ללחוץ על הסרטון...)
+  </p>
+    <div style="display:none">
+        <video id="sourcevid" autoplay="true" loop="true" width="560" height="315">
+            <source src="src/escape/assets/escape.mp4" type="video/mp4">
+        </video>
+        <canvas id="sourcecopy" width="640" height="360"></canvas>
+    </div>
+    <canvas id="output" width="640" height="360" ng-click="vm.dropBomb($event, this)" style="outline: none"></canvas>
+
+</div>

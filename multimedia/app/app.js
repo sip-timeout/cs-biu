@@ -1,6 +1,6 @@
 (function () {
     angular
-        .module('app', ['ngMaterial', 'puppy','ngRoute','ngResource','chart.js','audio.player'])
+        .module('app', ['ngMaterial', 'puppy','escape','ngRoute','ngResource','chart.js','audio.player'])
         .config(function ($mdThemingProvider, $mdIconProvider, $routeProvider,$locationProvider) {
 
             $mdIconProvider
@@ -20,6 +20,10 @@
                 controllerAs: "vm"
             }).when("/training", {
                 templateUrl: "src/training/training.html"
+            }).when("/escape", {
+                templateUrl: "src/escape/escape.html",
+                controller: "escapeController",
+                controllerAs: "vm"
             }).when("/singing", {
                 templateUrl: "src/singing/singing.html"
             }).otherwise({

@@ -28,6 +28,10 @@
             {
                 displayName: "קריירת שירה",
                 route: "/singing"
+            },
+            {
+                displayName: "משחק בריחה",
+                route: "/escape"
             }
         ];
         vm.selected = vm.stages[0];
