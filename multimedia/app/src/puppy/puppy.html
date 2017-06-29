@@ -5,16 +5,16 @@
         של שנינו (אני איש קבע ואשתי&nbsp;מהנדסת חשמל עובדת אינטל) לא נוכל להשקיע את המאמצים הנדרשים <a
                 href="http://www.vets.co.il/חינוך-גורים">בגידול של גור כלבים</a>. נוכחנו לדעת שאין דבר העומד בפני הרצון,
         כאשר ניהול נכון של הזמן מביא לתוצאות הרצויות.</p>
-<div layout="column">
-    <ul class="slide-list">
-        <li ng-repeat="s in vm.slides track by $index" ng-click="vm.showGallery($index)">
-            <img ng-src="{{ s.src }}" alt="slide number {{ $index }}"/>
-        </li>
-    </ul>
+    <div layout="column">
+        <ul class="slide-list">
+            <li ng-repeat="s in vm.slides track by $index" ng-click="vm.showGallery($index)">
+                <img ng-src="{{ s.src }}" alt="slide number {{ $index }}"/>
+            </li>
+        </ul>
 
-    <div ng-photoswipe slides="vm.slides" open="vm.open" slide-selector=".slide-list > li > img"
-         on-close="vm.closeGallery()" options="vm.opts"></div>
-</div>
+        <div ng-photoswipe slides="vm.slides" open="vm.open" slide-selector=".slide-list > li > img"
+             on-close="vm.closeGallery()" options="vm.opts"></div>
+    </div>
 
     <h3>שלבים בהתפתחות</h3>
     <p>בהתפתחות גורים יש תקופות חשובות שיקבעו את המשך חייהם איתכם ואת סדרי העולם שלהם , התקופה הכי חשובה ב4 חודשים
@@ -40,4 +40,17 @@
             chart-series="['שעות השקעה ביום']"
             chart-options="{scales:{yAxes:[{ticks:{min:0}}]}}">
     </canvas>
+    <h3>סרטון שנה</h3>
+    <p>בימים אלו פאי שלנו חוגגת שנה והחלטתי לציין זאת באמצעות סרטון מיוחד שהכנתי עבורה. </p>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/ILUKim_I9mQ" frameborder="0"
+            allowfullscreen></iframe>
+    <div class="img-caption">סרטון מתוך היו טיוב.</div>
+    <p></p>
+
+    <video controls width="560" height="315 ">
+        <source src="src/puppy/assets/pie.mp4">
+    </video>
+    <div class="img-caption">סרטון מהאתר.</div>
+
+    <p></p>
 </div>
