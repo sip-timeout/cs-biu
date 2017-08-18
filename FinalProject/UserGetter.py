@@ -25,8 +25,6 @@ attractions = {}
 
 browser = webdriver.Chrome()
 
-first_page = 0
-
 
 def close_popup_if_exists():
     if wait_by_selector('.ui_close_x', 2):
@@ -46,13 +44,24 @@ def wait_by_selector(css_selector, timeout=10):
 
 def init_page(trip_url):
     global first_page
-    first_page = 0
+    first_page = 1
     browser.maximize_window()
     browser.get(trip_url)
     # elem = browser.find_element_by_tag_name('a')
     # elem.click()
     wait_by_selector('.member_info')
 
+
+def getRating(rat):
+    cls = rat.get_attribute('class')
+    if 'bubble' in cls:
+        idx = cls.rfind('_') + 1
+        rating = cls[idx:]
+        if len(rating)<2:
+            rating+='0'
+        return rating[0] + '.' + rating[1]
+    else:
+        return ''
 
 def extract_page_users(poi_name):
     global first_page
@@ -69,7 +78,7 @@ def extract_page_users(poi_name):
         except NoSuchElementException:
             pass
 
-        for desc in browser.find_elements_by_css_selector(".memberdescription li"):
+        for desc in browser.find_elements_by_css_selector(".memberdescriptionReviewEnhancements li"):
             try:
                 descTXT = str(desc.text).lower()
             except UnicodeEncodeError:
@@ -97,11 +106,11 @@ def extract_page_users(poi_name):
         user['restName'] = poi_name
 
         def getCountValue(countHTML):
-            startidx = countHTML.find('>') + 1
-            endidx = countHTML.find('<', startidx)
-            return countHTML[startidx:endidx]
+            endidx = countHTML.find(' ')
+            return countHTML[0:endidx]
 
-        for count in browser.find_elements_by_css_selector(".counts li"):
+        for count in browser.find_elements_by_css_selector(
+                ".countsReviewEnhancementsItem .badgeTextReviewEnhancements"):
             countHtml = str(count.get_attribute("innerHTML"))
             if countHtml.find("Contributions") > -1:
                 user["contrib"] = getCountValue(countHtml)
@@ -114,10 +123,8 @@ def extract_page_users(poi_name):
         return user
 
     def getReviewContent(cont):
-        if cont.value_of_css_property('line-height') == '19px':
-            return cont.text
-        else:
-            return ''
+        return cont.text
+
 
     elems = browser.find_elements_by_class_name('member_info')
 
@@ -132,14 +139,12 @@ def extract_page_users(poi_name):
             close_popup_if_exists()
             continue
 
-
-
         member_info_html = elem.get_attribute('outerHTML')
         parsed_html = etree.HTML(member_info_html)
         user_img_url = parsed_html.cssselect('img')[0].attrib['src']
 
-        if wait_by_selector('.baseNav', 3):
-            elem = browser.find_element_by_partial_link_text("profile")
+        if wait_by_selector('.memberOverlay', 3):
+            elem = browser.find_element_by_css_selector('.memberOverlay a')
         else:
             close_elems = browser.find_elements_by_class_name('ui_close_x')
             if len(close_elems) > 0:
@@ -153,47 +158,57 @@ def extract_page_users(poi_name):
             temp_user_map[i] = user_object
             # user_object['review_title']=review_titles[i-1]
             # user_object['review_content'] = review_contents[i - 1]
-            try:
-                browser.find_element_by_class_name('ui_close_x').click()
-            except:
-                browser.find_element_by_css_selector('div .close').click()
-                browser.find_element_by_class_name('ui_close_x').click()
+
+
+            # for i in range(0,10):
+            #     try:
+            #         elem = browser.find_element_by_class_name('ui_close_x');
+            #         browser.find_element_by_class_name('ui_close_x').click()
+            #     except:
+            #         #browser.find_element_by_css_selector('div .close').click()
+            #         if i>8:
+            #             browser.find_element_by_class_name('ui_close_x').click()
+            #             break
+            #         time.sleep(1)
+
+            browser.find_element_by_css_selector('.ui_overlay >  .ui_close_x').click()
 
     browser.execute_script('scroll(250,0)')
-    for moreLink in browser.find_elements_by_css_selector('.moreLink'):
-        if moreLink.value_of_css_property('line-height') == '19px':
+    for moreLink in browser.find_elements_by_css_selector('.entry .taLnk'):
+        #if moreLink.value_of_css_property('line-height') == '19px':
             # browser.execute_script('arguments[0].scrollIntoView(true);', moreLink);
             # actions = ActionChains(browser)
             # actions.move_to_element(moreLink).click(moreLink).perform()
-            moreLink.click()
-            break
+        moreLink.click()
+        break
 
     close_popup_if_exists()
     # actions.move_to_element(moreLink).click(moreLink).perform()
-    try:
-        moreLink.click()
-    except ElementNotVisibleException:
-        pass
+    # try:
+    #     moreLink.click()
+    # except ElementNotVisibleException:
+    #     pass
 
     time.sleep(2)
     review_titles = filter(lambda title: title != '',
                            map(lambda title: title.text, browser.find_elements_by_css_selector('.noQuotes')))
     review_contents = filter(lambda cont: cont != '',
-                             map(getReviewContent, browser.find_elements_by_css_selector('.entry')))
-    review_ratings = map(lambda rating: rating.get_attribute('alt').split(' ')[0],
-                         browser.find_elements_by_css_selector('.rating_s_fill'))
+                             map(getReviewContent, browser.find_elements_by_css_selector('.partial_entry')))
+    review_ratings = filter(lambda rat: rat != '',
+                            map(getRating, browser.find_elements_by_css_selector('.reviewItemInline span')))
 
     for key in temp_user_map.keys():
         temp_user_map[key]['review_title'] = review_titles[key - 1 + first_page]
         temp_user_map[key]['review_content'] = review_contents[key - 1 + first_page]
-        temp_user_map[key]['review_rating'] = review_ratings[(key - 1 + first_page) * 2]
+        temp_user_map[key]['review_rating'] = review_ratings[key - 1 + first_page ]
 
     first_page = 1
 
 
 def move_to_next_page():
     browser.execute_script('scroll(250,0)')
-    browser.find_element_by_partial_link_text("Next").click()
+    #browser.find_element_by_partial_link_text("Next").click()
+    browser.find_element_by_css_selector(".next").click()
     close_popup_if_exists()
     browser.execute_script('scroll(250,0)')
 
@@ -222,12 +237,12 @@ def scrape_user(user):
         reviews = {}
         if len(type_btn) > 0:
             type_btn[0].click()
-            wait_by_selector('.sprite-ratings')
+            wait_by_selector('.cs-review-rating')
             time.sleep(1)
             more_pages = True
             while more_pages:
-                ratings = map(lambda rating: rating.get_attribute('content'),
-                              browser.find_elements_by_css_selector('.sprite-ratings'))
+                ratings = map(lambda rating: getRating(rating),
+                              browser.find_elements_by_css_selector('.cs-review-rating > span'))
 
                 i = 0
                 for review in browser.find_elements_by_css_selector('.cs-review-location > a'):
@@ -298,14 +313,14 @@ def scrape_restaurant(restaurant):
 
 def scrape_poi(url, name):
     init_page(url)
-    for i in range(0, 10):
+    for i in range(0, 2):
         extract_page_users(name)
         move_to_next_page()
 
 
 def main():
     with open('pois.json', 'r') as pois_file:
-        pois = json.load(pois_file)[:5]
+        pois = json.load(pois_file)[:1]
 
     for poi in pois:
         scrape_poi(poi['url'], poi['name'])
