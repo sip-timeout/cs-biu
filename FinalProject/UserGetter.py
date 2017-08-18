@@ -1,14 +1,9 @@
-from _threading_local import local
-
-from pip import locations
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException, \
-    ElementNotVisibleException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
 
 from lxml import etree
 from lxml.cssselect import CSSSelector
@@ -17,6 +12,7 @@ import time
 import re
 import json
 import urllib2
+from datetime import datetime
 
 users_map = {}
 restaurants = {}
@@ -30,7 +26,10 @@ def close_popup_if_exists():
     if wait_by_selector('.ui_close_x', 2):
         close_ui = browser.find_elements_by_class_name('ui_close_x')
         for close_ui in close_ui:
-            close_ui.click()
+            try:
+                close_ui.click()
+            except:
+                pass
 
 
 def wait_by_selector(css_selector, timeout=10):
@@ -43,29 +42,24 @@ def wait_by_selector(css_selector, timeout=10):
 
 
 def init_page(trip_url):
-    global first_page
-    first_page = 1
     browser.maximize_window()
     browser.get(trip_url)
-    # elem = browser.find_element_by_tag_name('a')
-    # elem.click()
     wait_by_selector('.member_info')
 
 
-def getRating(rat):
+def get_rating(rat):
     cls = rat.get_attribute('class')
     if 'bubble' in cls:
         idx = cls.rfind('_') + 1
         rating = cls[idx:]
-        if len(rating)<2:
-            rating+='0'
+        if len(rating) < 2:
+            rating += '0'
         return rating[0] + '.' + rating[1]
     else:
         return ''
 
-def extract_page_users(poi_name):
-    global first_page
 
+def extract_page_users(poi_name):
     def extractUserPreview(userName):
         global users_map
         user = {}
@@ -125,19 +119,17 @@ def extract_page_users(poi_name):
     def getReviewContent(cont):
         return cont.text
 
-
     elems = browser.find_elements_by_class_name('member_info')
 
     temp_user_map = {}
-    for i in range(1 - first_page, 11 - first_page):
+    for i in range(0, 10):
 
         elem = elems[i]
-        try:
-            elem.click()
-        except:
-            print 'shit shit shit'
-            close_popup_if_exists()
-            continue
+        # try:
+        elem.click()
+        # except:
+        #     close_popup_if_exists()
+        #     continue
 
         member_info_html = elem.get_attribute('outerHTML')
         parsed_html = etree.HTML(member_info_html)
@@ -146,10 +138,13 @@ def extract_page_users(poi_name):
         if wait_by_selector('.memberOverlay', 3):
             elem = browser.find_element_by_css_selector('.memberOverlay a')
         else:
-            close_elems = browser.find_elements_by_class_name('ui_close_x')
-            if len(close_elems) > 0:
-                close_elems[0].click()
+            close_popup_if_exists()
             continue
+            #
+            # close_elems = browser.find_elements_by_class_name('ui_close_x')
+            # if len(close_elems) > 0:
+            #     close_elems[0].click()
+            # continue
 
         user_object = extractUserPreview(elem.get_attribute('href').split('/')[-1])
         if user_object:
@@ -175,14 +170,14 @@ def extract_page_users(poi_name):
 
     browser.execute_script('scroll(250,0)')
     for moreLink in browser.find_elements_by_css_selector('.entry .taLnk'):
-        #if moreLink.value_of_css_property('line-height') == '19px':
-            # browser.execute_script('arguments[0].scrollIntoView(true);', moreLink);
-            # actions = ActionChains(browser)
-            # actions.move_to_element(moreLink).click(moreLink).perform()
+        # if moreLink.value_of_css_property('line-height') == '19px':
+        # browser.execute_script('arguments[0].scrollIntoView(true);', moreLink);
+        # actions = ActionChains(browser)
+        # actions.move_to_element(moreLink).click(moreLink).perform()
         moreLink.click()
         break
 
-    close_popup_if_exists()
+    # close_popup_if_exists()
     # actions.move_to_element(moreLink).click(moreLink).perform()
     # try:
     #     moreLink.click()
@@ -195,21 +190,22 @@ def extract_page_users(poi_name):
     review_contents = filter(lambda cont: cont != '',
                              map(getReviewContent, browser.find_elements_by_css_selector('.partial_entry')))
     review_ratings = filter(lambda rat: rat != '',
-                            map(getRating, browser.find_elements_by_css_selector('.reviewItemInline span')))
+                            map(get_rating, browser.find_elements_by_css_selector('.reviewItemInline span')))
+    review_dates = map(lambda date: str(datetime.strptime(date.get_attribute('title'), '%B %d, %Y')),
+                       browser.find_elements_by_css_selector('.ratingDate'))
 
     for key in temp_user_map.keys():
-        temp_user_map[key]['review_title'] = review_titles[key - 1 + first_page]
-        temp_user_map[key]['review_content'] = review_contents[key - 1 + first_page]
-        temp_user_map[key]['review_rating'] = review_ratings[key - 1 + first_page ]
-
-    first_page = 1
+        temp_user_map[key]['review_title'] = review_titles[key]
+        temp_user_map[key]['review_content'] = review_contents[key]
+        temp_user_map[key]['review_rating'] = review_ratings[key]
+        temp_user_map[key]['review_date'] = review_dates[key]
 
 
 def move_to_next_page():
     browser.execute_script('scroll(250,0)')
-    #browser.find_element_by_partial_link_text("Next").click()
+    # browser.find_element_by_partial_link_text("Next").click()
     browser.find_element_by_css_selector(".next").click()
-    close_popup_if_exists()
+    # close_popup_if_exists()
     browser.execute_script('scroll(250,0)')
 
 
@@ -241,7 +237,7 @@ def scrape_user(user):
             time.sleep(1)
             more_pages = True
             while more_pages:
-                ratings = map(lambda rating: getRating(rating),
+                ratings = map(lambda rating: get_rating(rating),
                               browser.find_elements_by_css_selector('.cs-review-rating > span'))
 
                 i = 0
@@ -316,6 +312,7 @@ def scrape_poi(url, name):
     for i in range(0, 2):
         extract_page_users(name)
         move_to_next_page()
+        time.sleep(1)
 
 
 def main():
