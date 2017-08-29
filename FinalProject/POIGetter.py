@@ -8,7 +8,6 @@ browser = webdriver.Chrome()
 
 
 def extract_pois(rest_page):
-
     def get_topics(url):
         browser.get(url)
         browser.execute_script('scroll(0,document.body.scrollHeight)')
@@ -19,35 +18,39 @@ def extract_pois(rest_page):
 
         return topics[1:]
 
+    def scrape_page():
+        browser.execute_script('scroll(0,document.body.scrollHeight)')
+        time.sleep(3)
+        html = browser.find_element_by_tag_name('body').get_attribute('outerHTML')
+        parsedHtml = etree.HTML(html)
+        pois = parsedHtml.cssselect('.listing')
+        for poi in pois:
+            poi_obj = {}
 
-    browser.get(rest_page)
-    browser.execute_script('scroll(0,document.body.scrollHeight)')
-    time.sleep(3)
-    html = browser.find_element_by_tag_name('body').get_attribute('outerHTML')
-    parsedHtml = etree.HTML(html)
-    pois = parsedHtml.cssselect('.listing')
+            link = poi.cssselect('.photo_link')[0]
+            poi_obj['url'] = 'http://www.tripadvisor.com' + link.attrib['href']
+
+            img = poi.cssselect('.photo_image')[0]
+            poi_obj['name'] = img.attrib['alt']
+            poi_obj['img'] = img.attrib['src']
+
+            # print poi.attrib['outerHTML']
+            review = poi.cssselect('.ui_bubble_rating')[0]
+            poi_obj['rating'] = review.attrib['alt'][:review.attrib['alt'].find(' ')]
+
+            cuisines = poi.cssselect('.cuisine')
+            poi_obj['cuisines'] = [cuisine.text for cuisine in cuisines]
+
+            poi_objects.append(poi_obj)
 
     poi_objects = []
-    for poi in pois:
-        poi_obj = {}
+    browser.get(rest_page)
+    for i in range(0, 3):
+        scrape_page()
+        browser.find_element_by_css_selector(".next").click()
 
-        link = poi.cssselect('.photo_link')[0]
-        poi_obj['url'] = 'http://www.tripadvisor.com' + link.attrib['href']
-
-        img = poi.cssselect('.photo_image')[0]
-        poi_obj['name'] = img.attrib['alt']
-        poi_obj['img'] = img.attrib['src']
-
-        # print poi.attrib['outerHTML']
-        review = poi.cssselect('.ui_bubble_rating')[0]
-        poi_obj['rating'] = review.attrib['alt'][:review.attrib['alt'].find(' ')]
-
-        cuisines = poi.cssselect('.cuisine')
-        poi_obj['cuisines'] = [cuisine.text for cuisine in cuisines]
-
+    for poi_obj in poi_objects:
         poi_obj['topics'] = get_topics(poi_obj['url'])
-
-        poi_objects.append(poi_obj)
 
     return poi_objects
 

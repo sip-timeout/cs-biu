@@ -23,7 +23,7 @@ browser = webdriver.Chrome()
 
 
 def close_popup_if_exists():
-    if wait_by_selector('.ui_close_x', 2):
+    if wait_by_selector('.ui_close_x', 10):
         close_ui = browser.find_elements_by_class_name('ui_close_x')
         for close_ui in close_ui:
             try:
@@ -138,7 +138,7 @@ def extract_page_users(poi_name):
         if wait_by_selector('.memberOverlay', 3):
             elem = browser.find_element_by_css_selector('.memberOverlay a')
         else:
-            close_popup_if_exists()
+            #close_popup_if_exists()
             continue
             #
             # close_elems = browser.find_elements_by_class_name('ui_close_x')
@@ -309,18 +309,28 @@ def scrape_restaurant(restaurant):
 
 def scrape_poi(url, name):
     init_page(url)
-    for i in range(0, 2):
+    for i in range(0, 10):
         extract_page_users(name)
         move_to_next_page()
-        time.sleep(1)
+        time.sleep(2)
 
 
 def main():
     with open('pois.json', 'r') as pois_file:
-        pois = json.load(pois_file)[:1]
+        pois = json.load(pois_file)[:50]
 
     for poi in pois:
-        scrape_poi(poi['url'], poi['name'])
+        try_count = 3
+        while try_count>0:
+            try:
+                scrape_poi(poi['url'], poi['name'])
+                break
+            except:
+                print 'error: scrape failed, retrying: '+poi['name']
+                try_count-=1
+
+        if try_count == 0:
+            print 'failed scraping '+poi['name']
 
     print json.dumps(users_map)
 
@@ -334,11 +344,17 @@ def main():
                 retry -= 1
 
     for restaurant in restaurants.values():
-        try:
-            scrape_restaurant(restaurant)
-        except:
-            print 'couldnt parse ' + restaurant['url']
-            pass
+        try_count = 3
+        while try_count > 0:
+            try:
+                scrape_restaurant(restaurant)
+                break
+            except:
+                print 'error: scrape failed, retrying'
+                try_count -= 1
+
+        if try_count == 0:
+            print 'failed scraping.'
 
     with open('users.json', 'w') as users_file:
         json.dump(users_map, users_file)
