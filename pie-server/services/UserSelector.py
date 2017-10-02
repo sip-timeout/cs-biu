@@ -7,7 +7,7 @@ from model import FileManager
 thresholds = None
 category_scores = None
 bucketed_feature_modifiers = ['continent', 'country', 'city', 'cuisine']
-feature_types = ['visit','liked', 'avg']
+feature_types = ['visit', 'liked', 'avg']
 buckets_num = 4
 
 
@@ -71,7 +71,7 @@ def ensure_category_scores():
                             buck_name = get_bucket(user_features[key], cat_name)
                             upsert(category_scores, '_'.join([key, buck_name]))
             for bin_feat in user['bin_features']:
-                upsert(category_scores,bin_feat)
+                upsert(category_scores, bin_feat)
 
     calculate_thresholds()
     calculate_category_scores()
@@ -106,28 +106,28 @@ def get_selection(restaurant_name):
 
         return score, user_covered
 
-    def get_category_coverage(top_k,top_m):
+    def get_category_coverage(top_k, top_m):
         ordered_total_cats = sorted(category_scores.keys(), key=lambda cat: category_scores[cat], reverse=True)
         selection_cats = set(reduce(lambda x, y: x + y[2], selected_users, []))
         selection_dict = dict((k[0], 1) for k in selection_cats)
         category_coverage = [[cat, cat in selection_dict] for cat in ordered_total_cats]
 
-        top_covered = [cat[0] for cat in category_coverage if cat[1]][:top_m]
-        top_not_covered = [cat[0] for cat in category_coverage if not cat[1]][:top_m]
+        top_covered = [cat for cat in category_coverage if cat[1]][:top_m]
+        top_not_covered = [cat for cat in category_coverage if not cat[1]][:top_m]
 
         top_category_coverage = category_coverage[:top_k]
         coverage_rate = float(len([1 for cat in top_category_coverage if cat[1]])) / top_k
 
-        return top_category_coverage, coverage_rate
+        return top_category_coverage, coverage_rate, top_covered, top_not_covered
 
     def get_selection_obj():
         selection_users = [{'score': user[1], 'categories': user[2][:m], 'user': user[-1]} for user in selected_users]
         selection_variance = numpy.var(map(lambda user: float(user[4]), selected_users))
-        category_coverage, coverage = get_category_coverage(200,20)
+        category_coverage, coverage, top_covered, top_not_covered = get_category_coverage(200, 20)
 
         return {'users': selection_users, 'top_category_coverage': category_coverage,
                 'category_coverage_rate': coverage, 'variance': selection_variance,
-                'total_variance': total_variance}
+                'total_variance': total_variance, 'top_covered': top_covered, 'top_not_covered': top_not_covered}
 
     rest_users = {k: v for k, v in users.iteritems() if v['restName'] == restaurant_name}
     total_variance = numpy.var(map(lambda username: float(rest_users[username]['review_rating']), rest_users))
@@ -236,7 +236,7 @@ def get_prediction(restaurant_name):
             'selection_variance': numpy.var(selection_ratings),
             'random_variance': numpy.var(random_ratings),
             'topic_coverage': topic_coverage,
-            'topic_coverage_rate':coverage_rate,
+            'topic_coverage_rate': coverage_rate,
             'random_topic_coverage': random_topic_coverage,
             'random_topic_coverage_rate': random_coverage_rate,
             'total_dist': get_rating_dist(total_ratings),

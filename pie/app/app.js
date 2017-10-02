@@ -6,6 +6,10 @@
             $mdIconProvider
                 .defaultIconSet("./assets/svg/avatars.svg", 128)
                 .icon("menu", "./assets/svg/menu.svg", 24)
+                .icon("add", "./assets/svg/add.svg", 16)
+                .icon("remove", "./assets/svg/remove.svg", 16)
+                .icon("recommend", "./assets/svg/recommend.svg", 16)
+                .icon("unrecommend", "./assets/svg/unrecommend.svg", 16)
                 .icon("logo", "./assets/svg/logo.svg")
                 .icon("share", "./assets/svg/share.svg", 24)
                 .icon("google_plus", "./assets/svg/google_plus.svg", 512)

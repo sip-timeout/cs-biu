@@ -1,4 +1,5 @@
 <div layout="column">
+    <h1 align="center">{{ctrl.restName}}</h1>
     <md-whiteframe class="md-whiteframe-2dp prediction-container">
         <div class="prediction-wrapper">
             <md-button class="md-primary md-hue-1" ng-click="ctrl.togglePrediction()">
@@ -17,7 +18,8 @@
                             <h3 class="user-name">
                                 <span>{{ user.user.name }}</span><span ng-if="ctrl.predictionMode"> - {{user.user.review_rating}} Stars</span>
                             </h3>
-                            <h4 class="review-content" title="{{user.user.review_title}}" ng-if="ctrl.predictionMode">{{user.user.review_title}}</h4>
+                            <h4 class="review-content" title="{{user.user.review_title}}" ng-if="ctrl.predictionMode">
+                                {{user.user.review_title}}</h4>
                             <h5 class="review-content" ng-if="ctrl.predictionMode">{{user.user.review_content}}</h5>
                             <div class="chips-container" ng-if="!ctrl.predictionMode">
                                 <md-chips ng-model="user.categories" md-removable="false" readonly="true">
@@ -36,26 +38,75 @@
         <!--<md-whiteframe class="md-whiteframe-2dp">-->
 
         <div layout="column" class="selection-content">
-            <h2>{{ctrl.restName}}</h2>
-            <!--<h2>Selection Variance: {{ctrl.selection.variance}}, Total Variance:{{ctrl.selection.total_variance}}</h2>-->
+
+
             <!-- Selection without prediction-->
             <div ng-if="!ctrl.predictionMode">
-                <h2>Top {{ctrl.selection.top_category_coverage.length}} Category Coverage -
-                    {{ctrl.selection.category_coverage_rate * 100}}%</h2>
 
-                <md-whiteframe class="md-whiteframe-2dp">
-                    <div>
-                        <md-chips ng-model="ctrl.selection.top_category_coverage" md-removable="false" readonly="true">
-                            <md-chip-template coverage-chip>
-                                <div ng-click="ctrl.selectCategory($chip[0])" title="{{$chip | category}}"
-                                     ng-class="{'small-chip':$chip[1] && ctrl.selectedCategory != $chip[0],'selected-cat':ctrl.selectedCategory === $chip[0]}" class="coverage-category-chip">{{$chip |
-                                    category}}
-                                </div>
 
-                            </md-chip-template>
-                        </md-chips>
-                    </div>
-                </md-whiteframe>
+                <div>
+                    <h2>Top {{ctrl.selection.top_covered.length}} Covered Categories</h2>
+                    <md-whiteframe class="md-whiteframe-2dp">
+                        <div>
+                            <md-chips ng-model="ctrl.selection.top_covered" md-removable="false"
+                                      readonly="true">
+                                <md-chip-template coverage-chip>
+                                    <div>
+                                    <span ng-click="ctrl.selectCategory($chip[0])" title="{{$chip | category}}"
+                                          ng-class="{'selected-cat':ctrl.selectedCategory === $chip[0]}"
+                                          class="coverage-category-chip">{{$chip |
+                                        category}}
+                                    </span>
+                                        <md-icon class="chip-icon" md-svg-icon="remove"></md-icon>
+                                        <md-icon class="chip-icon" md-svg-icon="unrecommend"></md-icon>
+                                    </div>
+                                </md-chip-template>
+                            </md-chips>
+                        </div>
+                    </md-whiteframe>
+                </div>
+
+                <div>
+                    <h2>Top {{ctrl.selection.top_not_covered.length}} Not Covered Categories</h2>
+                    <md-whiteframe class="md-whiteframe-2dp">
+                        <div>
+                            <md-chips ng-model="ctrl.selection.top_not_covered" md-removable="false"
+                                      readonly="true">
+                                <md-chip-template coverage-chip>
+                                    <div>
+                                    <span ng-click="ctrl.selectCategory($chip[0])" title="{{$chip | category}}"
+                                          ng-class="{'selected-cat':ctrl.selectedCategory === $chip[0]}"
+                                          class="coverage-category-chip">{{$chip |
+                                        category}}
+                                    </span>
+                                        <md-icon class="chip-icon" md-svg-icon="add"></md-icon>
+                                        <md-icon class="chip-icon" md-svg-icon="recommend"></md-icon>
+                                    </div>
+                                </md-chip-template>
+                            </md-chips>
+                        </div>
+                    </md-whiteframe>
+                </div>
+
+                <div>
+                    <h2>Top {{ctrl.selection.top_category_coverage.length}} Category Coverage -
+                        {{ctrl.selection.category_coverage_rate * 100}}%</h2>
+
+                    <md-whiteframe class="md-whiteframe-2dp">
+                        <div>
+                            <md-chips ng-model="ctrl.selection.top_category_coverage" md-removable="false"
+                                      readonly="true">
+                                <md-chip-template coverage-chip>
+                                    <div ng-click="ctrl.selectCategory($chip[0])" title="{{$chip | category}}"
+                                         ng-class="{'small-chip':$chip[1] && ctrl.selectedCategory != $chip[0],'selected-cat':ctrl.selectedCategory === $chip[0]}"
+                                         class="coverage-category-chip">{{$chip |
+                                        category}}
+                                    </div>
+                                </md-chip-template>
+                            </md-chips>
+                        </div>
+                    </md-whiteframe>
+                </div>
                 <div ng-if="ctrl.selectedCategory">
                     <h2 id="catAnalysis">Category Analysis - {{ctrl.selectedCategory}}</h2>
                     <category-analysis category="ctrl.selectedCategory" poi="ctrl.restName"></category-analysis>
