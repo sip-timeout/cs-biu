@@ -1,6 +1,7 @@
 import json
 import random
 import numpy
+import operator
 from services import FeatureCalculator
 from model import FileManager
 
@@ -77,7 +78,7 @@ def ensure_category_scores():
     calculate_category_scores()
 
 
-def get_selection(restaurant_name):
+def get_selection(restaurant_name, selection_criteria):
     k = 10
     m = 5
     collected_vars = []
@@ -85,9 +86,23 @@ def get_selection(restaurant_name):
 
     ensure_category_scores()
 
-    def calculate_user_score(user, covered_categories):
+    def get_user_feedback_scores():
+        feedback_scores = dict(category_scores)
+        max_val = max(feedback_scores.iteritems(), key=operator.itemgetter(1))[1]
+
+        for like_cat in selection_criteria['like_cats']:
+            feedback_scores[like_cat] = max_val
+        for dislike_cat in selection_criteria['dislike_cats']:
+            feedback_scores[dislike_cat] = 0
+
+        return feedback_scores
+
+    user_feedback_category_scores = get_user_feedback_scores()
+
+    def calculate_user_score(user):
         score = 0
         user_covered = []
+        user_cats = dict()
         if 'restaurants' in user and len(user['restaurants']) > 3:
             for mod in bucketed_feature_modifiers:
                 for tp in feature_types:
@@ -96,15 +111,17 @@ def get_selection(restaurant_name):
                     for key in user_features:
                         buck_name = get_bucket(user_features[key], cat_name)
                         full_cat_name = '_'.join([key, buck_name])
+                        user_cats[full_cat_name] = True
                         if full_cat_name not in covered_cats:
-                            score += category_scores[full_cat_name]
-                            user_covered.append((full_cat_name, category_scores[full_cat_name]))
+                            score += user_feedback_category_scores[full_cat_name]
+                            user_covered.append((full_cat_name, user_feedback_category_scores[full_cat_name]))
         for bin_feat in user['bin_features']:
+            user_cats[bin_feat] = True
             if bin_feat not in covered_cats:
-                score += category_scores[bin_feat]
-                user_covered.append((bin_feat, category_scores[bin_feat]))
+                score += user_feedback_category_scores[bin_feat]
+                user_covered.append((bin_feat, user_feedback_category_scores[bin_feat]))
 
-        return score, user_covered
+        return score, user_covered, user_cats
 
     def get_category_coverage(top_k, top_m):
         ordered_total_cats = sorted(category_scores.keys(), key=lambda cat: category_scores[cat], reverse=True)
@@ -129,6 +146,15 @@ def get_selection(restaurant_name):
                 'category_coverage_rate': coverage, 'variance': selection_variance,
                 'total_variance': total_variance, 'top_covered': top_covered, 'top_not_covered': top_not_covered}
 
+    def validate_user(user_cats):
+        for req_cat in selection_criteria['required_cats']:
+            if not req_cat in user_cats:
+                return False
+        for forb_cat in selection_criteria['forbidden_cats']:
+            if forb_cat in user_cats:
+                return False
+        return True
+
     rest_users = {k: v for k, v in users.iteritems() if v['restName'] == restaurant_name}
     total_variance = numpy.var(map(lambda username: float(rest_users[username]['review_rating']), rest_users))
     selected_users = []
@@ -139,10 +165,15 @@ def get_selection(restaurant_name):
 
         for username in rest_users:
             user = rest_users[username]
-            score, categories = calculate_user_score(user, covered_cats)
-            if score > max_score:
-                max_score = score
-                arg_max = [username, score, categories, user['review_title'], user['review_rating'], user]
+
+            score, user_covered_cats, user_total_cats = calculate_user_score(user)
+            if validate_user(user_total_cats):
+                if score > max_score:
+                    max_score = score
+                    arg_max = [username, score, user_covered_cats, user['review_title'], user['review_rating'], user]
+
+        if not arg_max:
+            break
 
         rest_users.pop(arg_max[0])
 
@@ -161,9 +192,9 @@ def get_selection(restaurant_name):
     return get_selection_obj()
 
 
-def get_category_analysis(category_name, restaurant_name):
+def get_category_analysis(category_name, restaurant_name,selection_criteria):
     users = FeatureCalculator.calculate_features()
-    selection = get_selection(restaurant_name)
+    selection = get_selection(restaurant_name,selection_criteria)
     specification, mod, tp, bucket = category_name.split('_')
     cat_name = '_'.join([mod, tp])
 
@@ -190,7 +221,7 @@ def get_category_analysis(category_name, restaurant_name):
             'selection_dist': get_normalized_dist(selection_users_dist)}
 
 
-def get_prediction(restaurant_name):
+def get_prediction(restaurant_name,selection_criteria):
     def get_topic_coverage(rest_users, selection_users):
         def is_topic_in_array(topic, arr):
             sub_topics = topic.split(' ')
@@ -224,7 +255,7 @@ def get_prediction(restaurant_name):
     users = FeatureCalculator.calculate_features()
 
     rest_users = [user for user in users.values() if user['restName'] == restaurant_name]
-    selection_users = [user['user'] for user in get_selection(restaurant_name)['users']]
+    selection_users = [user['user'] for user in get_selection(restaurant_name,selection_criteria)['users']]
     random_users = random.sample(rest_users, len(selection_users))
     total_ratings = [float(user['review_rating']) for user in rest_users]
     selection_ratings = [float(user['review_rating']) for user in selection_users]

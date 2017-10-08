@@ -12,7 +12,7 @@
 
             $scope.$watch('vm.category', function (newVal) {
                 if (newVal) {
-                    var analysis = selectionService.getCategoryAnalysis(vm.poi, vm.category);
+                    var analysis = selectionService.getCategoryAnalysis(vm.poi, vm.category,vm.criteria);
                     analysis.$promise.then(function (analysis) {
                         vm.data = [analysis.selection_dist, analysis.total_dist];
                         vm.labels=_.range(1,analysis.selection_dist.length+1);
@@ -26,7 +26,8 @@
             restrict: 'E', //Default for 1.3+
             scope: {
                 category: '=',
-                poi: '='
+                poi: '=',
+                criteria:'='
             },
             controller: controller,
             controllerAs: 'vm',

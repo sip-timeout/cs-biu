@@ -1,12 +1,32 @@
 <div layout="column">
     <h1 align="center">{{ctrl.restName}}</h1>
-    <md-whiteframe class="md-whiteframe-2dp prediction-container">
+    <md-whiteframe class="md-whiteframe-2dp header-container">
         <div class="prediction-wrapper">
             <md-button class="md-primary md-hue-1" ng-click="ctrl.togglePrediction()">
                 <span ng-if="!ctrl.predictionMode">Get Prediction!</span>
                 <span ng-if="ctrl.predictionMode">Back To Selection</span>
             </md-button>
         </div>
+    </md-whiteframe>
+    <md-whiteframe class="md-whiteframe-2dp header-container" ng-if="ctrl.selectionCriteria.length > 0">
+        <h3>Selection Criteria:</h3>
+        <div>
+            <md-chips ng-model="ctrl.selectionCriteria" md-removable="true"
+                      readonly="true">
+                <md-chip-template>
+                    <div>
+                                    <span ng-click="ctrl.selectCategory($chip[0])" title="{{$chip | category}}"
+                                          ng-class="{'selected-cat':ctrl.selectedCategory === $chip[0]}"
+                                          class="coverage-category-chip">{{$chip |
+                                        category}}
+                                    </span>
+                        <md-icon class="chip-icon" md-svg-icon="{{ $chip[2] }}" ></md-icon>
+                    </div>
+                </md-chip-template>
+            </md-chips>
+        </div>
+        <md-button class="md-primary md-hue-1" ng-click="ctrl.refine()">Refine Selection</md-button>
+        <md-button class="md-primary md-hue-1" ng-click="ctrl.selectionCriteria = []">Clear Criteria</md-button>
     </md-whiteframe>
     <div layout="row">
         <md-whiteframe class="md-whiteframe-2dp">
@@ -57,8 +77,8 @@
                                           class="coverage-category-chip">{{$chip |
                                         category}}
                                     </span>
-                                        <md-icon class="chip-icon" md-svg-icon="remove"></md-icon>
-                                        <md-icon class="chip-icon" md-svg-icon="unrecommend"></md-icon>
+                                        <md-icon class="chip-icon" md-svg-icon="forbidden" ng-click="ctrl.addCriterion($chip,$event.target.getAttribute('md-svg-icon'))"></md-icon>
+                                        <md-icon class="chip-icon" md-svg-icon="dislike" ng-click="ctrl.addCriterion($chip,$event.target.getAttribute('md-svg-icon'))"></md-icon>
                                     </div>
                                 </md-chip-template>
                             </md-chips>
@@ -79,8 +99,8 @@
                                           class="coverage-category-chip">{{$chip |
                                         category}}
                                     </span>
-                                        <md-icon class="chip-icon" md-svg-icon="add"></md-icon>
-                                        <md-icon class="chip-icon" md-svg-icon="recommend"></md-icon>
+                                        <md-icon class="chip-icon" md-svg-icon="required" ng-click="ctrl.addCriterion($chip,$event.target.getAttribute('md-svg-icon'))"></md-icon>
+                                        <md-icon class="chip-icon" md-svg-icon="like" ng-click="ctrl.addCriterion($chip,$event.target.getAttribute('md-svg-icon'))"></md-icon>
                                     </div>
                                 </md-chip-template>
                             </md-chips>
@@ -109,7 +129,7 @@
                 </div>
                 <div ng-if="ctrl.selectedCategory">
                     <h2 id="catAnalysis">Category Analysis - {{ctrl.selectedCategory}}</h2>
-                    <category-analysis category="ctrl.selectedCategory" poi="ctrl.restName"></category-analysis>
+                    <category-analysis category="ctrl.selectedCategory" poi="ctrl.restName" criteria="ctrl.selectionCriteria"></category-analysis>
                 </div>
             </div>
 

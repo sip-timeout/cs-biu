@@ -1,65 +1,66 @@
-.user-name{
+.user-name {
     padding-top: 22px;
 }
-.chips-container{
+
+.chips-container {
     width: 250px;
 }
 
-.coverage-category-chip{
+.coverage-category-chip {
     font-size: 10px;
     text-overflow: ellipsis;
     overflow: hidden;
     cursor: pointer;
 }
 
-.small-chip{
+.small-chip {
     max-width: 40px;
 }
 
-
-.category-chip{
+.category-chip {
     font-size: 10px;
 }
 
-.selection-content{
+.selection-content {
     padding-left: 15px;
     padding-right: 15px;
 }
-.selection-content > md-whiteframe{
+
+.selection-content > md-whiteframe {
     margin-top: 5px;
 }
 
-.in-selection{
+.in-selection {
     background-color: #55E9BC;
 }
 
-.not-in-selection{
-    background-color:#FF847C
-;
+.not-in-selection {
+    background-color: #FF847C;
 }
 
-.prediction-wrapper{
+.prediction-wrapper {
     text-align: center;
 }
 
-.prediction-container{
+.header-container {
     margin-bottom: 10px;
     margin-right: 15px;
+    padding-left: 10px;
 }
 
-.review-content{
+.review-content {
     max-width: 300px;
 }
 
-.selected-cat{
+.selected-cat {
     font-weight: bold;
     font-size: medium;
 }
 
-.chip-icon{
+.chip-icon {
     height: 20px;
     width: 20px;
     min-height: 20px;
     min-width: 20px;
-
+    cursor: pointer;
 }
