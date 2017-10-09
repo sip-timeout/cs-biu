@@ -99,6 +99,36 @@ def get_selection(restaurant_name, selection_criteria):
 
     user_feedback_category_scores = get_user_feedback_scores()
 
+    def remove_rest_users_data(category_scores, rest_users):
+
+        def get_rest_cuisines():
+            rest_cuisines = next((poi['cuisines'] for poi in FileManager.get_pois() if poi['name'] == restaurant_name),
+                                 None)
+
+            tax = dict(FileManager.get_rest_taxonomy())
+
+            def get_tax(cus):
+                if cus in tax:
+                    return tax[cus]
+                else:
+                    return cus
+
+            return [get_tax(cus) for cus in rest_cuisines]
+
+        rest_cuisines = get_rest_cuisines()
+
+        for user_name in rest_users:
+            user = rest_users[user_name]
+            if 'restaurants' in user and len(user['restaurants']) > 3:
+                user_features = user['rest_features']
+                for cus in rest_cuisines:
+                    for feat_type in feature_types:
+                        cat_name = '_'.join(['cuisine', feat_type])
+                        if cus in user_features[cat_name]:
+                            buck_name = get_bucket(user_features[cat_name][cus], cat_name)
+                            full_cat = '_'.join([cus, buck_name])
+                            category_scores[full_cat] -= 1
+
     def calculate_user_score(user):
         score = 0
         user_covered = []
@@ -156,6 +186,9 @@ def get_selection(restaurant_name, selection_criteria):
         return True
 
     rest_users = {k: v for k, v in users.iteritems() if v['restName'] == restaurant_name}
+
+    remove_rest_users_data(user_feedback_category_scores, rest_users)
+
     total_variance = numpy.var(map(lambda username: float(rest_users[username]['review_rating']), rest_users))
     selected_users = []
     covered_cats = dict()
@@ -192,9 +225,9 @@ def get_selection(restaurant_name, selection_criteria):
     return get_selection_obj()
 
 
-def get_category_analysis(category_name, restaurant_name,selection_criteria):
+def get_category_analysis(category_name, restaurant_name, selection_criteria):
     users = FeatureCalculator.calculate_features()
-    selection = get_selection(restaurant_name,selection_criteria)
+    selection = get_selection(restaurant_name, selection_criteria)
     specification, mod, tp, bucket = category_name.split('_')
     cat_name = '_'.join([mod, tp])
 
@@ -221,7 +254,7 @@ def get_category_analysis(category_name, restaurant_name,selection_criteria):
             'selection_dist': get_normalized_dist(selection_users_dist)}
 
 
-def get_prediction(restaurant_name,selection_criteria):
+def get_prediction(restaurant_name, selection_criteria):
     def get_topic_coverage(rest_users, selection_users):
         def is_topic_in_array(topic, arr):
             sub_topics = topic.split(' ')
@@ -255,7 +288,7 @@ def get_prediction(restaurant_name,selection_criteria):
     users = FeatureCalculator.calculate_features()
 
     rest_users = [user for user in users.values() if user['restName'] == restaurant_name]
-    selection_users = [user['user'] for user in get_selection(restaurant_name,selection_criteria)['users']]
+    selection_users = [user['user'] for user in get_selection(restaurant_name, selection_criteria)['users']]
     random_users = random.sample(rest_users, len(selection_users))
     total_ratings = [float(user['review_rating']) for user in rest_users]
     selection_ratings = [float(user['review_rating']) for user in selection_users]
