@@ -138,7 +138,7 @@ def extract_page_users(poi_name):
         if wait_by_selector('.memberOverlay', 3):
             elem = browser.find_element_by_css_selector('.memberOverlay a')
         else:
-            #close_popup_if_exists()
+            # close_popup_if_exists()
             continue
             #
             # close_elems = browser.find_elements_by_class_name('ui_close_x')
@@ -292,7 +292,10 @@ def scrape_restaurant(restaurant):
     details = parsedHtml.cssselect('.table_section > .row')
     for detail in details[1:]:
         title = str.lower(detail.cssselect('.title')[0].text.replace('\n', '').replace(' ', '_'))
-        content = detail.cssselect('.content')[0].text.replace('\n', '')
+        if title=='cuisine':
+            content = ','.join([cui.text for cui in detail.cssselect('a')])
+        else:
+            content = detail.cssselect('.content')[0].text.replace('\n', '')
         if content != '':
             restaurant[title] = content
 
@@ -316,21 +319,24 @@ def scrape_poi(url, name):
 
 
 def main():
+    # scrape_restaurant({'url':
+    #                        'https://www.tripadvisor.com/Restaurant_Review-g186338-d719637-Reviews-L_Etranger-London_England.html'})
+
     with open('pois.json', 'r') as pois_file:
         pois = json.load(pois_file)[:50]
 
     for poi in pois:
         try_count = 3
-        while try_count>0:
+        while try_count > 0:
             try:
                 scrape_poi(poi['url'], poi['name'])
                 break
             except:
-                print 'error: scrape failed, retrying: '+poi['name']
-                try_count-=1
+                print 'error: scrape failed, retrying: ' + poi['name']
+                try_count -= 1
 
         if try_count == 0:
-            print 'failed scraping '+poi['name']
+            print 'failed scraping ' + poi['name']
 
     print json.dumps(users_map)
 
