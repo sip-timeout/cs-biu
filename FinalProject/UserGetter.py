@@ -319,8 +319,31 @@ def scrape_poi(url, name):
 
 
 def main():
-    # scrape_restaurant({'url':
-    #                        'https://www.tripadvisor.com/Restaurant_Review-g186338-d719637-Reviews-L_Etranger-London_England.html'})
+
+    # with open('rests.json','r') as rest_to_fix:
+    #     rest_fix = json.load(rest_to_fix)
+    #     total = len(rest_fix)
+    #     i = 1
+    #     for rest in rest_fix.values():
+    #         if i % 1000 == 0:
+    #             with open('rests-fixed.json', 'w') as fixed_rest:
+    #                 json.dump(rest_fix, fixed_rest)
+    #             print 'dumped file'
+    #         try_count = 3
+    #         while try_count > 0:
+    #             try:
+    #                 print str(i) + ' out of ' + str(total)
+    #                 scrape_restaurant(rest)
+    #                 rest['processed'] = True
+    #                 i+=1
+    #                 break
+    #             except:
+    #                 print 'error: scrape failed, retrying'
+    #                 try_count -= 1
+    #     with open('rests-fixed.json', 'w') as fixed_rest:
+    #         json.dump(rest_fix, fixed_rest)
+    #
+    # return
 
     with open('pois.json', 'r') as pois_file:
         pois = json.load(pois_file)[:50]

@@ -7,8 +7,8 @@
         var vm = this;
         vm.restName = $routeParams['restName'];
         vm.selectionCriteria = [];
-        vm.selection = selectionService.getRestaurantUsers(vm.restName, vm.selectionCriteria);
-        vm.prediction = selectionService.getPrediction(vm.restName, vm.selectionCriteria);
+        // vm.selection = selectionService.getRestaurantUsers(vm.restName, vm.selectionCriteria);
+        // vm.prediction = selectionService.getPrediction(vm.restName, vm.selectionCriteria);
         vm.predictionMode = false;
         vm.predictionLabels = _.range(0.5, 5.5, 0.5);
 
