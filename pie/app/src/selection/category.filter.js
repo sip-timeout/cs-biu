@@ -9,10 +9,16 @@
         "visit": "Visited"
     };
 
+    var bucketName = {
+        "1": "Very Low",
+        "2": "Low",
+        "3": "High",
+        "4":"Very High"
+    };
     var cuisineFullName = {
         "md": "Mediterranean",
         "eur": "European",
-        "glut":"Gluten Free",
+        "glut": "Gluten Free",
         "me": "Middle Eastern",
         "veg": "Vegetarian",
         "na": "North American",
@@ -41,8 +47,14 @@
     function categoryFilter() {
         return function (category) {
             var catParts = category[0].split("_");
-            var catName = catParts[1] === "cuisine" && cuisineFullName[catParts[0]] ? cuisineFullName[catParts[0]] : catParts[0];
-            return catName + ", " + catTypesFullName[catParts[2]] + " (Bucket " + catParts[3] + ")";
+
+            switch (catParts.length){
+                case 2:
+                    return category[0].replace("_",": ").replace(/\b\w/g, function(l){ return l.toUpperCase();});
+                case 4:
+                    var catName = catParts[1] === "cuisine" && cuisineFullName[catParts[0]] ? cuisineFullName[catParts[0]] : catParts[0];
+                    return catName + ", " + catTypesFullName[catParts[2]] + " (" + bucketName[catParts[3]] + " Score)";
+            }
         };
 
     }
