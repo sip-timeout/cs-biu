@@ -20,7 +20,7 @@
                                           class="coverage-category-chip">{{$chip |
                                         category}}
                                     </span>
-                        <md-icon class="chip-icon" md-svg-icon="{{ $chip[2] }}" ></md-icon>
+                        <md-icon class="chip-icon" md-svg-icon="{{ $chip[2] }}"></md-icon>
                     </div>
                 </md-chip-template>
             </md-chips>
@@ -63,6 +63,30 @@
             <!-- Selection without prediction-->
             <div ng-if="!ctrl.predictionMode">
 
+                <div>
+                    <md-autocomplete md-search-text="ctrl.query"
+                                     md-items="item in ctrl.search(ctrl.query)"
+                                     md-item-text="item.display">
+                        <md-item-template>
+                            <div class="search-result"
+                                 ng-class="{'in-selection':item.originalCat[1],'not-in-selection':!item.originalCat[1]}">
+                                <span>{{item.display}}</span>
+                                <span ng-if="item.originalCat[1]">
+                                         <md-icon class="chip-icon" md-svg-icon="forbidden"
+                                                  ng-click="ctrl.addCriterion(item.originalCat,$event.target.getAttribute('md-svg-icon'))"></md-icon>
+                                        <md-icon class="chip-icon" md-svg-icon="dislike"
+                                                 ng-click="ctrl.addCriterion(item.originalCat,$event.target.getAttribute('md-svg-icon'))"></md-icon>
+                                </span>
+                                <span ng-if="!item.originalCat[1]">
+                                         <md-icon class="chip-icon" md-svg-icon="required"
+                                                  ng-click="ctrl.addCriterion(item.originalCat,$event.target.getAttribute('md-svg-icon'))"></md-icon>
+                                        <md-icon class="chip-icon" md-svg-icon="like"
+                                                 ng-click="ctrl.addCriterion(item.originalCat,$event.target.getAttribute('md-svg-icon'))"></md-icon>
+                                </span>
+                            </div>
+                        </md-item-template>
+                    </md-autocomplete>
+                </div>
 
                 <div>
                     <h2>Top {{ctrl.selection.top_covered.length}} Covered Categories</h2>
@@ -77,8 +101,10 @@
                                           class="coverage-category-chip">{{$chip |
                                         category}}
                                     </span>
-                                        <md-icon class="chip-icon" md-svg-icon="forbidden" ng-click="ctrl.addCriterion($chip,$event.target.getAttribute('md-svg-icon'))"></md-icon>
-                                        <md-icon class="chip-icon" md-svg-icon="dislike" ng-click="ctrl.addCriterion($chip,$event.target.getAttribute('md-svg-icon'))"></md-icon>
+                                        <md-icon class="chip-icon" md-svg-icon="forbidden"
+                                                 ng-click="ctrl.addCriterion($chip,$event.target.getAttribute('md-svg-icon'))"></md-icon>
+                                        <md-icon class="chip-icon" md-svg-icon="dislike"
+                                                 ng-click="ctrl.addCriterion($chip,$event.target.getAttribute('md-svg-icon'))"></md-icon>
                                     </div>
                                 </md-chip-template>
                             </md-chips>
@@ -99,8 +125,10 @@
                                           class="coverage-category-chip">{{$chip |
                                         category}}
                                     </span>
-                                        <md-icon class="chip-icon" md-svg-icon="required" ng-click="ctrl.addCriterion($chip,$event.target.getAttribute('md-svg-icon'))"></md-icon>
-                                        <md-icon class="chip-icon" md-svg-icon="like" ng-click="ctrl.addCriterion($chip,$event.target.getAttribute('md-svg-icon'))"></md-icon>
+                                        <md-icon class="chip-icon" md-svg-icon="required"
+                                                 ng-click="ctrl.addCriterion($chip,$event.target.getAttribute('md-svg-icon'))"></md-icon>
+                                        <md-icon class="chip-icon" md-svg-icon="like"
+                                                 ng-click="ctrl.addCriterion($chip,$event.target.getAttribute('md-svg-icon'))"></md-icon>
                                     </div>
                                 </md-chip-template>
                             </md-chips>
@@ -129,7 +157,8 @@
                 </div>
                 <div ng-if="ctrl.selectedCategory">
                     <h2 id="catAnalysis">Category Analysis - {{ctrl.selectedCategory}}</h2>
-                    <category-analysis category="ctrl.selectedCategory" poi="ctrl.restName" criteria="ctrl.selectionCriteria"></category-analysis>
+                    <category-analysis category="ctrl.selectedCategory" poi="ctrl.restName"
+                                       criteria="ctrl.selectionCriteria"></category-analysis>
                 </div>
             </div>
 

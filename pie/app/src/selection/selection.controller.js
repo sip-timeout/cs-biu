@@ -1,9 +1,9 @@
 (function () {
     "use strict";
     angular.module('selection')
-        .controller('selectionController', ['selectionService', '$scope', '$routeParams', '$location', '$anchorScroll', '$timeout', selectionController]);
+        .controller('selectionController', ['selectionService', '$scope', '$filter', '$routeParams', '$location', '$anchorScroll', '$timeout', selectionController]);
 
-    function selectionController(selectionService, $scope, $routeParams, $location, $anchorScroll, $timeout) {
+    function selectionController(selectionService, $scope, $filter, $routeParams, $location, $anchorScroll, $timeout) {
         var vm = this;
         vm.restName = $routeParams['restName'];
         vm.selectionCriteria = [];
@@ -37,12 +37,24 @@
 
         vm.refine = function () {
             vm.selection = selectionService.getRestaurantUsers(vm.restName, vm.selectionCriteria);
+            vm.selection.$promise.then(function (selection) {
+                vm.autoItems = _.map(selection.rest_categories, function (cat) {
+                    return {originalCat: cat, display: $filter('category')(cat)};
+                });
+            });
+
             vm.prediction = selectionService.getPrediction(vm.restName, vm.selectionCriteria);
+        };
+
+        vm.search = function (query) {
+            return _.filter(vm.autoItems, function (cat) {
+                return cat.display.toLowerCase().substring(0, cat.display.search(',')).includes(query.toLowerCase());
+            });
         };
 
         $scope.$watchCollection('ctrl.selectionCriteria', function (newVal) {
             if (newVal && newVal.length === 0) {
-               vm.refine();
+                vm.refine();
             }
         });
     }

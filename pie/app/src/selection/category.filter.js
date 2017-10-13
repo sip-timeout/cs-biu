@@ -33,7 +33,8 @@
         "car": "Caribbean",
         "del": "Delicatessen",
         "af": "African",
-        "ocn": "Oceania"
+        "ocn": "Oceania",
+        "gr": "Grill"
 
     };
 
