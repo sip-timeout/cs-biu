@@ -78,3 +78,7 @@
     max-width: 100%;
     position: relative;
 }
+
+.random-column{
+    margin-left: 15px;
+}
