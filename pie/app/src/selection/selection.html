@@ -1,13 +1,15 @@
 <div layout="column">
-    <h1 align="center">{{ctrl.restName}}</h1>
-    <md-whiteframe class="md-whiteframe-2dp header-container">
-        <div class="prediction-wrapper">
-            <md-button class="md-primary md-hue-1" ng-click="ctrl.togglePrediction()">
-                <span ng-if="!ctrl.predictionMode">Get Prediction!</span>
-                <span ng-if="ctrl.predictionMode">Back To Selection</span>
-            </md-button>
-        </div>
-    </md-whiteframe>
+    <div layout="row">
+        <h1>{{ctrl.restName}}</h1>
+        <md-whiteframe class="md-whiteframe-2dp header-container">
+
+                <md-button class="md-primary md-hue-1 switch-button" ng-click="ctrl.togglePrediction()">
+                    <span ng-if="!ctrl.predictionMode">Get Prediction!</span>
+                    <span ng-if="ctrl.predictionMode">Back To Selection</span>
+                </md-button>
+
+        </md-whiteframe>
+    </div>
     <md-whiteframe class="md-whiteframe-2dp header-container" ng-if="ctrl.selectionCriteria.length > 0">
         <h3>Selection Criteria:</h3>
         <div>
@@ -220,7 +222,6 @@
                         chart-labels="ctrl.predictionLabels" chart-series="['Selection','All Users','Random Selection']"
                         chart-options="{legend:{display:true}}">
                 </canvas>
-
 
 
             </div>
