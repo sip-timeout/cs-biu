@@ -15,8 +15,8 @@
                       readonly="true">
                 <md-chip-template>
                     <div>
-                                    <span ng-click="ctrl.selectCategory($chip[0])" title="{{$chip | category}}"
-                                          ng-class="{'selected-cat':ctrl.selectedCategory === $chip[0]}"
+                                    <span ng-click="ctrl.selectCategory($chip)" title="{{$chip | category}}"
+                                          ng-class="{'selected-cat':ctrl.selectedCategory === $chip}"
                                           class="coverage-category-chip">{{$chip |
                                         category}}
                                     </span>
@@ -66,7 +66,8 @@
                 <div>
                     <md-autocomplete md-search-text="ctrl.query"
                                      md-items="item in ctrl.search(ctrl.query)"
-                                     md-item-text="item.display">
+                                     md-item-text="item.display"
+                    placeholder="Add selection refinements!">
                         <md-item-template>
                             <div class="search-result"
                                  ng-class="{'in-selection':item.originalCat[1],'not-in-selection':!item.originalCat[1]}">
@@ -96,8 +97,8 @@
                                       readonly="true">
                                 <md-chip-template coverage-chip>
                                     <div>
-                                    <span ng-click="ctrl.selectCategory($chip[0])" title="{{$chip | category}}"
-                                          ng-class="{'selected-cat':ctrl.selectedCategory === $chip[0]}"
+                                    <span ng-click="ctrl.selectCategory($chip)" title="{{$chip | category}}"
+                                          ng-class="{'selected-cat':ctrl.selectedCategory === $chip}"
                                           class="coverage-category-chip">{{$chip |
                                         category}}
                                     </span>
@@ -120,8 +121,8 @@
                                       readonly="true">
                                 <md-chip-template coverage-chip>
                                     <div>
-                                    <span ng-click="ctrl.selectCategory($chip[0])" title="{{$chip | category}}"
-                                          ng-class="{'selected-cat':ctrl.selectedCategory === $chip[0]}"
+                                    <span ng-click="ctrl.selectCategory($chip)" title="{{$chip | category}}"
+                                          ng-class="{'selected-cat':ctrl.selectedCategory === $chip}"
                                           class="coverage-category-chip">{{$chip |
                                         category}}
                                     </span>
@@ -145,8 +146,8 @@
                             <md-chips ng-model="ctrl.selection.top_category_coverage" md-removable="false"
                                       readonly="true">
                                 <md-chip-template coverage-chip>
-                                    <div ng-click="ctrl.selectCategory($chip[0])" title="{{$chip | category}}"
-                                         ng-class="{'small-chip':$chip[1] && ctrl.selectedCategory != $chip[0],'selected-cat':ctrl.selectedCategory === $chip[0]}"
+                                    <div ng-click="ctrl.selectCategory($chip)" title="{{$chip | category}}"
+                                         ng-class="{'small-chip':$chip[1] && ctrl.selectedCategory != $chip,'selected-cat':ctrl.selectedCategory === $chip}"
                                          class="coverage-category-chip">{{$chip |
                                         category}}
                                     </div>
@@ -156,8 +157,18 @@
                     </md-whiteframe>
                 </div>
                 <div ng-if="ctrl.selectedCategory">
-                    <h2 id="catAnalysis">Category Analysis - {{ctrl.selectedCategory}}</h2>
-                    <category-analysis category="ctrl.selectedCategory" poi="ctrl.restName"
+                    <h2 id="catAnalysis">Category Analysis - {{ctrl.selectedCategory | category}}</h2>
+                    <span>
+                        <md-icon class="chip-icon" md-svg-icon="forbidden"
+                                 ng-click="ctrl.addCriterion(ctrl.selectedCategory,$event.target.getAttribute('md-svg-icon'))"></md-icon>
+                        <md-icon class="chip-icon" md-svg-icon="required"
+                                 ng-click="ctrl.addCriterion(ctrl.selectedCategory,$event.target.getAttribute('md-svg-icon'))"></md-icon>
+                        <md-icon class="chip-icon" md-svg-icon="dislike"
+                                 ng-click="ctrl.addCriterion(ctrl.selectedCategory,$event.target.getAttribute('md-svg-icon'))"></md-icon>
+                        <md-icon class="chip-icon" md-svg-icon="like"
+                                 ng-click="ctrl.addCriterion(ctrl.selectedCategory,$event.target.getAttribute('md-svg-icon'))"></md-icon>
+                    </span>
+                    <category-analysis category="ctrl.selectedCategory[0]" poi="ctrl.restName"
                                        criteria="ctrl.selectionCriteria"></category-analysis>
                 </div>
             </div>
@@ -193,7 +204,8 @@
                 <h2>Rating Distribution</h2>
                 <canvas id="line" class="chart chart-line"
                         chart-data="[ctrl.prediction.selection_dist,ctrl.prediction.total_dist,ctrl.prediction.random_dist]"
-                        chart-labels="ctrl.predictionLabels" chart-series="['Selection','Total','Random']">
+                        chart-labels="ctrl.predictionLabels" chart-series="['Selection','All Users','Random Selection']"
+                        chart-options="{legend:{display:true}}">
                 </canvas>
                 <h2>Selection Variance - {{ctrl.prediction.selection_variance}}</h2>
                 <h2>Random Variance - {{ctrl.prediction.random_variance}}</h2>
