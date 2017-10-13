@@ -48,7 +48,8 @@
 
         vm.search = function (query) {
             return _.filter(vm.autoItems, function (cat) {
-                return cat.display.toLowerCase().substring(0, cat.display.search(',')).includes(query.toLowerCase());
+                var substrIndex = cat.display.includes(":") ? cat.length : cat.display.search(',');
+                return cat.display.toLowerCase().substring(0, substrIndex).includes(query.toLowerCase());
             });
         };
 
