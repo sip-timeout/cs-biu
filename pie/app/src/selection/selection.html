@@ -180,7 +180,7 @@
                 <div layout="row">
                     <div layout="column">
                         <h2>Selection Topic Coverage -
-                            {{ctrl.prediction.topic_coverage_rate * 100}}%</h2>
+                            {{(ctrl.prediction.topic_coverage_rate * 100).toFixed(2)}}%</h2>
                         <md-whiteframe class="md-whiteframe-2dp">
                             <div>
                                 <md-chips ng-model="ctrl.prediction.topic_coverage" md-removable="false"
@@ -197,7 +197,7 @@
                     </div>
                     <div layout="column" class="random-column">
                         <h2>Random Selection Topic Coverage -
-                            {{ctrl.prediction.random_topic_coverage_rate * 100}}%</h2>
+                            {{(ctrl.prediction.random_topic_coverage_rate * 100).toFixed(2)}}%</h2>
                         <md-whiteframe class="md-whiteframe-2dp">
                             <div>
                                 <md-chips ng-model="ctrl.prediction.random_topic_coverage" md-removable="false"
