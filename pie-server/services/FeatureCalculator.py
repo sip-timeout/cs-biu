@@ -48,7 +48,7 @@ def calculate_features():
 
             total_restaurants = len(user['restaurants'])
             total_rating = reduce(lambda x, y: x + y,
-                                  map(lambda rest: int(rest['rating']), user['restaurants'].values()))
+                                  map(lambda rest: float(rest['rating']), user['restaurants'].values()))
             total_avg = float(total_rating) / total_restaurants
 
             for rest in user['restaurants']:
@@ -94,5 +94,6 @@ def calculate_features():
 
 
     # print json.dumps(sorted(unclassified_cuisines.items(),key=operator.itemgetter(1),reverse=True))
+    print unclassified_cuisines
     cached_users = users
     return users

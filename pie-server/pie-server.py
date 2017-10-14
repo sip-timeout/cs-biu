@@ -10,7 +10,7 @@ CORS(app)
 
 @app.route('/rests')
 def get_rests():
-    return jsonify(FileManager.get_pois()[:5])
+    return jsonify(FileManager.get_pois()[:50])
 
 
 @app.route('/selection/<rest_name>', methods=['POST'])
