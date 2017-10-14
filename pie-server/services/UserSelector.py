@@ -7,10 +7,10 @@ from model import FileManager
 
 thresholds = None
 category_scores = None
-bucketed_feature_modifiers = ['continent', 'country', 'city', 'cuisine']
-feature_types = ['visit', 'liked', 'avg']
+bucketed_feature_modifiers = ['continent', 'country', 'cuisine','good-for']
+feature_types = ['visit', 'avg']
 like_factor = 1.2
-buckets_num = 4
+buckets_num = 3
 top_coverage_calculation = 200
 
 
