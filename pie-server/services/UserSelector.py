@@ -1,17 +1,19 @@
 import json
 import random
 import numpy
+import functools
 import operator
 from services import FeatureCalculator
 from model import FileManager
 
 thresholds = None
 category_scores = None
-bucketed_feature_modifiers = ['continent', 'country', 'cuisine','good-for']
+bucketed_feature_modifiers = ['continent', 'country', 'cuisine', 'good-for']
 feature_types = ['visit', 'avg']
 like_factor = 1.2
 buckets_num = 3
 top_coverage_calculation = 200
+random_sample_times = 11
 
 
 def upsert(map, key, value=1):
@@ -297,6 +299,25 @@ def get_prediction(restaurant_name, selection_criteria):
             dist[int(rat * 2) - 1] += 1.0 / len(rating_arr)
         return dist
 
+    def get_random_coverage(sample_size):
+        all_coverages = list()
+        total_topic_coverage = list()
+        total_coverage_rate = 0.0
+        for i in range(0, random_sample_times):
+            random_users = random.sample(rest_users, sample_size)
+            random_ratings = [float(user['review_rating']) for user in random_users]
+            topic_coverage, coverage_rate = get_topic_coverage(rest_users, random_users)
+            all_coverages.append(topic_coverage)
+
+
+        for topic in all_coverages[0]:
+            vote_count = functools.reduce(lambda x, y: x + int([topic[0],True] in y), all_coverages, 0)
+            added_topic = [topic[0],vote_count > random_sample_times / 2]
+            total_topic_coverage.append(added_topic)
+            total_coverage_rate += float(added_topic[1]) / float(len(all_coverages[0]))
+
+        return total_topic_coverage, total_coverage_rate
+
     users = FeatureCalculator.calculate_features()
 
     rest_users = [user for user in users.values() if user['restName'] == restaurant_name]
@@ -307,7 +328,7 @@ def get_prediction(restaurant_name, selection_criteria):
     random_ratings = [float(user['review_rating']) for user in random_users]
 
     topic_coverage, coverage_rate = get_topic_coverage(rest_users, selection_users)
-    random_topic_coverage, random_coverage_rate = get_topic_coverage(rest_users, random_users)
+    random_topic_coverage, random_coverage_rate = get_random_coverage(len(selection_users))
     return {'total_variance': numpy.var(total_ratings),
             'selection_variance': numpy.var(selection_ratings),
             'random_variance': numpy.var(random_ratings),
