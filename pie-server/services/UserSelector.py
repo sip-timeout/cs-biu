@@ -11,6 +11,7 @@ category_scores = None
 bucketed_feature_modifiers = ['continent', 'country', 'cuisine', 'good-for']
 feature_types = ['visit', 'avg']
 like_factor = 1.2
+rest_cat_factor = 1
 buckets_num = 3
 top_coverage_calculation = 200
 random_sample_times = 11
@@ -90,8 +91,38 @@ def get_selection(restaurant_name, selection_criteria):
 
     ensure_category_scores()
 
-    def get_user_feedback_scores():
-        feedback_scores = dict(category_scores)
+    def get_rest_cuisines():
+        rest_cuisines = next((poi['cuisines'] for poi in FileManager.get_pois() if poi['name'] == restaurant_name),
+                             None)
+
+        tax = dict(FileManager.get_rest_taxonomy())
+
+        def get_tax(cus):
+            if cus in tax:
+                return tax[cus]
+            else:
+                return cus
+
+        return [get_tax(cus) for cus in rest_cuisines]
+
+    def predominate_restaurant_categories():
+        predominated_scores = dict(category_scores)
+        max_val = max(predominated_scores.iteritems(), key=operator.itemgetter(1))[1]
+
+        rest_cats = []
+        for cui in get_rest_cuisines():
+            for type in feature_types:
+                for buck_num in range(1, buckets_num + 1):
+                    rest_cats.append('_'.join([cui, 'cuisine', type, str(buck_num)]))
+
+        for rest_cat in rest_cats:
+            if rest_cat in predominated_scores:
+                predominated_scores[rest_cat] += int(max_val * rest_cat_factor)
+
+        return predominated_scores
+
+    def get_user_feedback_scores(score_dict):
+        feedback_scores = score_dict
         max_val = max(feedback_scores.iteritems(), key=operator.itemgetter(1))[1]
 
         for like_cat in selection_criteria['like_cats']:
@@ -101,23 +132,10 @@ def get_selection(restaurant_name, selection_criteria):
 
         return feedback_scores
 
-    user_feedback_category_scores = get_user_feedback_scores()
+    restaurant_predominated_scores = predominate_restaurant_categories()
+    user_feedback_category_scores = get_user_feedback_scores(dict(category_scores))
 
     def remove_rest_users_data(category_scores, rest_users):
-
-        def get_rest_cuisines():
-            rest_cuisines = next((poi['cuisines'] for poi in FileManager.get_pois() if poi['name'] == restaurant_name),
-                                 None)
-
-            tax = dict(FileManager.get_rest_taxonomy())
-
-            def get_tax(cus):
-                if cus in tax:
-                    return tax[cus]
-                else:
-                    return cus
-
-            return [get_tax(cus) for cus in rest_cuisines]
 
         rest_cuisines = get_rest_cuisines()
 
@@ -309,10 +327,9 @@ def get_prediction(restaurant_name, selection_criteria):
             topic_coverage, coverage_rate = get_topic_coverage(rest_users, random_users)
             all_coverages.append(topic_coverage)
 
-
         for topic in all_coverages[0]:
-            vote_count = functools.reduce(lambda x, y: x + int([topic[0],True] in y), all_coverages, 0)
-            added_topic = [topic[0],vote_count > random_sample_times / 2]
+            vote_count = functools.reduce(lambda x, y: x + int([topic[0], True] in y), all_coverages, 0)
+            added_topic = [topic[0], vote_count > random_sample_times / 2]
             total_topic_coverage.append(added_topic)
             total_coverage_rate += float(added_topic[1]) / float(len(all_coverages[0]))
 
