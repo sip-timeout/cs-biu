@@ -73,7 +73,7 @@
                         <md-item-template>
                             <div class="search-result"
                                  ng-class="{'in-selection':item.originalCat[1],'not-in-selection':!item.originalCat[1]}">
-                                <span>{{item.display}}</span>
+                                <span ng-click="ctrl.selectCategory(item.originalCat)">{{item.display}}</span>
                                 <span ng-if="item.originalCat[1]">
                                          <md-icon class="chip-icon" md-svg-icon="forbidden"
                                                   ng-click="ctrl.addCriterion(item.originalCat,$event.target.getAttribute('md-svg-icon'))"></md-icon>
@@ -90,7 +90,8 @@
                         </md-item-template>
                     </md-autocomplete>
                 </div>
-
+                <h2>Top {{ctrl.selection.top_category_coverage.length}} Category Coverage -
+                    {{ctrl.selection.category_coverage_rate * 100}}%</h2>
                 <div>
                     <h2>Top {{ctrl.selection.top_covered.length}} Covered Categories</h2>
                     <md-whiteframe class="md-whiteframe-2dp">
@@ -140,8 +141,7 @@
                 </div>
 
                 <div>
-                    <h2>Top {{ctrl.selection.top_category_coverage.length}} Category Coverage -
-                        {{ctrl.selection.category_coverage_rate * 100}}%</h2>
+                    <h2>Top {{ctrl.selection.top_category_coverage.length}} Category Coverage</h2>
 
                     <md-whiteframe class="md-whiteframe-2dp">
                         <div>
