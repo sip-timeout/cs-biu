@@ -10,11 +10,11 @@ thresholds = None
 category_scores = None
 bucketed_feature_modifiers = ['continent', 'country', 'cuisine', 'good-for']
 feature_types = ['visit', 'avg']
-like_factor = 1.2
+like_factor = 4
 rest_cat_factor = 1
 buckets_num = 3
 top_coverage_calculation = 200
-random_sample_times = 11
+random_sample_times = 51
 
 
 def upsert(map, key, value=1):
@@ -133,7 +133,7 @@ def get_selection(restaurant_name, selection_criteria):
         return feedback_scores
 
     restaurant_predominated_scores = predominate_restaurant_categories()
-    user_feedback_category_scores = get_user_feedback_scores(dict(category_scores))
+    user_feedback_category_scores = get_user_feedback_scores(restaurant_predominated_scores)
 
     def remove_rest_users_data(category_scores, rest_users):
 
