@@ -339,13 +339,15 @@ def get_prediction(restaurant_name, selection_criteria):
 
     rest_users = [user for user in users.values() if user['restName'] == restaurant_name]
     selection_users = [user['user'] for user in get_selection(restaurant_name, selection_criteria)['users']]
+    random.seed(abs(hash(restaurant_name)))
     random_users = random.sample(rest_users, len(selection_users))
     total_ratings = [float(user['review_rating']) for user in rest_users]
     selection_ratings = [float(user['review_rating']) for user in selection_users]
     random_ratings = [float(user['review_rating']) for user in random_users]
 
     topic_coverage, coverage_rate = get_topic_coverage(rest_users, selection_users)
-    random_topic_coverage, random_coverage_rate = get_random_coverage(len(selection_users))
+    #random_topic_coverage, random_coverage_rate = get_random_coverage(len(selection_users))
+    random_topic_coverage, random_coverage_rate = get_topic_coverage(rest_users,random_users)
     return {'total_variance': numpy.var(total_ratings),
             'selection_variance': numpy.var(selection_ratings),
             'random_variance': numpy.var(random_ratings),

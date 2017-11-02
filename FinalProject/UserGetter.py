@@ -4,6 +4,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 
 from lxml import etree
 from lxml.cssselect import CSSSelector
@@ -44,7 +45,7 @@ def wait_by_selector(css_selector, timeout=10):
 def init_page(trip_url):
     browser.maximize_window()
     browser.get(trip_url)
-    wait_by_selector('.member_info')
+    wait_by_selector('.scrname')
 
 
 def get_rating(rat):
@@ -119,14 +120,30 @@ def extract_page_users(poi_name):
     def getReviewContent(cont):
         return cont.text
 
-    elems = browser.find_elements_by_class_name('member_info')
+
+    builder = ActionChains(browser)
+    time.sleep(5)
+    elems = browser.find_elements_by_class_name('username')
+    #browser.execute_script('scroll(250,0)')
+    browser.execute_script('arguments[0].scrollIntoView(true);', elems[0]);
+    time.sleep(5)
+    builder.move_to_element(elems[0]).perform()
+    time.sleep(5)
 
     temp_user_map = {}
     for i in range(0, 10):
 
         elem = elems[i]
-        # try:
-        elem.click()
+        # # try:
+        # for i in range(0,10):
+        #     try:
+        #         elem.click()
+        #     except:
+        #         time.sleep(0.5)
+
+        #elem.click()
+        builder.move_to_element(elem).perform()
+        #elem.click()
         # except:
         #     close_popup_if_exists()
         #     continue
@@ -346,11 +363,12 @@ def main():
     # return
 
     with open('pois.json', 'r') as pois_file:
-        pois = json.load(pois_file)[:50]
+        pois = json.load(pois_file)
 
     for poi in pois:
         try_count = 3
         while try_count > 0:
+            scrape_poi(poi['url'], poi['name'])
             try:
                 scrape_poi(poi['url'], poi['name'])
                 break

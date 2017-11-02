@@ -1,6 +1,7 @@
 <div layout="column">
     <div layout="row">
         <h1>{{ctrl.restName}}</h1>
+
         <md-whiteframe class="md-whiteframe-2dp switch-button-container">
 
                 <md-button class="md-primary md-hue-1 switch-button" ng-click="ctrl.togglePrediction()">
@@ -10,6 +11,7 @@
 
         </md-whiteframe>
     </div>
+    <h3>{{selectedPOI.cuisines.slice(0,6).join(', ')}}</h3>
     <md-whiteframe class="md-whiteframe-2dp header-container" ng-if="ctrl.selectionCriteria.length > 0">
         <h3>Selection Criteria:</h3>
         <div>
@@ -90,10 +92,10 @@
                         </md-item-template>
                     </md-autocomplete>
                 </div>
-                <h2>Top {{ctrl.selection.top_category_coverage.length}} Category Coverage -
+                <h2>Top {{ctrl.selection.top_category_coverage.length}} Groups Coverage -
                     {{ctrl.selection.category_coverage_rate * 100}}%</h2>
                 <div>
-                    <h2>Top {{ctrl.selection.top_covered.length}} Covered Categories</h2>
+                    <h2>Top {{ctrl.selection.top_covered.length}} Covered Groups</h2>
                     <md-whiteframe class="md-whiteframe-2dp">
                         <div>
                             <md-chips ng-model="ctrl.selection.top_covered" md-removable="false"
@@ -117,7 +119,7 @@
                 </div>
 
                 <div>
-                    <h2>Top {{ctrl.selection.top_not_covered.length}} Not Covered Categories</h2>
+                    <h2>Top {{ctrl.selection.top_not_covered.length}} Not Covered Groups</h2>
                     <md-whiteframe class="md-whiteframe-2dp">
                         <div>
                             <md-chips ng-model="ctrl.selection.top_not_covered" md-removable="false"
@@ -141,7 +143,7 @@
                 </div>
 
                 <div>
-                    <h2>Top {{ctrl.selection.top_category_coverage.length}} Category Coverage</h2>
+                    <h2>Top {{ctrl.selection.top_category_coverage.length}} Groups Coverage</h2>
 
                     <md-whiteframe class="md-whiteframe-2dp">
                         <div>
@@ -159,7 +161,7 @@
                     </md-whiteframe>
                 </div>
                 <div ng-if="ctrl.selectedCategory">
-                    <h2 id="catAnalysis">Category Analysis - {{ctrl.selectedCategory | category}}</h2>
+                    <h2 id="catAnalysis">Group Analysis - {{ctrl.selectedCategory | category}}</h2>
                     <span>
                         <md-icon class="chip-icon" md-svg-icon="forbidden"
                                  ng-click="ctrl.addCriterion(ctrl.selectedCategory,$event.target.getAttribute('md-svg-icon'))"></md-icon>
