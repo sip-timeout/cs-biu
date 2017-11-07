@@ -15,7 +15,7 @@
                     var analysis = selectionService.getCategoryAnalysis(vm.poi, vm.category,vm.criteria);
                     analysis.$promise.then(function (analysis) {
                         vm.data = [analysis.selection_dist, analysis.total_dist];
-                        vm.labels=_.range(1,analysis.selection_dist.length+1);
+                        vm.labels=['Low Score','Medium Score','High Score']
                     });
                 }
             });
