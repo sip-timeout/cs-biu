@@ -7,6 +7,7 @@
         var vm = this;
         vm.restName = $routeParams['restName'];
         vm.selectionCriteria = [];
+        vm.selection = {'users': []};
         // vm.selection = selectionService.getRestaurantUsers(vm.restName, vm.selectionCriteria);
         // vm.prediction = selectionService.getPrediction(vm.restName, vm.selectionCriteria);
         vm.predictionMode = false;
@@ -36,8 +37,19 @@
         };
 
         vm.refine = function () {
+            var oldSelection = vm.selection.users.slice().map(function (user) {
+                return user.user;
+            });
             vm.selection = selectionService.getRestaurantUsers(vm.restName, vm.selectionCriteria);
             vm.selection.$promise.then(function (selection) {
+                if (oldSelection.length > 0) {
+                    _.forEach(vm.selection.users, function (user) {
+                        if (_.findIndex(oldSelection, {'name': user.user.name}) < 0) {
+                            user.new = true;
+                        }
+                    });
+                }
+
                 vm.autoItems = _.map(selection.rest_categories, function (cat) {
                     return {originalCat: cat, display: $filter('category')(cat)};
                 });

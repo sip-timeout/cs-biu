@@ -35,7 +35,7 @@
     <div layout="row">
         <md-whiteframe class="md-whiteframe-2dp">
             <md-list>
-                <div ng-repeat="user in ctrl.selection.users">
+                <div ng-repeat="user in ctrl.selection.users" ng-class="{'new-user':user.new && !ctrl.predictionMode}">
                     <md-list-item class="md-3-line md-long-text">
                         <img src="{{user.user.img_url}}" class="md-avatar"/>
                         <div class="md-list-item-text" layout="column">

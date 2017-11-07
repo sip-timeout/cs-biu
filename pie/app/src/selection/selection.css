@@ -62,6 +62,11 @@
     max-width: 300px;
 }
 
+.new-user {
+    border: 2px solid;
+    border-color: rgb(63,81,181);
+}
+
 .selected-cat {
     font-weight: bold;
     font-size: medium;
