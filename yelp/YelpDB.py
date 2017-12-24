@@ -8,24 +8,25 @@ class YelpDB:
         self.procedures = {
             "get_rests":
                 """ 
-                select b.id,b.name from business b where 
+                select b.id,b.name from restaurant b where 
                 review_count > {0}
-                and 'Restaurants' in ( select c.category from category c where c.business_id = b.id)
                 order by review_count desc
                 limit {1};
                  """
             ,
             "get_users":
                 """
-                select u.id as user_id,u.name,u.review_count,u.yelping_since,u.useful,u.funny,u.cool,u.fans  
-                from user u  
-                order by u.review_count
-                limit {0}
+                    select u.id as user_id,u.name,DATE_FORMAT(u.yelping_since,'%d-%m-%Y') as yelping_since,u.useful,u.funny,u.cool,u.fans,
+                     urc.review_count
+                    from user u, user_review_count urc
+                      where u.id = urc.id
+                    order by review_count desc
+                    limit {0}
                 """
             ,
             "get_reviews":
                 """
-                select r.text as review_content ,r.stars as review_rating,r.date as review_date,u.id as user_id,u.name,u.review_count,u.yelping_since,u.useful,u.funny,u.cool,u.fans  
+                select r.text as review_content ,r.stars as review_rating,r.date as review_date,u.id as user_id,u.name,u.review_count,u.useful,u.funny,u.cool,u.fans,u.yelping_since  
                 from review r, user u  
                 where business_id='{0}'
                 and r.user_id=u.id
@@ -34,14 +35,14 @@ class YelpDB:
             "get_user_reviews":
                 """
                 select r.stars as review_rating,r.business_id as rest_id
-                from review r
-                where 'Restaurants' in ( select c.category from category c where c.business_id = r.business_id)
+                from review r, restaurant rest
+                where r.business_id = rest.id
                 and r.user_id = '{0}'
                 """
             ,
             "get_rest_info":
                 """
-                select name,city,state as country from business where id  = '{0}'
+                select name,city,state as country from restaurant where id  = '{0}'
                 """
             ,
             "get_rest_categories":

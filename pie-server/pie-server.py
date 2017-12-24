@@ -57,6 +57,10 @@ def get_test():
     results['better_equal'] = beteq
     return jsonify(results)
 
+@app.route('/experiment/quality')
+def perform_quality_test():
+    return jsonify(UserSelector.get_selection(None,None))
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, threaded=True, debug=True)

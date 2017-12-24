@@ -35,8 +35,8 @@ def calculate_features():
 
     def calculate_rest_features(user):
 
-        list_modifiers = ['cuisine', 'good-for', 'restaurant-features']
-        location_modifiers = ['continent', 'country', 'city']
+        list_modifiers = ['cuisine', 'restaurant-features']
+        location_modifiers = [ 'country', 'city']
 
         if 'restaurants' in user:
             rest_features = dict()

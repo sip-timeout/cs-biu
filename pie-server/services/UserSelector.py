@@ -8,7 +8,8 @@ from model import FileManager
 
 thresholds = None
 category_scores = None
-bucketed_feature_modifiers = ['continent', 'country', 'cuisine', 'good-for']
+#bucketed_feature_modifiers = ['continent', 'country', 'cuisine', 'good-for']
+bucketed_feature_modifiers = ['country', 'cuisine','city']
 feature_types = ['visit', 'avg']
 like_factor = 4
 rest_cat_factor = 1
@@ -64,6 +65,7 @@ def ensure_category_scores():
             for i in range(1, buckets_num):
                 thresholds[key + '_' + str(i)] = sorted_arr[i * buck_size]
             thresholds[key + '_' + str(buckets_num)] = sorted_arr[-1]
+        print 'done'
 
     def calculate_category_scores():
         for username in users:
@@ -79,14 +81,15 @@ def ensure_category_scores():
             for bin_feat in user['bin_features']:
                 upsert(category_scores, bin_feat)
 
+
     calculate_thresholds()
     calculate_category_scores()
 
 
 def get_selection(restaurant_name, selection_criteria):
-    k = 10
-    m = 5
-    collected_vars = []
+    k = 5
+    m = 10
+
     users = FeatureCalculator.calculate_features()
 
     ensure_category_scores()
@@ -132,8 +135,11 @@ def get_selection(restaurant_name, selection_criteria):
 
         return feedback_scores
 
-    restaurant_predominated_scores = predominate_restaurant_categories()
-    user_feedback_category_scores = get_user_feedback_scores(restaurant_predominated_scores)
+    if restaurant_name:
+        restaurant_predominated_scores = predominate_restaurant_categories()
+        user_feedback_category_scores = get_user_feedback_scores(restaurant_predominated_scores)
+    else:
+        user_feedback_category_scores = dict(category_scores)
 
     def remove_rest_users_data(category_scores, rest_users):
 
@@ -179,7 +185,7 @@ def get_selection(restaurant_name, selection_criteria):
         ordered_total_cats = sorted(category_scores.keys(), key=lambda cat: category_scores[cat], reverse=True)
         selection_cats = set(reduce(lambda x, y: x + y[2], selected_users, []))
         selection_dict = dict((k[0], 1) for k in selection_cats)
-        category_coverage = [[cat, cat in selection_dict] for cat in ordered_total_cats]
+        category_coverage = [[cat, cat in selection_dict,category_scores[cat]] for cat in ordered_total_cats]
 
         top_covered = [cat for cat in category_coverage if cat[1]][:top_covered_indication]
         top_not_covered = [cat for cat in category_coverage if not cat[1]][:top_covered_indication]
@@ -191,7 +197,6 @@ def get_selection(restaurant_name, selection_criteria):
 
     def get_selection_obj(rest_categories):
         selection_users = [{'score': user[1], 'categories': user[2][:m], 'user': user[-1]} for user in selected_users]
-        selection_variance = numpy.var(map(lambda user: float(user[4]), selected_users))
         category_coverage, coverage, top_covered, top_not_covered, all_covered_cats = get_category_coverage(
             top_coverage_calculation, 20)
 
@@ -199,8 +204,7 @@ def get_selection(restaurant_name, selection_criteria):
                                 key=lambda cat: category_scores[cat[0]], reverse=True)
 
         return {'users': selection_users, 'top_category_coverage': category_coverage,
-                'category_coverage_rate': coverage, 'variance': selection_variance,
-                'total_variance': total_variance, 'top_covered': top_covered, 'top_not_covered': top_not_covered,
+                'category_coverage_rate': coverage,  'top_covered': top_covered, 'top_not_covered': top_not_covered,
                 'rest_categories': formatted_cats}
 
     def validate_user(user_cats):
@@ -212,11 +216,12 @@ def get_selection(restaurant_name, selection_criteria):
                 return False
         return True
 
-    rest_users = {k: v for k, v in users.iteritems() if v['restName'] == restaurant_name}
+    if restaurant_name:
+        rest_users = {k: v for k, v in users.iteritems() if v['restName'] == restaurant_name}
+        remove_rest_users_data(user_feedback_category_scores, rest_users)
+    else:
+        rest_users = users
 
-    remove_rest_users_data(user_feedback_category_scores, rest_users)
-
-    total_variance = numpy.var(map(lambda username: float(rest_users[username]['review_rating']), rest_users))
     selected_users = []
     covered_cats = dict()
     restaurant_cats = set()
@@ -229,12 +234,13 @@ def get_selection(restaurant_name, selection_criteria):
 
             score, user_covered_cats, user_total_cats = calculate_user_score(user)
 
-            if validate_user(user_total_cats):
+            if selection_criteria is None or validate_user(user_total_cats):
                 if score > max_score:
                     max_score = score
-                    arg_max = [username, score, user_covered_cats, user['review_title'], user['review_rating'], user]
+                    #arg_max = [username, score, user_covered_cats, user['review_title'], user['review_rating'], user]
+                    arg_max = [username, score, user_covered_cats, user]
 
-            if i == 0:
+            if i == 0 and restaurant_name:
                 restaurant_cats = restaurant_cats.union(user_total_cats)
 
         if not arg_max:
@@ -249,9 +255,8 @@ def get_selection(restaurant_name, selection_criteria):
         user_categories = sorted(user_categories, key=lambda cat: cat[1], reverse=True)
         arg_max[2] = user_categories
         selected_users.append(arg_max)
-        collected_vars.append(numpy.var(map(lambda user: float(user[4]), selected_users)))
 
-    print 'Selection variance:', numpy.var(map(lambda user: float(user[4]), selected_users))
+
 
     # return [{'score': user[1], 'categories': user[2], 'user': user[-1]} for user in selected_users]
     return get_selection_obj(restaurant_cats)
