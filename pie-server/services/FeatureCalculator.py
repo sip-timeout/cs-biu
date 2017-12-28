@@ -1,13 +1,14 @@
-import json
-import operator
+import time
 from model import FileManager
 
 cached_users = None
+calculation_time = 0
 
 
 def calculate_features():
     global cached_users
-
+    global calculation_time
+    start = time.time()
     if cached_users:
         print 'return users from cache'
         return cached_users
@@ -25,18 +26,17 @@ def calculate_features():
             map[key] = value
 
     def calculate_binary_features(user):
-        feat_types = ['location','age']
+        feat_types = ['location', 'age']
         bin_features = dict()
         for bin_feat in feat_types:
             if bin_feat in user:
-                bin_features['_'.join([bin_feat,user[bin_feat]])] = 1
+                bin_features['_'.join([bin_feat, user[bin_feat]])] = 1
         user['bin_features'] = bin_features
-
 
     def calculate_rest_features(user):
 
         list_modifiers = ['cuisine', 'restaurant-features']
-        location_modifiers = [ 'country', 'city']
+        location_modifiers = ['country', 'city']
 
         if 'restaurants' in user:
             rest_features = dict()
@@ -78,7 +78,7 @@ def calculate_features():
             # for key in rest_features['cuisine_avg']:
             #     rest_features['cuisine_avg'][key] /= (rest_features['cuisine_visit'][key] * total_restaurants)
 
-            for mod in location_modifiers+list_modifiers:
+            for mod in location_modifiers + list_modifiers:
                 for key in rest_features[mod + '_avg']:
                     rest_features[mod + '_avg'][key] /= (rest_features[mod + '_visit'][key] * total_restaurants)
 
@@ -96,4 +96,5 @@ def calculate_features():
     # print json.dumps(sorted(unclassified_cuisines.items(),key=operator.itemgetter(1),reverse=True))
     print unclassified_cuisines
     cached_users = users
+    calculation_time = time.time() - start
     return users
