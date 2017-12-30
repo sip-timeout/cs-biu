@@ -5,6 +5,7 @@ import functools
 import operator
 from services import FeatureCalculator
 from model import FileManager
+from services.Clustering import KMeansCluster
 
 calculation_time = 0
 thresholds = None
@@ -283,6 +284,8 @@ def get_selection(restaurant_name, selection_criteria):
 
 def get_cluster_selection():
     users = FeatureCalculator.calculate_features()
+    clustering = KMeansCluster()
+    return clustering.get_representatives(users,selection_size)
 
 
 def get_category_analysis(category_name, restaurant_name, selection_criteria):
