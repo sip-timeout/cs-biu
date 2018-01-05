@@ -88,11 +88,75 @@ def ensure_category_scores():
     calculate_category_scores()
 
 
+def get_category_coverage(top_for_coverage, top_covered_indication, selection):
+    ordered_total_cats = sorted(category_scores.keys(), key=lambda cat: category_scores[cat], reverse=True)
+    selection_cats = set(reduce(lambda x, y: x + y[2], selection, []))
+    selection_dict = dict((k[0], 1) for k in selection_cats)
+    category_coverage = [[cat, cat in selection_dict, category_scores[cat]] for cat in ordered_total_cats]
+
+    top_covered = [cat for cat in category_coverage if cat[1]][:top_covered_indication]
+    top_not_covered = [cat for cat in category_coverage if not cat[1]][:top_covered_indication]
+
+    top_category_coverage = category_coverage[:top_for_coverage]
+    coverage_rate = float(len([1 for cat in top_category_coverage if cat[1]])) / top_for_coverage
+
+    return top_category_coverage, coverage_rate, top_covered, top_not_covered, selection_dict
+
+
+def get_selection_obj(selection, rest_categories):
+    selection_users = [{'score': user[1], 'categories': user[2][:10], 'user': user[-1]} for user in selection]
+    category_coverage, coverage, top_covered, top_not_covered, all_covered_cats = get_category_coverage(
+        top_coverage_calculation, 20, selection)
+
+    formatted_cats = sorted([[rest_cat, rest_cat in all_covered_cats] for rest_cat in rest_categories],
+                            key=lambda cat: category_scores[cat[0]], reverse=True)
+
+    return {'users': selection_users, 'top_category_coverage': category_coverage,
+            'category_coverage_rate': coverage, 'top_covered': top_covered, 'top_not_covered': top_not_covered,
+            'rest_categories': formatted_cats}
+
+
+def calculate_arbitrary_selection_score(random_users, users, cat_score):
+    ret_obj = []
+    covered = dict()
+    for username in random_users:
+        user = users[username]
+        score, user_cats, all_cats = calculate_user_score(user, covered, cat_score)
+        ret_obj.append([username, score, user_cats, user])
+
+        for cat in user_cats:
+            covered[cat[0]] = True
+    return ret_obj
+
+
+def calculate_user_score(user, covered_cats, cat_scores):
+    score = 0
+    user_covered = []
+    user_cats = dict()
+    if 'restaurants' in user and len(user['restaurants']) > 3:
+        for mod in bucketed_feature_modifiers:
+            for tp in feature_types:
+                cat_name = mod + '_' + tp
+                user_features = user['rest_features'][cat_name]
+                for key in user_features:
+                    buck_name = get_bucket(user_features[key], cat_name)
+                    full_cat_name = '_'.join([key, buck_name])
+                    user_cats[full_cat_name] = True
+                    if full_cat_name not in covered_cats:
+                        score += cat_scores[full_cat_name]
+                        user_covered.append((full_cat_name, cat_scores[full_cat_name]))
+    for bin_feat in user['bin_features']:
+        user_cats[bin_feat] = True
+        if bin_feat not in covered_cats:
+            score += cat_scores[bin_feat]
+            user_covered.append((bin_feat, cat_scores[bin_feat]))
+
+    return score, user_covered, user_cats
+
+
 def get_selection(restaurant_name, selection_criteria):
     global calculation_time
     start = time.time()
-
-    m = 10
 
     users = FeatureCalculator.calculate_features()
 
@@ -161,71 +225,10 @@ def get_selection(restaurant_name, selection_criteria):
                             full_cat = '_'.join([cus, buck_name])
                             category_scores[full_cat] -= 1
 
-    def calculate_user_score(user, covered_cats):
-        score = 0
-        user_covered = []
-        user_cats = dict()
-        if 'restaurants' in user and len(user['restaurants']) > 3:
-            for mod in bucketed_feature_modifiers:
-                for tp in feature_types:
-                    cat_name = mod + '_' + tp
-                    user_features = user['rest_features'][cat_name]
-                    for key in user_features:
-                        buck_name = get_bucket(user_features[key], cat_name)
-                        full_cat_name = '_'.join([key, buck_name])
-                        user_cats[full_cat_name] = True
-                        if full_cat_name not in covered_cats:
-                            score += user_feedback_category_scores[full_cat_name]
-                            user_covered.append((full_cat_name, user_feedback_category_scores[full_cat_name]))
-        for bin_feat in user['bin_features']:
-            user_cats[bin_feat] = True
-            if bin_feat not in covered_cats:
-                score += user_feedback_category_scores[bin_feat]
-                user_covered.append((bin_feat, user_feedback_category_scores[bin_feat]))
-
-        return score, user_covered, user_cats
-
-    def get_category_coverage(top_for_coverage, top_covered_indication, selection):
-        ordered_total_cats = sorted(category_scores.keys(), key=lambda cat: category_scores[cat], reverse=True)
-        selection_cats = set(reduce(lambda x, y: x + y[2], selection, []))
-        selection_dict = dict((k[0], 1) for k in selection_cats)
-        category_coverage = [[cat, cat in selection_dict, category_scores[cat]] for cat in ordered_total_cats]
-
-        top_covered = [cat for cat in category_coverage if cat[1]][:top_covered_indication]
-        top_not_covered = [cat for cat in category_coverage if not cat[1]][:top_covered_indication]
-
-        top_category_coverage = category_coverage[:top_for_coverage]
-        coverage_rate = float(len([1 for cat in top_category_coverage if cat[1]])) / top_for_coverage
-
-        return top_category_coverage, coverage_rate, top_covered, top_not_covered, selection_dict
-
     def get_random_users(users):
 
         random_users = random.sample(rest_users, selection_size)
-        ret_obj = []
-        covered = dict()
-
-        for username in random_users:
-            user = users[username]
-            score, user_cats, all_cats = calculate_user_score(user, covered)
-            ret_obj.append([username, score, user_covered_cats, user])
-
-            for cat in user_covered_cats:
-                covered[cat[0]] = True
-
-        return ret_obj
-
-    def get_selection_obj(selection, rest_categories):
-        selection_users = [{'score': user[1], 'categories': user[2][:m], 'user': user[-1]} for user in selection]
-        category_coverage, coverage, top_covered, top_not_covered, all_covered_cats = get_category_coverage(
-            top_coverage_calculation, 20, selection)
-
-        formatted_cats = sorted([[rest_cat, rest_cat in all_covered_cats] for rest_cat in rest_categories],
-                                key=lambda cat: category_scores[cat[0]], reverse=True)
-
-        return {'users': selection_users, 'top_category_coverage': category_coverage,
-                'category_coverage_rate': coverage, 'top_covered': top_covered, 'top_not_covered': top_not_covered,
-                'rest_categories': formatted_cats}
+        return calculate_arbitrary_selection_score(random_users, users,user_feedback_category_scores)
 
     def validate_user(user_cats):
         for req_cat in selection_criteria['required_cats']:
@@ -252,7 +255,8 @@ def get_selection(restaurant_name, selection_criteria):
         for username in rest_users:
             user = rest_users[username]
 
-            score, user_covered_cats, user_total_cats = calculate_user_score(user, covered_cats)
+            score, user_covered_cats, user_total_cats = calculate_user_score(user, covered_cats,
+                                                                             user_feedback_category_scores)
 
             if selection_criteria is None or validate_user(user_total_cats):
                 if score > max_score:
@@ -279,13 +283,15 @@ def get_selection(restaurant_name, selection_criteria):
     # return [{'score': user[1], 'categories': user[2], 'user': user[-1]} for user in selected_users]
     calculation_time = time.time() - start
     return get_selection_obj(selected_users, restaurant_cats), get_selection_obj(get_random_users(users),
-                                                                                 restaurant_cats)
+                                                                                 restaurant_cats), get_selection_obj(
+        calculate_arbitrary_selection_score([user['user_id'] for user in get_cluster_selection()], users,user_feedback_category_scores),
+        restaurant_cats)
 
 
 def get_cluster_selection():
     users = FeatureCalculator.calculate_features()
     clustering = KMeansCluster()
-    return clustering.get_representatives(users,selection_size)
+    return clustering.get_representatives(users, selection_size)
 
 
 def get_category_analysis(category_name, restaurant_name, selection_criteria):

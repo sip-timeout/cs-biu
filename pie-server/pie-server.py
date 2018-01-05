@@ -59,8 +59,8 @@ def get_test():
 
 @app.route('/experiment/quality')
 def perform_quality_test():
-    #return jsonify(UserSelector.get_selection(None,None))
-    return jsonify(UserSelector.get_cluster_selection())
+    return jsonify(UserSelector.get_selection(None,None))
+    #return jsonify(UserSelector.get_cluster_selection())
 
 
 if __name__ == '__main__':
