@@ -228,7 +228,7 @@ def get_selection(restaurant_name, selection_criteria):
     def get_random_users(users):
 
         random_users = random.sample(rest_users, selection_size)
-        return calculate_arbitrary_selection_score(random_users, users,user_feedback_category_scores)
+        return calculate_arbitrary_selection_score(random_users, users, user_feedback_category_scores)
 
     def validate_user(user_cats):
         for req_cat in selection_criteria['required_cats']:
@@ -284,7 +284,8 @@ def get_selection(restaurant_name, selection_criteria):
     calculation_time = time.time() - start
     return get_selection_obj(selected_users, restaurant_cats), get_selection_obj(get_random_users(users),
                                                                                  restaurant_cats), get_selection_obj(
-        calculate_arbitrary_selection_score([user['user_id'] for user in get_cluster_selection()], users,user_feedback_category_scores),
+        calculate_arbitrary_selection_score([user['user_id'] for user in get_cluster_selection()], users,
+                                            user_feedback_category_scores),
         restaurant_cats)
 
 
