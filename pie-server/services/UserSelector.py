@@ -153,6 +153,9 @@ def calculate_user_score(user, covered_cats, cat_scores):
 
     return score, user_covered, user_cats
 
+def user_in_restaurant(user,rest_id):
+    if 'reviews' in user:
+        return rest_id in user['reviews']
 
 def get_selection(restaurant_name, selection_criteria):
     global calculation_time
@@ -163,7 +166,7 @@ def get_selection(restaurant_name, selection_criteria):
     ensure_category_scores()
 
     def get_rest_cuisines():
-        rest_cuisines = next((poi['cuisines'] for poi in FileManager.get_pois() if poi['name'] == restaurant_name),
+        rest_cuisines = next((poi['cuisine'] for poi in FileManager.get_pois() if poi['id'] == restaurant_name),
                              None)
 
         tax = dict(FileManager.get_rest_taxonomy())
@@ -204,8 +207,9 @@ def get_selection(restaurant_name, selection_criteria):
         return feedback_scores
 
     if restaurant_name:
-        restaurant_predominated_scores = predominate_restaurant_categories()
-        user_feedback_category_scores = get_user_feedback_scores(restaurant_predominated_scores)
+        # restaurant_predominated_scores = predominate_restaurant_categories()
+        # user_feedback_category_scores = get_user_feedback_scores(restaurant_predominated_scores)
+        user_feedback_category_scores = get_user_feedback_scores(dict(category_scores))
     else:
         user_feedback_category_scores = dict(category_scores)
 
@@ -239,8 +243,10 @@ def get_selection(restaurant_name, selection_criteria):
                 return False
         return True
 
+
+
     if restaurant_name:
-        rest_users = {k: v for k, v in users.iteritems() if v['restName'] == restaurant_name}
+        rest_users = {k: v for k, v in users.iteritems() if user_in_restaurant(v,restaurant_name)}
         remove_rest_users_data(user_feedback_category_scores, rest_users)
     else:
         rest_users = users
@@ -282,15 +288,14 @@ def get_selection(restaurant_name, selection_criteria):
 
     # return [{'score': user[1], 'categories': user[2], 'user': user[-1]} for user in selected_users]
     calculation_time = time.time() - start
-    return get_selection_obj(selected_users, restaurant_cats), get_selection_obj(get_random_users(users),
+    return get_selection_obj(selected_users, restaurant_cats), get_selection_obj(get_random_users(rest_users),
                                                                                  restaurant_cats), get_selection_obj(
-        calculate_arbitrary_selection_score([user['user_id'] for user in get_cluster_selection()], users,
+        calculate_arbitrary_selection_score([user['user_id'] for user in get_cluster_selection(rest_users)], rest_users,
                                             user_feedback_category_scores),
         restaurant_cats)
 
 
-def get_cluster_selection():
-    users = FeatureCalculator.calculate_features()
+def get_cluster_selection(users):
     clustering = KMeansCluster()
     return clustering.get_representatives(users, selection_size)
 
@@ -330,7 +335,8 @@ def get_prediction(restaurant_name, selection_criteria):
             sub_topics = topic.split(' ')
             for user in arr:
                 found = True
-                review_text = user['review_title'].lower() + '###' + user['review_content'].lower()
+                # review_text = user['review_title'].lower() + '###' + user['review_content'].lower()
+                review_text = user['reviews'][restaurant_name]['content'].lower()
                 for sub_topic in sub_topics:
                     if review_text.find(sub_topic) < 0:
                         found = False
@@ -339,7 +345,7 @@ def get_prediction(restaurant_name, selection_criteria):
                     return True
             return False
 
-        poi_topics = next(poi['topics'] for poi in FileManager.get_pois() if poi['name'] == restaurant_name)
+        poi_topics = next(poi['topics'].split(';') for poi in FileManager.get_pois() if poi['id'] == restaurant_name)
         topic_coverage = {k: {} for k in poi_topics}
         for topic in poi_topics:
             topic_coverage[topic]['total'] = is_topic_in_array(topic, rest_users)
@@ -361,7 +367,7 @@ def get_prediction(restaurant_name, selection_criteria):
         total_coverage_rate = 0.0
         for i in range(0, random_sample_times):
             random_users = random.sample(rest_users, sample_size)
-            random_ratings = [float(user['review_rating']) for user in random_users]
+            # random_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in random_users]
             topic_coverage, coverage_rate = get_topic_coverage(rest_users, random_users)
             all_coverages.append(topic_coverage)
 
@@ -375,24 +381,32 @@ def get_prediction(restaurant_name, selection_criteria):
 
     users = FeatureCalculator.calculate_features()
 
-    rest_users = [user for user in users.values() if user['restName'] == restaurant_name]
-    selection_users = [user['user'] for user in get_selection(restaurant_name, selection_criteria)['users']]
-    random.seed(abs(hash(restaurant_name)))
-    random_users = random.sample(rest_users, len(selection_users))
-    total_ratings = [float(user['review_rating']) for user in rest_users]
-    selection_ratings = [float(user['review_rating']) for user in selection_users]
-    random_ratings = [float(user['review_rating']) for user in random_users]
+    rest_users = [user for user in users.values() if user_in_restaurant(user,restaurant_name)]
+    selection_obj = get_selection(restaurant_name, selection_criteria)
+    selection_users = [user['user'] for user in selection_obj[0]['users']]
+    # random.seed(abs(hash(restaurant_name)))
+    # random_users = random.sample(rest_users, len(selection_users))
+    random_users = [user['user'] for user in selection_obj[1]['users']]
+    cluster_users = [user['user'] for user in selection_obj[2]['users']]
+
+    total_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in rest_users]
+    selection_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in selection_users]
+    random_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in random_users]
+    cluster_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in cluster_users]
 
     topic_coverage, coverage_rate = get_topic_coverage(rest_users, selection_users)
-    # random_topic_coverage, random_coverage_rate = get_random_coverage(len(selection_users))
-    random_topic_coverage, random_coverage_rate = get_topic_coverage(rest_users, random_users)
+    random_topic_coverage, random_coverage_rate = get_random_coverage(len(selection_users))
+    cluster_topic_coverage, cluster_coverage_rate = get_topic_coverage(rest_users, cluster_users)
     return {'total_variance': numpy.var(total_ratings),
             'selection_variance': numpy.var(selection_ratings),
             'random_variance': numpy.var(random_ratings),
+            'cluster_variance': numpy.var(cluster_ratings),
             'topic_coverage': topic_coverage,
             'topic_coverage_rate': coverage_rate,
             'random_topic_coverage': random_topic_coverage,
             'random_topic_coverage_rate': random_coverage_rate,
+            'cluster_topic_coverage': cluster_topic_coverage,
+            'cluster_topic_coverage_rate': cluster_coverage_rate,
             'total_dist': get_rating_dist(total_ratings),
             'selection_dist': get_rating_dist(selection_ratings),
             'random_dist': get_rating_dist(random_ratings)

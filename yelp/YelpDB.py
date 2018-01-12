@@ -35,7 +35,7 @@ class YelpDB:
             ,
             "get_reviews":
                 """
-                select r.text as review_content ,r.stars as review_rating,r.date as review_date,u.id as user_id,
+                select r.text as review_content ,r.stars as review_rating,DATE_FORMAT(r.date,'%d-%m-%Y') as review_date,u.id as user_id,
                        u.name,DATE_FORMAT(u.yelping_since,'%d-%m-%Y') as yelping_since,urc.review_count,u.useful,
                        u.funny,u.cool,u.fans  
                 from review r, user u  , user_review_count urc
@@ -54,7 +54,7 @@ class YelpDB:
             ,
             "get_rest_info":
                 """
-                select name,city,state as country,postal_code,topics from restaurant where id  = '{0}'
+                select id,name,city,state as country,postal_code,topics from restaurant where id  = '{0}'
                 """
             ,
             "get_rest_categories":
@@ -110,13 +110,13 @@ class YelpDB:
     def get_rest_reviews(self, rest_id):
         reviewing_users = self.__perform_query__("get_reviews", DictCursor, rest_id)
         for user in reviewing_users:
-            user['reviews'] = list()
+            user['reviews'] = dict()
             review = dict()
             review['id'] = rest_id
             review['rating'] = user.pop('review_rating')
             review['content'] = user.pop('review_content')
             review['date'] = user.pop('review_date')
-            user['reviews'].append(review)
+            user['reviews'][rest_id] = review
         return reviewing_users
 
     def get_users(self, limit):

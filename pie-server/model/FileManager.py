@@ -5,11 +5,11 @@ def get_pois():
 
 
 def get_rests():
-    return _file_to_dict('rests_quality.json')
+    return _file_to_dict('rests.json')
 
 
 def get_users():
-    return _file_to_dict('users_quality.json')
+    return _file_to_dict('users.json')
 
 
 def get_rest_taxonomy():

@@ -1,14 +1,15 @@
 """Generate.
 
 Usage:
-  YelpDataExtractor.py -m <mode> [-u <num_of_users>] [-r <num_of_rests>] [-t <threshold>]
+  YelpDataExtractor.py -m <mode> [-u <num_of_users>] [-r <num_of_rests>] [-t <threshold>] [--merge]
 
 Options:
   -h --help     Show this screen.
-  -m <mode>  Available modes: quality,prediction
+  -m <mode>  Available modes: quality,prediction,merge
   -u <num_of_users> number of users for quality tests
   -r <num_of_rests> number of rests for prediction tests
   -t <threshold> review threshold
+  -merge whether to merge results of quality and prediction after runtime
 """
 
 import itertools
@@ -25,6 +26,7 @@ class YelpDataExtractor:
         self.scraper = TripAdvisorScraper()
         self.users = dict()
         self.restaurants = dict()
+        self.pois = list()
 
     def __enter__(self):
         self.db = YelpDB()
@@ -82,12 +84,28 @@ class YelpDataExtractor:
         for rest in self.db.get_rests(review_threshold, num_of_rests):
             i += 1
             self.restaurants[rest] = self.__get_rest_details__(rest, True)
+            self.pois.append(self.restaurants[rest])
             for user in self.db.get_rest_reviews(rest):
                 if user['user_id'] in self.users:
-                    self.users[user['user_id']]['reviews'].append(user['reviews'][0])
+                    self.users[user['user_id']]['reviews'].update(user['reviews'])
                 else:
                     self.__process_user__(user)
             print i
+
+
+def merge_results(users, rests):
+    with open('users_quality.json', 'r') as users_file:
+        quality_users = json.load(users_file, encoding='latin1')
+    with open('rests_quality.json', 'r') as rests_file:
+        quality_rests = json.load(rests_file, encoding='latin1')
+
+    for user in quality_users:
+        if user not in users:
+            users[user] = quality_users[user]
+
+    for rest in quality_rests:
+        if rest not in rests:
+            rests[rest] = quality_rests[rest]
 
 
 def main():
@@ -99,12 +117,23 @@ def main():
             extractor.quality(args['-u'])
         elif mode == 'prediction':
             extractor.prediction(args['-r'], args['-t'])
+        elif mode == 'merge':
+            with open('users_prediction.json', 'r') as users_file:
+                extractor.users = json.load(users_file, encoding='latin1')
+            with open('rests_prediction.json', 'r') as rests_file:
+                extractor.restaurants = json.load(rests_file, encoding='latin1')
+
+    if (mode == 'merge') or ('--merge' in args):
+        merge_results(extractor.users, extractor.restaurants)
 
     with open('users_' + args['-m'] + '.json', 'w') as users_file:
         json.dump(extractor.users, users_file, encoding='latin1')
 
     with open('rests_' + args['-m'] + '.json', 'w') as rests_file:
         json.dump(extractor.restaurants, rests_file, encoding='latin1')
+
+    with open('pois_' + args['-m'] + '.json', 'w') as pois_file:
+        json.dump(extractor.pois, pois_file, encoding='latin1')
 
     print str(len(extractor.users)) + ' ' + str(len(extractor.restaurants))
 

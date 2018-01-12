@@ -38,29 +38,34 @@ def get_test():
     better = 0
     beteq = 0
     for poi in FileManager.get_pois()[:50]:
-        try:
-            prediction = UserSelector.get_prediction(poi['name'],
-                                                     {'forbidden_cats': [], 'dislike_cats': [], 'required_cats': [],
-                                                      'like_cats': []})
+        # try:
+        prediction = UserSelector.get_prediction(poi['id'],
+                                                 {'forbidden_cats': [], 'dislike_cats': [], 'required_cats': [],
+                                                  'like_cats': []})
 
-        except Exception as ex:
-            print 'cant predict ' + poi['name'] + ' ex:' + str(ex)
+        # except Exception as ex:
+        #     print 'cant predict ' + poi['name'] + ' ex:' + str(ex)
 
-        results[poi['name']] = {'our': prediction['topic_coverage_rate'], 'random': prediction['random_topic_coverage_rate']}
+        results[poi['name']] = {'our': prediction['topic_coverage_rate'],
+                                'random': prediction['random_topic_coverage_rate'],
+                                ' cluster': prediction['cluster_topic_coverage_rate']}
         comp = prediction['topic_coverage_rate'] - prediction['random_topic_coverage_rate']
-        if comp >=0:
-            beteq+=1
+        if comp >= 0:
+            beteq += 1
             if comp - 0.0001 > 0:
-                better+=1
+                better += 1
 
     results['better'] = better
     results['better_equal'] = beteq
     return jsonify(results)
 
+
 @app.route('/experiment/quality')
 def perform_quality_test():
-    return jsonify(UserSelector.get_selection(None,None))
-    #return jsonify(UserSelector.get_cluster_selection())
+    return jsonify(UserSelector.get_selection('4JNXUYY8wbaaDmk3BPzlWw',
+                                              {'forbidden_cats': [], 'dislike_cats': [], 'required_cats': [],
+                                               'like_cats': []}))
+    # return jsonify(UserSelector.get_cluster_selection())
 
 
 if __name__ == '__main__':
