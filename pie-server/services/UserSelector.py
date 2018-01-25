@@ -18,7 +18,7 @@ rest_cat_factor = 1
 buckets_num = 3
 top_coverage_calculation = 200
 random_sample_times = 51
-selection_size = 5
+selection_size = 10
 
 
 def upsert(map, key, value=1):
@@ -380,6 +380,23 @@ def get_prediction(restaurant_name, selection_criteria):
 
         return total_topic_coverage, total_coverage_rate, random_var / float(random_sample_times)
 
+    def get_marginal_cont():
+        marg_cont = []
+        prev_top_rate, prev_pod_rate = 0.0,0.0
+        for i in range(0, selection_size):
+            stage_margin = {}
+            _, pod_rate = get_topic_coverage(rest_users, selection_users[:i + 1])
+            _, top_rate = get_topic_coverage(rest_users, top_reviewers[:i + 1])
+
+            stage_margin['pod'] = pod_rate - prev_pod_rate
+            stage_margin['top'] = top_rate - prev_top_rate
+
+            prev_pod_rate = pod_rate
+            prev_top_rate = top_rate
+
+            marg_cont.append(stage_margin)
+        return marg_cont
+
     users = FeatureCalculator.calculate_features()
 
     rest_users = [user for user in users.values() if user_in_restaurant(user, restaurant_name)]
@@ -389,7 +406,7 @@ def get_prediction(restaurant_name, selection_criteria):
     # random_users = random.sample(rest_users, len(selection_users))
     random_users = [user['user'] for user in selection_obj[1]['users']]
     cluster_users = [user['user'] for user in selection_obj[2]['users']]
-    top_reviewers = sorted(rest_users, key=lambda user: user['review_count'],reverse=True)[:selection_size]
+    top_reviewers = sorted(rest_users, key=lambda user: user['review_count'], reverse=True)[:selection_size]
 
     total_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in rest_users]
     selection_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in selection_users]
@@ -401,6 +418,8 @@ def get_prediction(restaurant_name, selection_criteria):
     random_topic_coverage, random_coverage_rate, random_variance = get_random_stats(len(selection_users))
     cluster_topic_coverage, cluster_coverage_rate = get_topic_coverage(rest_users, cluster_users)
     top_topic_coverage, top_coverage_rate = get_topic_coverage(rest_users, top_reviewers)
+
+    marginal_cont = get_marginal_cont()
     return {'total_variance': numpy.var(total_ratings),
             'selection_variance': numpy.var(selection_ratings),
             'random_variance': random_variance,
@@ -416,5 +435,6 @@ def get_prediction(restaurant_name, selection_criteria):
             'top_topic_coverage_rate': top_coverage_rate,
             'total_dist': get_rating_dist(total_ratings),
             'selection_dist': get_rating_dist(selection_ratings),
-            'random_dist': get_rating_dist(random_ratings)
+            'random_dist': get_rating_dist(random_ratings),
+            'marg_cont': marginal_cont
             }

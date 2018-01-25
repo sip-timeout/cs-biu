@@ -49,7 +49,7 @@ def compare_results(base, other, bet_key, beq_key, summary):
 def get_test():
     results = {}
     summary = {'all': 0}
-    for poi in FileManager.get_pois():
+    for poi in FileManager.get_pois()[:5]:
         if ';' in poi['topics']:
             try:
                 prediction = UserSelector.get_prediction(poi['id'],
@@ -69,7 +69,8 @@ def get_test():
                                     'var_tot': prediction['total_variance'],
                                     'var_cluster': prediction['cluster_variance'],
                                     'var_random': prediction['random_variance'],
-                                    'var_top': prediction['top_variance']}
+                                    'var_top': prediction['top_variance'],
+                                    'marg_cont': prediction['marg_cont']}
             compare_results(prediction['topic_coverage_rate'], prediction['random_topic_coverage_rate'], 'rand_top_bet',
                             'rand_top_beq', summary)
             compare_results(prediction['topic_coverage_rate'], prediction['cluster_topic_coverage_rate'],
