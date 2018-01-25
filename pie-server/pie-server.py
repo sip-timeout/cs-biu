@@ -49,7 +49,7 @@ def compare_results(base, other, bet_key, beq_key, summary):
 def get_test():
     results = {}
     summary = {'all': 0}
-    for poi in FileManager.get_pois()[:5]:
+    for poi in FileManager.get_pois():
         if ';' in poi['topics']:
             try:
                 prediction = UserSelector.get_prediction(poi['id'],

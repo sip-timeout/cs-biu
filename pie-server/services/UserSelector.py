@@ -1,4 +1,5 @@
 import time
+import itertools
 import random
 import numpy
 import functools
@@ -18,7 +19,7 @@ rest_cat_factor = 1
 buckets_num = 3
 top_coverage_calculation = 200
 random_sample_times = 51
-selection_size = 10
+selection_size = 5
 
 
 def upsert(map, key, value=1):
@@ -355,6 +356,39 @@ def get_prediction(restaurant_name, selection_criteria):
         coverage_rate = float(len([1 for topic in coverage if topic[1]])) / len(coverage)
         return coverage, coverage_rate
 
+    def get_weighted_topic_coverage(rest_users, selection_users):
+        weights = ['low', 'med', 'high']
+        rating_to_weight = {1: 'low', 2: 'low', 3: 'med', 4: 'high', 5: 'high'}
+
+        def is_topic_in_array(topic, rating, arr):
+            sub_topics = topic.split(' ')
+            for user in arr:
+                found = True
+                # review_text = user['review_title'].lower() + '###' + user['review_content'].lower()
+                review_text = user['reviews'][restaurant_name]['content'].lower()
+                for sub_topic in sub_topics:
+                    if review_text.find(sub_topic) < 0:
+                        found = False
+                        break
+                if found:
+                    if rating_to_weight[user['reviews'][restaurant_name]['rating']] == rating:
+                        # print '\n'.join([topic,rating,str(user['reviews'][restaurant_name])])
+                        return True
+            return False
+
+        poi_topics = next(poi['topics'].split(';') for poi in FileManager.get_pois() if poi['id'] == restaurant_name)
+        weighted_topics = list(itertools.chain.from_iterable([['_'.join([topic, weight]) for weight in weights] for topic in poi_topics]))
+        topic_coverage = {k: {} for k in weighted_topics}
+        for topic in poi_topics:
+            for weight in weights:
+                topic_coverage['_'.join([topic,weight])]['total'] = is_topic_in_array(topic, weight, rest_users)
+                topic_coverage['_'.join([topic,weight])]['selection'] = is_topic_in_array(topic, weight, selection_users)
+
+        coverage = [[topic, v['selection']] for topic, v in topic_coverage.iteritems() if v['total']]
+        #print coverage
+        coverage_rate = float(len([1 for topic in coverage if topic[1]])) / len(coverage)
+        return coverage, coverage_rate
+
     def get_rating_dist(rating_arr):
         dist = [0.0] * 10
         for rat in rating_arr:
@@ -369,7 +403,7 @@ def get_prediction(restaurant_name, selection_criteria):
         for i in range(0, random_sample_times):
             random_users = random.sample(rest_users, sample_size)
             random_var += numpy.var([float(user['reviews'][restaurant_name]['rating']) for user in random_users])
-            topic_coverage, coverage_rate = get_topic_coverage(rest_users, random_users)
+            topic_coverage, coverage_rate = get_weighted_topic_coverage(rest_users, random_users)
             all_coverages.append(topic_coverage)
 
         for topic in all_coverages[0]:
@@ -382,7 +416,7 @@ def get_prediction(restaurant_name, selection_criteria):
 
     def get_marginal_cont():
         marg_cont = []
-        prev_top_rate, prev_pod_rate = 0.0,0.0
+        prev_top_rate, prev_pod_rate = 0.0, 0.0
         for i in range(0, selection_size):
             stage_margin = {}
             _, pod_rate = get_topic_coverage(rest_users, selection_users[:i + 1])
@@ -414,10 +448,10 @@ def get_prediction(restaurant_name, selection_criteria):
     cluster_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in cluster_users]
     top_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in top_reviewers]
 
-    topic_coverage, coverage_rate = get_topic_coverage(rest_users, selection_users)
+    topic_coverage, coverage_rate = get_weighted_topic_coverage(rest_users, selection_users)
     random_topic_coverage, random_coverage_rate, random_variance = get_random_stats(len(selection_users))
-    cluster_topic_coverage, cluster_coverage_rate = get_topic_coverage(rest_users, cluster_users)
-    top_topic_coverage, top_coverage_rate = get_topic_coverage(rest_users, top_reviewers)
+    cluster_topic_coverage, cluster_coverage_rate = get_weighted_topic_coverage(rest_users, cluster_users)
+    top_topic_coverage, top_coverage_rate = get_weighted_topic_coverage(rest_users, top_reviewers)
 
     marginal_cont = get_marginal_cont()
     return {'total_variance': numpy.var(total_ratings),
