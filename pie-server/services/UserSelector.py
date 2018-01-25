@@ -153,9 +153,11 @@ def calculate_user_score(user, covered_cats, cat_scores):
 
     return score, user_covered, user_cats
 
-def user_in_restaurant(user,rest_id):
+
+def user_in_restaurant(user, rest_id):
     if 'reviews' in user:
         return rest_id in user['reviews']
+
 
 def get_selection(restaurant_name, selection_criteria):
     global calculation_time
@@ -243,10 +245,8 @@ def get_selection(restaurant_name, selection_criteria):
                 return False
         return True
 
-
-
     if restaurant_name:
-        rest_users = {k: v for k, v in users.iteritems() if user_in_restaurant(v,restaurant_name)}
+        rest_users = {k: v for k, v in users.iteritems() if user_in_restaurant(v, restaurant_name)}
         remove_rest_users_data(user_feedback_category_scores, rest_users)
     else:
         rest_users = users
@@ -361,13 +361,14 @@ def get_prediction(restaurant_name, selection_criteria):
             dist[int(rat * 2) - 1] += 1.0 / len(rating_arr)
         return dist
 
-    def get_random_coverage(sample_size):
+    def get_random_stats(sample_size):
         all_coverages = list()
         total_topic_coverage = list()
         total_coverage_rate = 0.0
+        random_var = 0.0
         for i in range(0, random_sample_times):
             random_users = random.sample(rest_users, sample_size)
-            # random_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in random_users]
+            random_var += numpy.var([float(user['reviews'][restaurant_name]['rating']) for user in random_users])
             topic_coverage, coverage_rate = get_topic_coverage(rest_users, random_users)
             all_coverages.append(topic_coverage)
 
@@ -377,36 +378,42 @@ def get_prediction(restaurant_name, selection_criteria):
             total_topic_coverage.append(added_topic)
             total_coverage_rate += float(added_topic[1]) / float(len(all_coverages[0]))
 
-        return total_topic_coverage, total_coverage_rate
+        return total_topic_coverage, total_coverage_rate, random_var / float(random_sample_times)
 
     users = FeatureCalculator.calculate_features()
 
-    rest_users = [user for user in users.values() if user_in_restaurant(user,restaurant_name)]
+    rest_users = [user for user in users.values() if user_in_restaurant(user, restaurant_name)]
     selection_obj = get_selection(restaurant_name, selection_criteria)
     selection_users = [user['user'] for user in selection_obj[0]['users']]
     # random.seed(abs(hash(restaurant_name)))
     # random_users = random.sample(rest_users, len(selection_users))
     random_users = [user['user'] for user in selection_obj[1]['users']]
     cluster_users = [user['user'] for user in selection_obj[2]['users']]
+    top_reviewers = sorted(rest_users, key=lambda user: user['review_count'],reverse=True)[:selection_size]
 
     total_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in rest_users]
     selection_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in selection_users]
     random_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in random_users]
     cluster_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in cluster_users]
+    top_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in top_reviewers]
 
     topic_coverage, coverage_rate = get_topic_coverage(rest_users, selection_users)
-    random_topic_coverage, random_coverage_rate = get_random_coverage(len(selection_users))
+    random_topic_coverage, random_coverage_rate, random_variance = get_random_stats(len(selection_users))
     cluster_topic_coverage, cluster_coverage_rate = get_topic_coverage(rest_users, cluster_users)
+    top_topic_coverage, top_coverage_rate = get_topic_coverage(rest_users, top_reviewers)
     return {'total_variance': numpy.var(total_ratings),
             'selection_variance': numpy.var(selection_ratings),
-            'random_variance': numpy.var(random_ratings),
+            'random_variance': random_variance,
             'cluster_variance': numpy.var(cluster_ratings),
+            'top_variance': numpy.var(top_ratings),
             'topic_coverage': topic_coverage,
             'topic_coverage_rate': coverage_rate,
             'random_topic_coverage': random_topic_coverage,
             'random_topic_coverage_rate': random_coverage_rate,
             'cluster_topic_coverage': cluster_topic_coverage,
             'cluster_topic_coverage_rate': cluster_coverage_rate,
+            'top_topic_coverage': top_topic_coverage,
+            'top_topic_coverage_rate': top_coverage_rate,
             'total_dist': get_rating_dist(total_ratings),
             'selection_dist': get_rating_dist(selection_ratings),
             'random_dist': get_rating_dist(random_ratings)

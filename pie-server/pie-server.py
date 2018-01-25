@@ -32,31 +32,64 @@ def get_prediction(rest_name):
     # return jsonify({})
 
 
+def compare_results(base, other, bet_key, beq_key, summary):
+    if beq_key not in summary:
+        summary[bet_key] = 0
+    if beq_key not in summary:
+        summary[beq_key] = 0
+
+    comp = base - other
+    if comp >= 0:
+        summary[beq_key] += 1
+        if comp - 0.0001 > 0:
+            summary[bet_key] += 1
+
+
 @app.route('/test_results')
 def get_test():
     results = {}
-    better = 0
-    beteq = 0
-    for poi in FileManager.get_pois()[:50]:
-        # try:
-        prediction = UserSelector.get_prediction(poi['id'],
-                                                 {'forbidden_cats': [], 'dislike_cats': [], 'required_cats': [],
-                                                  'like_cats': []})
+    summary = {'all': 0}
+    for poi in FileManager.get_pois():
+        if ';' in poi['topics']:
+            try:
+                prediction = UserSelector.get_prediction(poi['id'],
+                                                         {'forbidden_cats': [], 'dislike_cats': [], 'required_cats': [],
+                                                          'like_cats': []})
 
-        # except Exception as ex:
-        #     print 'cant predict ' + poi['name'] + ' ex:' + str(ex)
+            except Exception as ex:
+                print 'cant predict ' + poi['name'] + ' ex:' + str(ex)
+                continue
 
-        results[poi['name']] = {'our': prediction['topic_coverage_rate'],
-                                'random': prediction['random_topic_coverage_rate'],
-                                ' cluster': prediction['cluster_topic_coverage_rate']}
-        comp = prediction['topic_coverage_rate'] - prediction['random_topic_coverage_rate']
-        if comp >= 0:
-            beteq += 1
-            if comp - 0.0001 > 0:
-                better += 1
+            summary['all'] += 1
+            results[poi['name']] = {'top_pod': prediction['topic_coverage_rate'],
+                                    'top_random': prediction['random_topic_coverage_rate'],
+                                    'top_cluster': prediction['cluster_topic_coverage_rate'],
+                                    'top_top': prediction['top_topic_coverage_rate'],
+                                    'var_pod': prediction['selection_variance'],
+                                    'var_tot': prediction['total_variance'],
+                                    'var_cluster': prediction['cluster_variance'],
+                                    'var_random': prediction['random_variance'],
+                                    'var_top': prediction['top_variance']}
+            compare_results(prediction['topic_coverage_rate'], prediction['random_topic_coverage_rate'], 'rand_top_bet',
+                            'rand_top_beq', summary)
+            compare_results(prediction['topic_coverage_rate'], prediction['cluster_topic_coverage_rate'],
+                            'clus_top_bet',
+                            'clus_top_beq', summary)
+            compare_results(prediction['topic_coverage_rate'], prediction['top_topic_coverage_rate'],
+                            'top_top_bet',
+                            'top_top_beq', summary)
+            compare_results(prediction['selection_variance'], prediction['cluster_variance'], 'clus_var_bet',
+                            'clus_var_beq', summary)
+            compare_results(prediction['selection_variance'], prediction['random_variance'], 'rand_var_bet',
+                            'rand_var_beq', summary)
+            compare_results(prediction['selection_variance'], prediction['total_variance'], 'tot_var_bet',
+                            'tot_var_beq', summary)
+            compare_results(prediction['selection_variance'], prediction['top_variance'], 'top_var_bet',
+                            'top_var_beq', summary)
 
-    results['better'] = better
-    results['better_equal'] = beteq
+            print summary
+
+    results['summary'] = summary
     return jsonify(results)
 
 
