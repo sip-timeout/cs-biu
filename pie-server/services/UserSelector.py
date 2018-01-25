@@ -418,4 +418,3 @@ def get_prediction(restaurant_name, selection_criteria):
             'selection_dist': get_rating_dist(selection_ratings),
             'random_dist': get_rating_dist(random_ratings)
             }
-asdas
