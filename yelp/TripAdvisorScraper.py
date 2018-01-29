@@ -18,9 +18,16 @@ SEARCH_RESULT_IMG_SELECTOR = '.photo_image'
 class TripAdvisorScraper:
     def __init__(self):
         self.browser = webdriver.Chrome()
+        self.counter = 0
 
     def get_restaurant_topics(self, rest_name, city, postal_code):
         topics = 'NA'
+        self.counter += 1
+
+        if self.counter % 50 == 0:
+            self.browser.close()
+            self.browser = webdriver.Chrome()
+            time.sleep(60)
         try:
             self.__search_restaurant__(city, rest_name)
             self.browser.switch_to.window(self.browser.window_handles[-1])
