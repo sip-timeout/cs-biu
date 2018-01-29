@@ -20,7 +20,7 @@ class YelpDB:
                      urc.review_count
                     from user u, user_review_count urc, 
                       where u.id = urc.id
-                    
+
                 """
             ,
             "get_users":
@@ -101,7 +101,7 @@ class YelpDB:
         return cur.fetchall()
 
     def update_restaurant_topics(self, rest_id, topics):
-        self.__perform_query__('set_rest_topics', DictCursor, rest_id, topics)
+        self.__perform_query__('set_rest_topics', DictCursor, rest_id, topics.replace('\'', '\\\''))
         self.conn.commit()
 
     def get_rests(self, review_threshold, limit):
