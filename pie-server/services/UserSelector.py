@@ -12,7 +12,7 @@ calculation_time = 0
 thresholds = None
 category_scores = None
 # bucketed_feature_modifiers = ['continent', 'country', 'cuisine', 'good-for']
-bucketed_feature_modifiers = ['cuisine','country']
+bucketed_feature_modifiers = ['cuisine', 'country']
 feature_types = ['avg']
 like_factor = 4
 rest_cat_factor = 1
@@ -112,9 +112,12 @@ def get_selection_obj(selection, rest_categories):
     formatted_cats = sorted([[rest_cat, rest_cat in all_covered_cats] for rest_cat in rest_categories],
                             key=lambda cat: category_scores[cat[0]], reverse=True)
 
+    selection_score = sum([category_scores[cat] for cat in all_covered_cats])
+    covered_cat_num = len(all_covered_cats)
     return {'users': selection_users, 'top_category_coverage': category_coverage,
             'category_coverage_rate': coverage, 'top_covered': top_covered, 'top_not_covered': top_not_covered,
-            'rest_categories': formatted_cats}
+            'rest_categories': formatted_cats,'selection_score':selection_score,'cats_num':covered_cat_num}
+
 
 
 def calculate_arbitrary_selection_score(random_users, users, cat_score):
@@ -293,6 +296,9 @@ def get_selection(restaurant_name, selection_criteria):
                                                                                  restaurant_cats), get_selection_obj(
         calculate_arbitrary_selection_score([user['user_id'] for user in get_cluster_selection(rest_users)], rest_users,
                                             user_feedback_category_scores),
+        restaurant_cats), get_selection_obj(
+        calculate_arbitrary_selection_score([user['user_id'] for user in sorted(rest_users.values(), key=lambda user: user['review_count'], reverse=True)[:selection_size]], rest_users,
+                                            user_feedback_category_scores),
         restaurant_cats)
 
 
@@ -357,7 +363,7 @@ def get_prediction(restaurant_name, selection_criteria):
         return coverage, coverage_rate
 
     def get_weighted_topic_coverage(rest_users, selection_users):
-        weights = ['low','med','high']
+        weights = ['low', 'med', 'high']
         rating_to_weight = {1: 'low', 2: 'low', 3: 'med', 4: 'high', 5: 'high'}
 
         def is_topic_in_array(topic, rating, arr):
@@ -377,22 +383,25 @@ def get_prediction(restaurant_name, selection_criteria):
             return False
 
         poi_topics = next(poi['topics'].split(';') for poi in FileManager.get_pois() if poi['id'] == restaurant_name)
-        weighted_topics = list(itertools.chain.from_iterable([['_'.join([topic, weight]) for weight in weights] for topic in poi_topics]))
+        weighted_topics = list(
+            itertools.chain.from_iterable([['_'.join([topic, weight]) for weight in weights] for topic in poi_topics]))
         topic_coverage = {k: {} for k in weighted_topics}
         for topic in poi_topics:
             for weight in weights:
-                topic_coverage['_'.join([topic,weight])]['total'] = is_topic_in_array(topic, weight, rest_users)
-                topic_coverage['_'.join([topic,weight])]['selection'] = is_topic_in_array(topic, weight, selection_users)
+                topic_coverage['_'.join([topic, weight])]['total'] = is_topic_in_array(topic, weight, rest_users)
+                topic_coverage['_'.join([topic, weight])]['selection'] = is_topic_in_array(topic, weight,
+                                                                                           selection_users)
 
         coverage = [[topic, v['selection']] for topic, v in topic_coverage.iteritems() if v['total']]
-        #print coverage
+        # print coverage
         coverage_rate = float(len([1 for topic in coverage if topic[1]])) / len(coverage)
         return coverage, coverage_rate
 
     def get_rating_dist(rating_arr):
-        dist = [0.0] * 10
+        print rating_arr
+        dist = [0.0] * 5
         for rat in rating_arr:
-            dist[int(rat * 2) - 1] += 1.0 / len(rating_arr)
+            dist[int(rat) - 1] += 1.0 / len(rating_arr)
         return dist
 
     def get_random_stats(sample_size):
@@ -467,10 +476,14 @@ def get_prediction(restaurant_name, selection_criteria):
             'cluster_topic_coverage_rate': cluster_coverage_rate,
             'top_topic_coverage': top_topic_coverage,
             'top_topic_coverage_rate': top_coverage_rate,
-            'total_dist': get_rating_dist(total_ratings),
-            'selection_dist': get_rating_dist(selection_ratings),
-            'random_dist': get_rating_dist(random_ratings),
+            'distributions': {
+                'dist_total': get_rating_dist(total_ratings),
+                'dist_pod': get_rating_dist(selection_ratings),
+                'dist_random': get_rating_dist(random_ratings),
+                'dist_cluster': get_rating_dist(cluster_ratings),
+                'dist_top': get_rating_dist(top_ratings)
+            },
             'marg_cont': marginal_cont,
-            'selection_reviews' : [user['reviews'][restaurant_name] for user in selection_users],
+            'selection_reviews': [user['reviews'][restaurant_name] for user in selection_users],
             'top_reviews': [user['reviews'][restaurant_name] for user in top_reviewers]
             }

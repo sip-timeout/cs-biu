@@ -57,8 +57,8 @@ def get_marginal_summary(results):
 
 
 def get_averages(results):
-    algos = ['pod','top','random','cluster']
-    measures = ['var', 'top']
+    algos = ['pod', 'top', 'random', 'cluster']
+    measures = ['var', 'top','dist']
     avgs = {mes: {algo: 0.0 for algo in algos} for mes in measures}
     for _, res in results.iteritems():
         for algo in algos:
@@ -66,6 +66,22 @@ def get_averages(results):
                 avgs[mes][algo] += res['_'.join([mes, algo])] / len(results)
 
     return avgs
+
+
+def get_distributions_diff(dist):
+    dist_diff = dict()
+    total_dist = dist.pop('dist_total')
+    print total_dist
+    for dist_type, cur_dist in dist.iteritems():
+        diff_sum = 0
+        print dist_type, cur_dist
+        for i in range(0, len(total_dist)):
+            diff = total_dist[i] - cur_dist[i]
+            if diff > 0:
+                diff_sum += diff ** 2
+        dist_diff[dist_type] = diff_sum
+
+    return dist_diff
 
 
 @app.route('/test_results')
@@ -98,8 +114,8 @@ def get_test():
                                         'var_random': prediction['random_variance'],
                                         'var_top': prediction['top_variance'],
                                         'marg_cont': prediction['marg_cont'],
-                                        'top_reviews':prediction['top_reviews'],
-                                        'selection_reviews':prediction['selection_reviews']}
+                                        'top_reviews': prediction['top_reviews'],
+                                        'selection_reviews': prediction['selection_reviews']}
                 compare_results(prediction['topic_coverage_rate'], prediction['random_topic_coverage_rate'],
                                 'rand_top_bet',
                                 'rand_top_beq', summary)
@@ -117,6 +133,8 @@ def get_test():
                                 'tot_var_beq', summary)
                 compare_results(prediction['selection_variance'], prediction['top_variance'], 'top_var_bet',
                                 'top_var_beq', summary)
+
+                results[poi['name']].update(get_distributions_diff(prediction['distributions']))
 
                 print summary
 
