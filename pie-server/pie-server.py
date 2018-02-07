@@ -97,7 +97,9 @@ def get_test():
                                         'var_cluster': prediction['cluster_variance'],
                                         'var_random': prediction['random_variance'],
                                         'var_top': prediction['top_variance'],
-                                        'marg_cont': prediction['marg_cont']}
+                                        'marg_cont': prediction['marg_cont'],
+                                        'top_reviews':prediction['top_reviews'],
+                                        'selection_reviews':prediction['selection_reviews']}
                 compare_results(prediction['topic_coverage_rate'], prediction['random_topic_coverage_rate'],
                                 'rand_top_bet',
                                 'rand_top_beq', summary)
