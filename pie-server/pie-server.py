@@ -58,12 +58,12 @@ def get_marginal_summary(results):
 
 def get_averages(results):
     algos = ['pod', 'top', 'random', 'cluster']
-    measures = ['var', 'top','dist']
+    measures = ['var', 'top', 'neg_dist','cov_rats_dist']
     avgs = {mes: {algo: 0.0 for algo in algos} for mes in measures}
     for _, res in results.iteritems():
         for algo in algos:
             for mes in measures:
-                avgs[mes][algo] += res['_'.join([mes, algo])] / len(results)
+                avgs[mes][algo] += float(res['_'.join([mes, algo])]) / len(results)
 
     return avgs
 
@@ -73,13 +73,17 @@ def get_distributions_diff(dist):
     total_dist = dist.pop('dist_total')
     print total_dist
     for dist_type, cur_dist in dist.iteritems():
-        diff_sum = 0
+        neg_diff_sum = 0
+        cov_rats = 0.0
         print dist_type, cur_dist
         for i in range(0, len(total_dist)):
             diff = total_dist[i] - cur_dist[i]
             if diff > 0:
-                diff_sum += diff ** 2
-        dist_diff[dist_type] = diff_sum
+                neg_diff_sum += diff ** 2
+            if cur_dist[i] > 0:
+                cov_rats+=1.0
+        dist_diff['neg_' + dist_type] = neg_diff_sum
+        dist_diff['cov_rats_'+dist_type] = cov_rats
 
     return dist_diff
 
