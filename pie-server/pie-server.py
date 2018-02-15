@@ -77,9 +77,11 @@ def get_distributions_diff(dist):
         cov_rats = 0.0
         print dist_type, cur_dist
         for i in range(0, len(total_dist)):
+            if total_dist[i] == 0:
+                continue
             diff = total_dist[i] - cur_dist[i]
             if diff > 0:
-                neg_diff_sum += diff ** 2
+                neg_diff_sum += diff / float(total_dist[i])
             if cur_dist[i] > 0:
                 cov_rats+=1.0
         dist_diff['neg_' + dist_type] = neg_diff_sum
