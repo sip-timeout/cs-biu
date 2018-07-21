@@ -1,0 +1,232 @@
+% THIS IS AN EXAMPLE DOCUMENT FOR VLDB 2012
+% based on ACM SIGPROC-SP.TEX VERSION 2.7
+% Modified by  Gerald Weber <gerald@cs.auckland.ac.nz>
+% Removed the requirement to include *bbl file in here. (AhmetSacan, Sep2012)
+% Fixed the equation on page 3 to prevent line overflow. (AhmetSacan, Sep2012)
+
+\documentclass{vldb}
+\usepackage{graphicx}
+\usepackage{balance}  % for  \balance command ON LAST PAGE  (only there!)
+\usepackage{url}
+\usepackage{makecell}
+\usepackage{booktabs} % For formal tables
+\usepackage{color,soul}
+\usepackage{fancyvrb}
+\usepackage{amsmath}
+%\usepackage{amsthm}
+\usepackage{subcaption}
+\captionsetup{compatibility=false}
+\usepackage[T1]{fontenc}
+\usepackage{dsfont}
+\fvset{frame=single,framesep=1mm,fontfamily=tt,numbers=left,framerule=.3mm,numbersep=1mm,commandchars=\\\{\}}
+\definecolor{bgred}{RGB}{255,210,205}
+\definecolor{bgblue}{RGB}{210,220,255}
+\definecolor{bgyellow}{RGB}{240,240,190}
+\definecolor{bggrey}{RGB}{223,223,225}
+\definecolor{purple}{RGB}{180,0,180}
+\usepackage{colonequals}
+\usepackage{paralist}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{xfrac}
+\usepackage[boxed,noend]{algorithm2e}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{definition}[theorem]{Definition}
+
+%\fancyhead{}
+%\settopmatter{printacmref=false, printfolios=false}
+
+\newcommand{\REMARK}[2]{\textcolor{red}{{\bf #1: }#2}}
+\newcommand{\TODO}[1]{\textcolor{red}{[{\bf TODO: }#1]}}
+\newcommand{\tova}[1]{\textcolor{purple}{[{\bf Tova: }#1]}}
+\newcommand{\amit}[1]{\textcolor{blue}{[{\bf Amit: }#1]}}
+\newcommand{\yael}[1]{\textcolor{red}{[{\bf Yael: }#1]}}
+\newcommand{\brit}[1]{\textcolor{green}{[{\bf Brit: }#1]}}
+%\newcommand{\tova}[1]{\textcolor{purple}{\REMARK{Yael}{#1}}
+%\newcommand{\brit}[1]{\textcolor{green}{\REMARK{Yael}{#1}}
+\newcommand{\scream}[1]{\REMARK{\underline{TBD}}{#1}}
+%\newcommand{\icde}[1]{\textcolor{DarkRed}{#1}}
+\newcommand{\icde}[1]{#1}
+\newcommand{\eat}[1]{}
+\newcommand{\highlight}[1]{%
+	\colorbox{red!20}{$\displaystyle#1$}}
+\newcommand{\highlightblue}[1]{%
+	\colorbox{blue!20}{$\displaystyle#1$}}
+
+% general macros
+\newcommand{\var}[1]{\operatorname{\mathit{#1}}}
+\newcommand{\name}[1]{\operatorname{#1}}
+\newcommand{\funct}[2]{\operatorname{#1}\!\left({#2}\right)}
+\newcommand{\To}{\!\rightarrow\!}
+\newcommand{\card}[1]{\left|{#1}\right|}
+\newcommand{\ceil}[1]{\left\lceil{#1}\right\rceil}
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\phi}{\varphi}
+\newcommand{\oof}[1]{\operatorname{O}\!\left({#1}\right)}
+\newcommand{\oofi}[1]{\operatorname{O}({#1})}
+\newcommand{\omegaof}[1]{\operatorname{\Omega}\!\left({#1}\right)}
+\newcommand{\omegaofi}[1]{\operatorname{\Omega}({#1})}
+\newcommand{\thetaof}[1]{\operatorname{\Theta}\!\left({#1}\right)}
+\newcommand{\thetaofi}[1]{\operatorname{\Theta}({#1})}
+
+%typeface
+\newcommand{\textcd}[1]{\textup{#1}}
+\newcommand{\texterm}[1]{\textup{``#1''}}
+\newcommand{\elem}[1]{\textcd{#1}}
+
+% terms
+\newcommand{\fset}{fact-set}
+\newcommand{\Fset}{Fact-set}
+\newcommand{\clss}{\mathcal{E}}
+\newcommand{\rels}{\mathcal{R}}
+\newcommand{\qlang}{\textup{\textsf{SPARQ-U}}}
+\newcommand{\sysname}{\textup{\textsf{PODIUM}}}
+\newcommand{\oassis}{\textup{\texttt{OASSIS}}}
+\newcommand{\oassisql}{\textup{\texttt{OASSIS-QL}}}
+\newcommand{\histories}{\textup{\texttt{activities}}}
+%\newcommand{\cic}{\mathcal{C}_{\name{ic}}}
+\newcommand{\tax}{\Psi}
+\newcommand{\blnk}{\underline{\hspace{2.5mm}}}
+
+%functions
+\newcommand{\ic}[1]{\funct{ic}{#1}}
+\newcommand{\icsim}[1]{\funct{icsim}{#1}}
+\newcommand{\nicsim}[1]{\funct{\tilde{icsim}}{#1}}
+\newcommand{\supsim}[1]{\funct{supsim}{#1}}
+\newcommand{\fullsim}[1]{\funct{sim}{#1}}
+\newcommand{\supp}[2][u]{\funct{supp_{\mathit{#1}}}{#2}}
+
+
+
+% Include information below and uncomment for camera ready
+\vldbTitle{PODIUM: Procuring Opinions from Diverse Users in a Multi-Dimensional World}
+\vldbAuthors{}
+\vldbDOI{https://doi.org/TBD}
+	
+\usepackage[pdfborder={0 0 0}, plainpages, pdfpagelabels=false, pdfstartview=FitH]{hyperref}
+
+\begin{document}
+
+% ****************** TITLE ****************************************
+
+\title{PODIUM: Procuring Opinions from Diverse Users in a Multi-Dimensional World}
+
+
+% possible, but not really needed or used for PVLDB:
+%\subtitle{[Extended Abstract]
+%\titlenote{A full version of this paper is available as\textit{Author's Guide to Preparing ACM SIG Proceedings Using \LaTeX$2_\epsilon$\ and BibTeX} at \texttt{www.acm.org/eaddress.htm}}}
+
+% ****************** AUTHORS **************************************
+
+% You need the command \numberofauthors to handle the 'placement
+% and alignment' of the authors beneath the title.
+%
+% For aesthetic reasons, we recommend 'three authors at a time'
+% i.e. three 'name/affiliation blocks' be placed beneath the title.
+%
+% NOTE: You are NOT restricted in how many 'rows' of
+% "name/affiliations" may appear. We just ask that you restrict
+% the number of 'columns' to three.
+%
+% Because of the available 'opening page real-estate'
+% we ask you to refrain from putting more than six authors
+% (two rows with three columns) beneath the article title.
+% More than six makes the first-page appear very cluttered indeed.
+%
+% Use the \alignauthor commands to handle the names
+% and affiliations for an 'aesthetic maximum' of six authors.
+% Add names, affiliations, addresses for
+% the seventh etc. author(s) as the argument for the
+% \additionalauthors command.
+% These 'additional authors' will be output/set for you
+% without further effort on your part as the last section in
+% the body of your article BEFORE References or any Appendices.
+
+\numberofauthors{2} %  in this sample file, there are a *total*
+% of EIGHT authors. SIX appear on the 'first-page' (for formatting
+% reasons) and the remaining two appear in the \additionalauthors section.
+
+\author{
+% You can go ahead and credit any number of authors here,
+% e.g. one 'row of three' or two rows (consisting of one row of three
+% and a second row of one, two or three).
+%
+% The command \alignauthor (no curly braces needed) should
+% precede each author name, affiliation/snail-mail address and
+% e-mail address. Additionally, tag each line of
+% affiliation/address with \affaddr, and tag the
+% e-mail address with \email.
+%
+% 1st. author
+\alignauthor
+Yael Amsterdamer\\
+       \affaddr{Bar Ilan University}\\
+       \email{first.last@biu.ac.il}
+% 2nd. author
+\alignauthor
+Oded Goldreich\\
+       \affaddr{Bar Ilan University}\\
+       \email{first.last@live.biu.ac.il}      
+% 3rd. author
+}
+% There's nothing stopping you putting the seventh, eighth, etc.
+% author on the opening page (as the 'third row') but we ask,
+% for aesthetic reasons that you place these 'additional authors'
+% in the \additional authors block, viz.
+
+% Just remember to make sure that the TOTAL number of authors
+% is the number that will appear on the first page PLUS the
+% number that will appear in the \additionalauthors section.
+
+
+\maketitle
+
+\begin{abstract}
+%	Many modern applications, such as crowdsourcing platforms, social networks and recommender systems, include a crucial component that selects user profiles from a repository. The implementation of this component is application-specific and laborious, often depending on semantically rich user information. To assist application developers in this task, we propose a novel declarative framework that includes (1) a query language that extends SPARQL to allow capturing the properties and similarity of (query-defined parts of) user profiles/data, (2) a generic similarity measure allowing to compare (parts of) user profiles and to support soft constraints in a semantically rich environment, and (3) an efficient query evaluation algorithm derived from a theoretical analysis of our novel similarity metric. Our experimental study on real-life data indicates the effectiveness and flexibility of our approach, showing in particular that it outperforms existing task-specific solutions in common user selection tasks.
+
+To Be Written.
+\end{abstract}
+
+\input{intro}
+\input{model}
+\input{diversity}
+\input{execution}
+\input{implementation}
+\input{related}
+\input{conc}
+
+
+
+
+
+
+% ensure same length columns on last page (might need two sub-sequent latex runs)
+\balance
+
+
+
+\newpage
+% The following two commands are all you need in the
+% initial runs of your .tex file to
+% produce the bibliography for the citations in your paper.
+\bibliographystyle{abbrv}
+%\bibliography{vldb_sample}  % vldb_sample.bib is the name of the
+\bibliography{sigproc}
+% Bibliography in this case
+% You must have a proper ".bib" file
+%  and remember to run:
+% latex bibtex latex latex
+% to resolve all references
+
+
+
+
+
+\end{document}

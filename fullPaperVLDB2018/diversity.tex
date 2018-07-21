@@ -1,0 +1,135 @@
+\section{diversity notion}
+\label{sec:diversity}
+
+The process of procuring diverse user opinions begins with capturing diverse user profiles. We conclude that in most cases the opinions of users regarding a specific topic or question is not available to us, therefore we suggest that a selection of diverse users profiles would yield diverse opinions. The concept of diversification has been widely researched (see Section~\ref{sec:related}), with many approaches suggesting the use of a \emph{similarity function} that quantifies the similarity between two objects. The notion of \emph{distance-based} diversity utilizes this measure to portray diversity as the problem of finding a set k objects for which the pair-wise similarity is minimal (i.e., the distance is maximal).
+
+\begin{example}
+	Following the example in \ref{tab:profs}, we could look at profiles as vectors of properties and naturally define a similarity function, e.g. euclidean distance. To measure the difference between non-scalar properties (e.g. location, age) we could use a constant value, 1 for example, to denote whether the values are different or 0 if they are identical. Now, the selected group of size 2 for which the pair-wise distance is maximal is \{Bob, Eve\} with a measured similarity of approx. 1.29.
+\end{example}
+
+Using distance-based techniques to acquire a diverse group of items is a very popular approach in many domains, but when it comes to gathering user opinions it would not yield the best results. For example, an entrepreneur looking to open a new restaurant does not necessarily care for the most eccentric and obscure opinions, and would rather get a picture that best resembles the range of opinions within the crowd.
+When it comes to user opinions, we propose the concept of \emph{coverage-based} diversity which focuses on the representation of as many groups as possible within a source population. We later show that this approach does achieve superior results, both in qualitative and predictive tests. The reason coverage-based diversity produces objectively diverse opinions is due to the fact that different opinions inherently exist within the many groups inside the source population.
+YAEL-TODO: add a segment about data ethics.
+An ideal coverage of the entire population by a subset of users would be one where each of the different groups (e.g. users who visits Italian restaurants frequently, users who tends to dislike Mexican food) inside the population are proportionally represented. A similar approach has been adopted by surveyors in the form of a \emph{Stratified survey} [add-cite]. This form of surveys tries to reflect the inherent diversity of the source population by first dividing the population into non-overlapping groups and afterwards performing a random sample of participants from each group, with proportion to the group's size. In theory, this approach would produce the optimal coverage. In practice, it is generally impossible to obtain such a coverage due to these challenges:
+
+\paragraph*{High Data Dimensionality} The different groups are based on user preferences, characteristics and activities which makes the user profiles. In reality, each profile could be made up from hundreds to thousands of properties, which brings the distinct total number of properties to acknowledge (and thus groups to cover) within the 100,000's. An attempt to \emph{proportionally} represent each and every group with only a selection of representatives is doomed to fail. There also exist a great difference of the groups sizes. For example, there are many more people who frequently visits Italian eateries than people who visits Indian restaurants. As a result, there is a long tail of tiny groups which is impossible to cover with only a few users. In our research, we propose a method which enables the ordering of groups according to priority, in an attempt to represent as many \emph{important} groups as possible.TODO: taxonomies.
+
+\paragraph*{Range Coverage} Recall the model we presented in Section~\ref{sec:prelim}. Each property has a score within the range [0,1]. It is not feasible to try and represent each of the discrete scores in each of the properties. In the next section we demonstrate how to associate sub-ranges of [0,1] into different groups, in an attempt to accurately represent users with different opinions (which reflect in different scores).
+\begin{example}
+The property called "Average Rating of Mexican Food" has a score range of [0,1]. Suppose we divide the range into sub-ranges [0,0.5) with label "Low" and [0.5,1] with label "High". A user with a score of 0.7 will suffice as a representative for the group "High Average Rating of Mexican Food".
+\end{example}
+
+\paragraph*{Domain-Relevant Properties} 
+In many cases, the importance of certain properties is tightly linked with a specific application. For instance, a French bistro restaurant owner seeking opinions regarding a new menu would give much more consideration to opinions of those who are fond of European cuisines. He could also decide to completely ignore people that never visited a French restaurant before. Notably, the diversity the user is aiming for is subject to the specific application rather than a general notion.
+To capture domain related nuances we introduce a comprehensible \emph{explanations} and \emph{customizations} mechanisms. By allowing the user to better understand why a specific subset of opinions were chosen by our algorithm, we expect him to be competent to fine-tune the selection to a specific domain using designated customization tools.
+
+
+% There are two key challenges here: (a) formally defining an adequate
+% similarity measure, and (b) providing an efficient algorithm to
+% compute it.
+
+
+% Then, in the following section, we explain how
+% to efficiently compute it.
+
+%\paragraph*{Overview}
+%Different similarity measures are considered in previous work
+%(e.g.,~\cite{dinoia2012linked,hu2008matching,jean2007asmov,resnik1995using}),
+%yet none of them can fully account for the semantically-rich representation of user data in our setting. First, \qlang{} requires a \emph{semantically aware comparison of \fset{}s}, e.g., quantifying the relevance to practicing yoga at a park (Figure~\ref{fig:qlang} lines~11-13) of a user like Adam who practices Pilates, another form of mind-body fitness, at Jardin des Tuileries (Table~\ref{tab:answers}) or of users who play chess and basketball outdoors, practice yoga indoors, etc. Second, our similarity measure must operate under the assumption that\emph{ profiles are incomplete}, e.g., it is possible that Adam does practice yoga in the park, but failed to mention it. Third, \emph{support scores} play an important role in similarity evaluation, and e.g., our measure should allow comparing Adam to Benjamin who does practice yoga at a park, but very rarely. %Our similarity metric should also enable the online evaluation of \qlang{} queries, which is discussed in the next section.
+
+
+%., namely \fset{}s, possibly accompanied by support scores. Moreover, as explained in the Introduction, our measure is applied over user profiles that are allowed to be \emph{incomplete} and due to the interaction with the query language, may also be applied over \emph{profile parts}.
+%For instance, reconsider the soft constraint asking that Isabella's
+%match should practice Yoga on a park, in $Q_{\textrm{Isabella}}$. According to Adam's profile (Table~\ref{tab:answers}), he
+%practices some other form of mind-body fitness, Pilates, at Jardin des Tuileries, with a certain frequency. To compute Adam's relevance to the query, one should be
+%able to \emph{quantify} how similar this hobby of
+%Adam are to Isabella's specified preference. This similarity measure should allow comparing Adam to Benjamin who does practice Yoga (at Jardin du Luxembourg), but very rarely, or to other possible users who play chess and basketball outdoors, practice Yoga indoors, etc.
+
+%In comparison, Benjamin does
+%practice Yoga on weekends, but according to the support score he
+%does so very rarely, much less frequently than Adam practices
+%Pilates. In a sense, Adam should ``gain points'' for frequently
+%practicing and Benjamin should ``gain points'' for being closer to
+%the desired description. How do users who play chess on weekends, or practice Yoga on weekdays, etc., compare to Adam and Benjamin?
+
+%Our contribution in this section is thus to define \emph{formal
+%constraints} on any similarity measure that takes into
+%consideration the semantics of \fset{}s that describe user data as well as support scores. Then, by
+%extending and adapting standard similarity functions to our data
+%representation, we develop a \emph{generic formulation} that (i) satisfies the constraints, as
+%we prove below, (ii) can be computed via an efficient algorithm, as
+%we show in Section~\ref{sec:exec}, and (iii) works well in real-life
+%scenarios, as we show in
+%Section~\ref{sec:Implementation}. 
+
+%Given two pieces of data, e.g., a soft constraint (looking  for a
+%user who practices yoga on weekends) and a \fset{} with support
+%(Adam practices Pilates on weekends with support~0.27), The semantic
+%part of our definition requires identifying the information that is
+%\emph{common to the two pieces}. In this example, the common
+%information might be practicing a mind-body fitness on weekends, but
+%may also be doing any activity on the weekends. We formally define
+%common information using a notion of \emph{semantic subsumption}
+%between facts and \fset{}s (see Section~\ref{sec:subsumption}).
+%
+%Next we quantify the meaningfulness of a piece of common
+%information. E.g., for the purpose of evaluating similarity,
+%practicing a mind-body fitness on weekends is more meaningful than
+%reading a book, if we assume that significantly fewer people have
+%the former habit. To measure this we use a notion of
+%\emph{information content} (defined in Section~\ref{sec:ic}) based
+%on~\cite{resnik1995using}.
+
+%Our semantics- and support-aware similarity metric builds on two auxiliary notions: \emph{semantic subsumption}, capturing the s
+%Our definitions use two auxiliary notions: \emph{semantic
+%subsumption}, that allows identifying information common to two
+%semantic units, and \emph{information content}, that quantifies how
+%informative the common information is based on its prevalence. The
+%first factor of our similarity measure, \emph{semantic similarity}, compares two semantic units
+%based on their subsumption relationships and information content (Section~\ref{sec:icsim}).
+%The second factor, \emph{support similarity}, completes the semantic similarity by
+%considering support values (Section~\ref{sec:supsim}). Finally, we combine the semantic
+%similarity and the support similarity to form a combined similarity
+%measure (Section~\ref{sec:combined}).
+
+%Reconsider query $Q_{\textrm{Isabella}}$ from Figure~\ref{fig:qlang}. In particular, $Q_{\textrm{Isabella}}$ selects users whose basic profiles resembles Isabella's, considering only the users' hobbies. Consider the sample basic profiles in Table~\ref{tab:profile} and observe that
+%\emph{comparing these profiles textually is insufficient}: while Isabella likes Mathematician and Benjamin likes drawing, both of them (implicitly) like (some form of) visual art.
+%To capture this similarity, we use \emph{semantic subsumption} between facts and \fset{}s (formally defined in Section~\ref{sec:subsumption}), to determine common information
+%\emph{implied} by the two users.
+
+%Having identified common information between (parts of) two profiles (or, a profile and a desired property), we need to \emph{quantify} how similar they are. For instance, Isabella and Benjamin's common interest in visual art is more meaningful for the sake of similarity than the fact they are respectively interested in Mathematician and basketball (which may only imply they both have \emph{some} hobby). To measure this we use a notion of \emph{information content} (defined in Section~\ref{sec:ic}) based on~\cite{resnik1995using}.
+%
+%
+%Regarding the users' extended profiles, note that in Table~\ref{tab:answers}, both Adam and Benjamin practice (some form of) mind-body fitness on weekends. However, Adam's support value is higher (i.e., he practices more often), which should ``add points'' to Adam's
+%similarity to Isabella's desired \fset{} (in lines ~11-13 in $Q_{\textrm{Isabella}}$) in comparison with Benjamin.
+%
+%
+%\vspace{4px}
+%The first factor of our similarity metric, \emph{semantic
+%similarity}, described in Section~\ref{sec:icsim}, thus compares two
+%semantic units based on
+%their subsumption relationships and information content. The second factor,
+%\emph{support similarity}, described in Section~\ref{sec:supsim},
+%completes the semantic similarity by considering support values.
+%Finally, we combine the semantic similarity and the support
+%similarity to form a single similarity measure, in
+%Section~\ref{sec:combined}.
+% PREFIX ontology:  <http://xmlns.com/foaf/0.1/>
+% PREFIX profiles:  <http://xmlns.com/foaf/0.1/>
+% PREFIX histories:  <http://xmlns.com/foaf/0.1/>
+% SELECT ?u
+% WHERE {
+%      ?x ontology:instanceOf ontology:Place .
+%      ?x ontology:near       ontology:Paris .
+%      ?u profiles:livesIn ?x.
+% }
+
+
+
+
+%observe comparing these profiles textually is insufficient: for instance, while Ann likes photography and Carol likes drawing, both of them (implicitly) have some form of art as a hobby. We would like this fact to ``add points'' to the similarity between Ann and Carol.
+%
+%
+%To fully understand the semantics of a \qlang{} query, one must provide formulas for the similarity scores over \fset{}s and answer databases. On the one hand, we will use an independent module for computing similarity scores, which would enable one to plug in alternative modules that compute different similarity formulas. Similarity computation has been considered in previous work in various contexts (e.g.,~\cite{benticha2012user,dinoia2012linked,seco2004intrinsic}), and one may attempt to adapt them to our setting. However, on the other hand, no existing similarity measure can fully account for the complex semantics in our context in a generic manner (see Section~\ref{sec:related}). We therefor propose, in this section, a novel definition of similarity which considers the relations between semantic units in our setting, as well as support scores.
+
+%We start by defining subsumption relations between semantic units, which will be used in defining the ``semantic'' part of the similarity sco

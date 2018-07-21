@@ -1,0 +1,44 @@
+This is BibTeX, Version 0.99dThe top-level auxiliary file: main-diverse.aux
+The style file: abbrv.bst
+I couldn't open database file sigproc.bib
+---line 107 of file main-diverse.aux
+ : \bibdata{sigproc
+ :                 }
+I'm skipping whatever remains of this command
+I found no database files---while reading file main-diverse.aux
+Warning--I didn't find a database entry for "agrawal2009diversifying"
+Warning--I didn't find a database entry for "servajean2013profile"
+Warning--I didn't find a database entry for "wu2015hear"
+Warning--I didn't find a database entry for "amsterdamer2016december"
+Warning--I didn't find a database entry for "nemhauser1978analysis"
+Warning--I didn't find a database entry for "jena"
+Warning--I didn't find a database entry for "StackOverflow"
+Warning--I didn't find a database entry for "tang2008arnetminer"
+Warning--I didn't find a database entry for "dbpedia"
+Warning--I didn't find a database entry for "tian2016sling"
+Warning--I didn't find a database entry for "SVM"
+Warning--I didn't find a database entry for "Difallah:2013:PTM:2488388.2488421"
+Warning--I didn't find a database entry for "jiang2017reads"
+Warning--I didn't find a database entry for "AgrawalGHI09"
+Warning--I didn't find a database entry for "carbonell1998MMR"
+Warning--I didn't find a database entry for "vee2008efficientdiv"
+Warning--I didn't find a database entry for "anagon2005sampling"
+Warning--I didn't find a database entry for "radlinskiD20006persondiv"
+Warning--I didn't find a database entry for "drosou2010search"
+Warning--I didn't find a database entry for "zheng2012coverage"
+Warning--I didn't find a database entry for "su2009cfsurvey"
+Warning--I didn't find a database entry for "boim2011priori"
+Warning--I didn't find a database entry for "yu2009variety"
+Warning--I didn't find a database entry for "tang2011expertisehetro"
+Warning--I didn't find a database entry for "campbell2003expertemail"
+Warning--I didn't find a database entry for "zhang2007expertsoc"
+Warning--I didn't find a database entry for "bozzon2013choosing"
+Warning--I didn't find a database entry for "ipeirotis2010quality"
+Warning--I didn't find a database entry for "raykar2012spam"
+Warning--I didn't find a database entry for "haas2015CLAMShell"
+Warning--I didn't find a database entry for "lappas2009finding"
+Warning--I didn't find a database entry for "kargar2012eff"
+Warning--I didn't find a database entry for "buccafurri2014driving"
+Warning--I didn't find a database entry for "cohen2017Crowdiv"
+Warning--I didn't find a database entry for "ghazanfar2014leveraging"
+(There were 2 error messages)

@@ -1,0 +1,63 @@
+
+
+\section{Introduction}
+\label{sec:intro} 
+
+% Something general about the need (focus on crowdsourcing probably)
+
+The need to procure a diverse and representative set of opinions arises in multiple contexts, such as surveys, market research, and crowdsourcing applications. Consider, for example, a traveler planning a trip and looking for specific ``tips'' on some destination; an owner of a new restaurant wishing to perform a preliminary customer survey; or a website manager seeking usability feedback. Platforms such as Yelp (\url{https://www.yelp.com}), that have a large user base and high-dimensional, rich data on each user, provide an opportunity for procuring opinions from a diverse set of users. At the same time, these characteristics of the data also pose challenges in realizing this potential: how do we \emph{define} diversity while accounting for high-dimensional data? Can we \emph{efficiently compute} a diverse subset of users? Can the resulting selection be \emph{explained to} and \emph{customized by} the client user? 
+
+The latter challenge is of particular interest since the requirements on user selection may greatly vary across different scenarios. For instance, a traveler may seek the opinions of users with different culinary preferences, whereas a website manager may seek feedback from users with diverse activity history. 
+%The latter challenge reflects a desideratum that the choice of users is not made as a ``black box", since the requirements on user selection may greatly vary across different settings. For instance, the client user may wish to focus only on users who visited a particular restaurant or ones that like its type of cuisine, fixing some characteristics and wishing for diversity in others. 
+
+%While user selection 
+%
+%Most of the previously proposed crowdsourcing solutions either do not allow for user selection \cite{..} at all, or do not account for diversity \cite{...}. Multiple notions of diversity were proposed, but... \scream{DISCUSS, say that not explainable/configurable/something}. See discussion of related work in Section 2. 
+%
+%
+%
+%To account for diversified user selection   
+
+
+
+
+%For example, hotels and restaurants owners often wish to conduct a market research, whose results would allow them to place targeted advertisements; as another example, the effectiveness of crowdsourcing applications \scream{such as..} often requires a representative set of opinions \scream{...}. \scream{Maybe focus on crowdsourcing to begin with}. 
+
+
+% What existing solutions so and why they do not suffice (briefly+point to related work)
+
+
+Previous work on diversification either focus on covering a range or a set of categories, and thus do not account for covering the full range of opinions in multiple dimensions, which is provided in user profiles and can be leveraged for user selection. Moreover, explanations and customization  has not been considered in this context. See Section~\ref{sec:related} for details.
+%(1) focuses on diversifying users rather than opinions, thus not accounting for the multi-faceted data of their previous interactions with the system, and (2) do not support explanation and customization. See Section 2.4 for details.   
+
+To address these challenges, we introduce \sysname{}:  
+a novel tool for the procurement of diverse opinions, utilizing multi-dimensional user profiles. Our solution consists of the following components:
+
+\paragraph*{User Profile Model} The model that we consider for user profiles enables capturing, in a uniform manner, personal characteristics of users 
+(e.g., nationality) and their past interactions with the platform (e.g., feedback they provided on restaurants). These properties are associated with a score from some range (Boolean, rating score, etc.) and thus form high-dimensional data.
+
+%High-dimensional information of both kinds is openly available in frameworks such as Tripadvisor: we have retrieved over \scream{how many?} properties of users, where values are e.g. boolean/rating/etc.        
+
+\paragraph*{Capturing Diversity} 
+Different notions of diversity has been considered in the literature (see  Section~\ref{sec:related}). In the present work, we focus on a notion of diversity that is \emph{coverage-based}, \emph{customizable} and designed for the multi-dimensional, rich contents of user profiles, as briefly explained next.
+
+\emph{Coverage-based diversity} aims to select a set (of users, in our case) that in some sense represents or ``covers'' many of the different, possibly overlapping \emph{groups} within a source population~\cite{agrawal2009diversifying,servajean2013profile,wu2015hear}.
+This class of diversity notions fits typical scenarios of opinion procurement (e.g., surveys, market research) in comparison with \emph{distance-based diversity}, which focuses on maximizing the differences between the members of the selected group~\cite{wu2015hear}. We provide a specific problem definition for coverage-based diversity in our setting, relying on the available properties in user profiles.
+
+\emph{Customizable} diversity allows the client an informed control over the user groups/data dimensions whose coverage is targeted. For that, we define general notions of  \emph{explanations} for the user selection result, which enable visualizing the coverage of different user properties and the role of such properties in the selection of each user. The client can then provide, via a user-friendly interface, a \emph{feedback} with well-defined semantics that serves to refine the user selection.     %For instance, a journalist that seeks diverse opinions related to Mexican food in some region, might wish to choose users that are diverse in every respect other than love for Mexican food. As another example, a website manager seeking diverse opinions on its usability might prefer users that are diverse mainly in their level of activity in the website.
+
+
+
+\paragraph*{Complexity and Algorithms} Based on our model, we formalize the problem of optimizing user subset diversity. The corresponding decision problem is NP-complete and thus we employ an effective greedy algorithm with provable approximation guarantees.  
+
+%\paragraph*{Customization and Explanations} An important feature of our solution is that it allows an interactive process where the client user feeds her diversity requirements \scream{such as..}, \sysname computes a proposed selection of users, and graphically shows and explain features of the selection \scream{such as..}. This user-friendly interface allows the client user to understand the selection, and if needed to refine her criteria and repeat the selection process, before the selection is finalized and requests are sent.  
+
+
+
+
+
+
+
+\paragraph*{Experimentation Methods} We will examine our approach using data from large-scale existing datasets in respect to relevant alternative algorithms. We provide several means and measures, some generic and some tailor-made, to try and accurately assess diversification achieved by our method. Aside from performing \emph{qualitative} tests and \emph{performance} benchmark, we will show that our approach is successfully able to predict a selection of users that would yield a diverse set of opinions in a real-world scenario.
+
+\paragraph*{Paper Outline} Section~\ref{sec:prelim} contains the model we use to represent user profiles. In Section~\ref{sec:diversity} we present several possible definitions for diversity as well as a formal definition, and in Section~\ref{sec:coverage} we propose and develop the concept of \emph{Coverage-based} diversity. Algorithmic and computational concerns are described in Section~\ref{sec:compute}, while experiments and results are shown in Section~\ref{sec:Implementation}. Section~\ref{sec:related} consists of related work and we conclude in Section~\ref{sec:conc}.

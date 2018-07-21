@@ -1,0 +1,399 @@
+%\vspace{8mm}
+\appendix
+\label{Sec:Appendix}
+
+\section{Structural Similarity}
+\label{sec:structure}
+In Section~\ref{sec:ic} we provide a definition of IC which is based on a \emph{statistical approach}. Previous work~\cite{mobasher2003semantically} also mentions a \emph{structural approach} which is based on the structure of the partial order of semantic units. More concretely, the IC of a semantic unit is computed as a function of the \emph{number of descendants} it has in the subsumption partial order. More specific concepts are expected to have less sub-concepts and instances.
+Unfortunately, in the case of \fset{}s we can show that a structural similarity function is intractable to compute, since in particular, computing the number of descendants of a \fset{} is intractable.
+\begin{proposition}
+	Given a subsumption partial order $\leq$ over $\clss,\rels$ and a \fset{} $A$ over $\clss,\rels$, counting the descendants of $A$ in the lifted partial order $\leq$ over \fset{}s is \#P-hard.
+\end{proposition}
+\begin{proof}
+	Counting the \emph{antichains} in a partial order is known to be a \#P-hard problem~\cite{provan1983complexity}. Intuitively, the definition of an antichain is related to our requirement of non-redundancy in \fset{}s. Formally, the definition of the lifted partial order over \fset{}s leads to a bijective mapping between \fset{}s and antichains of the subsumption partial order of facts. Thus, to show a reduction from the antichain counting problem to our problem, it is only left to prove that every partial order corresponds to some partial order over facts. Assume that the partial order input to the antichain counting problem is $\leq_i$ over the domain of elements $\mathcal{D}$. Then define $\clss=\{\textcd{\blnk{}}\}$ and $\rels=\mathcal{D}$, and take the partial order over $\rels$ to be $\leq_i$. Then there is a bijective mapping between every $d\in\mathcal{D}$ and the single fact that contains it, \{\textcd{\blnk{}}~ $d$~ \textcd{\blnk{}}\}. Denote this single fact by $\funct{f}{d}$. Then $\funct{f}{d}\leq \funct{f}{d'}$ iff $d\leq_i d'$ (since the other parts of the triple are identical). This means that the partial order over facts that we obtained is isomorphic to the input partial order, and thus its \fset{}s correspond to the antichains of the input partial order. If we can count the descendants of the root of the antichain partial order (the most specific \fset{}) in PTIME, then we can also count the antichains in the original partial order.
+\end{proof}
+
+\section{Semantic Similarity}
+\label{semantic}
+In Section~\ref{sec:icsim} we listed desiderata for a \textit{semantic similarity function}. 
+We next show that $\icsim{\cdot,\cdot}$ (see Definition~\ref{def:icsim}), fulfills these desiderata and is therefore a semantic similarity function.
+
+% \begin{proposition}
+% \label{prop:icsim}
+% $\icsim{\cdot,\cdot}$ as formulated in Definition~\ref{def:icsim} is a semantic similarity function.
+% \end{proposition}
+\begin{proof}[(Prop.~\ref{prop:icsim})]
+We prove that desiderata (1)-(4) described in Section~\ref{sec:icsim} hold for $\icsim{\cdot,\cdot}$.
+\begin{compactenum}[(1)]
+\item \emph{Maximum self-similarity.} By definition, $\icsim{X,X}=\ic{X}$. By the observation above that IC is monotonous w.r.t.\ the subsumption partial order, since the common ancestor of $X$ and some other unit $Y$ is in particular an ancestor of $X$, whose IC can only be smaller or equal.
+\item \emph{Symmetry.} This follows directly from the symmetry of the formula for the common ancestor.
+\item \emph{Fixed value range.} This follows directly from the range of values of IC.
+\item \emph{IC monotonicity.} Let $X'\leq X,Z$ be a common ancestor of $X$ and $Z$ with maximal IC value. If $X\leq Y$ then $X'$ is also a common ancestor of $Y$ and $Z$, hence  $\icsim{X,Z}\leq\icsim{X,Y}$.
+\end{compactenum} \vspace{-3mm} \end{proof}
+
+\section{Support Similarity}
+\label{support}
+We prove that $\supsim{\cdot,\cdot}$ (articulated in Definition~\ref{def:supsim}) is a \textit{support similarity function} as the desiderata described in Section~\ref{sec:supsim} hold.  
+
+
+% \begin{proposition}
+% \label{prop:supsim}
+% $\supsim{\cdot,\cdot}$ as formulated in Definition~\ref{def:supsim} is a support similarity function.
+% \end{proposition}
+\begin{proof} [(Prop.~\ref{prop:supsim})]
+We prove that desiderata (1)-(3),(5) described in Sections~\ref{sec:icsim}, \ref{sec:supsim} hold for $\supsim{\cdot,\cdot}$.
+\begin{compactenum}[(1)]
+\item \emph{Maximum self-similarity.} For a \fset{} $A$,
+$supsim(\mathcal{S}(A)$,\newline
+$\mathcal{S}(A)) =1$ by definition. For a database $D$ (or $D_A$ derived from an \fset{} $A$), either all of its \fset{}s have IC~0, in which case its similarity is defined to be~1, and otherwise it is a weighted average of~1-s, which also equals~1.
+\item \emph{Symmetry.} This follows directly from the symmetry of the formula.
+\item \emph{Fixed value range.} This is guaranteed by the normalization of $\supsim{\mathcal{S}(X),\mathcal{S}'(X)}$ to be between~0 and~1. A weighted average of values in $[0,1]$ is also in $[0,1]$.\setcounter{enumi}{4}
+\item \emph{Support monotonicity.} $\supsim{\mathcal{S}(X),\mathcal{S}'(X)}$ is monotonous with respect to $\card{\mathcal{S}(X)-\mathcal{S}'(X)}$. Then if these values for a pair of databases $D$, $D'$ are greater or equal than the values of $D$, $D''$, the same holds for the weighted average of these values with the same weights.\end{compactenum} \vspace{-3mm} \end{proof}
+
+
+
+
+\section{Combined Similarity}
+\label{comb}
+In Section~\ref{sec:combined}, we state that the combined similarity $\fullsim{\cdot,\cdot}$, as defined there, is a semantic and support similarity function. The proof for desiderata (1)-(3) follows from that
+of Prop.~\ref{prop:icsim} and~\ref{prop:supsim}. Desideratum (5)
+also holds because it refers to extended profile databases whose common \fset{}s are the same, and hence also their support similarity. The
+support monotonicity of definition~\ref{def:supsim} is proven in
+Prop.~\ref{prop:supsim}. Finally, desideratum~(4) is only defined
+for \fset{}s, and since $\fullsim{\cdot,\cdot}$ coincides with
+$\icsim{\cdot,\cdot}$ for \fset{}s, the desideratum holds by
+Prop.~\ref{prop:icsim}. However, note that in extended profile databases such
+monotonicity may not hold: if we replace some fact by another
+fact with higher IC, we will obtain higher semantic similarity, but
+the support similarity may decrease (depending on the support
+difference of this \fset{}), leading to a lower combined similarity.
+This is, however, a necessary trade-off when balancing semantic and
+support similarity. To complete the picture we illustrate the computation of the results
+of $Q_{\textrm{Isabella}}$.
+\begin{example}
+	For both Adam and Benjamin the \textcd{WHERE}  clauses holds (i.e.,
+	both of them live near Le Marais and like spicy food with support
+	values above the threshold). The first \textcd{SIMILAR} clause is
+	computed by finding the information common to Isabella and each of
+	the others, based on the hobbies in their basic profiles. E.g., in
+	the case of Benjamin, this would be the singleton \fset{}
+	\{\elem{User} \elem{hasHobby} \elem{Visual\_Art}\}, as he is
+	interested in drawing and Isabella in photography, and every other
+	common information (both of them also implicitly have
+	\elem{Activity} and \elem{Thing} as hobbies) is subsumed by this
+	\fset{}. Assume that the semantic similarity score, i.e., the IC of this
+	\fset{}, exceeds the threshold for both users.
+	%Assume we have computed the similarity of Adam and
+	%Isabella's basic profiles, restricted to their hobbies, to be higher than the specified thresholds in the
+	%first \textcd{SIMILAR} clauses, as for Isabella
+	%and Benjamin.
+	Finally, we compute the combined similarity of both users to the
+	\fset{} in the second \textcd{SIMILAR} clause. In this  case two
+	factors are affecting the final similarity scores: (a) Benjamin's
+	habit is semantically more similar to the \fset{} in the query than
+	Adam's, yet (b) Adam's support for his most relevant habit is
+	significantly higher. Using the scores computed in the previous
+	examples, we get that the support similarity of Adam is~$0.126$ and
+	the semantic similarity is~$0.3$, therefore the combined similarity
+	is $0.126\cdot0.3 = 0.0378$. As for Benjamin, the support similarity
+	is $0.004$, and the semantic similarity is~$0.55$, yielding a combined similarity of $0.0022$. Intuitively, Adam is ranked higher then
+	Benjamin in the query result, since his habit is not too far from
+	Isabella's specified preference, and his support for this habit is much
+	higher. In this case, a Pilates enthusiast may be a better match than someone who
+	practices Yoga rarely (otherwise, Isabella could have specified this
+	as a hard constraint).
+	% Finally, we compute the similarity of Adam and Benjamin to
+	% the \fset{} in the second \textcd{SIMILAR} clause.In this case two important factors are effecting the final similarity score:(a)the frequencies of practice mind-body fitness on weekends. In this case Adams' support similarity score is higher; (b)the mind-body fitness Adam and Benjamin are practicing. In this case Benjamins' semantic similarity score is higher, since Benjamin practice Yoga and Adam practice Pilates.
+	% Note that the fact Adam engaging in mind-body fitness is
+	% only implied, since he practice a specific mind-body fitness according to his extended profiles, yet both Yoga and Pilates are \textit{instanceof} mind-body fitness according to the ontology.
+	% Assuming that the
+	% IC of practicing some mind-body fitness on weekends is $0.3$, we get that the support similarity of Adam is $\frac{0.25\cdot0.3}{0.3}=0.25$ and the semantic similarity is $0.3$, therefore the combined similarity score is $0.25\cdot0.3 = 0.075$. As for Benjamin, the support similarity is $\frac{0.11\cdot0.55}{0.55}=0.11$, and the semantic similarity is $0.55$, yields combined similarity of $0.06$. Therefore Adam is ranked higher then Benjamin in the query result.
+\end{example}
+
+%Experimental studies indicate that when using an elaborate taxonomy of terms, e.g., Wordnet~\cite{??}, the similarity results are highly correlated with similarity results based on elaborate statistics~\cite{??}.
+
+%%%%%%%%%%%%%%%%%Collaborative Filtering%%%%%%%%%%%%
+
+% \section{Support Similarity for Collaborative Filtering}
+
+% We note that the similarity of users by their answers has been considered in previous work, in
+% the context of \emph{memory-based collaborative filtering} (see,
+% e.g., \cite{adomavicius2005toward} for a survey). The similarity
+% metrics used in this field are mostly based on variations of
+% \emph{vector cosine similarity}, over the vectors of answers
+% provided by the users. However, none of this methods accounts for
+% the IC of the answers, which we wish to leverage in the present
+% context.
+
+% Moreover, the main application of collaborative  filtering is
+% computing recommendations based on ratings; in such cases, the score
+% given by a user to some item is less relevant as an \emph{absolute}
+% score, and it is more interesting to consider which items are
+% \emph{relatively preferred} by the user. In our context, however,
+% support scores usually represent absolute values, e.g., habit
+% frequencies. E.g., a user that surfs once a year is different than a
+% user that surfs every day, regardless of whether they prefer surfing
+% over some other hobby. In cases when the support scores in our
+% context represent ratings, the second part of the
+% $\fullsim{\cdot,\cdot}$ formula could be replaced by a cosine
+% similarity formula, weighted by ICs, as follows.
+
+% \[\frac{\sum_{A\in \mathcal{A}\cap\mathcal{A}'}\ic{A}\cdot\mathcal{S}(A)\cdot\mathcal{S}'(A)}{\sqrt{\sum_{A\in \mathcal{A}\cap\mathcal{A}'}\ic{A}\cdot\mathcal{S}(A)^2}\sqrt{\sum_{A\in \mathcal{A}\cap\mathcal{A}'}\ic{A}\cdot\mathcal{S}'(A)^2}}\]
+
+
+%The approach that we consider is based on a standard approach from \emph{memory-based collaborative filtering} (see, e.g., \cite{??} for a survey): we treat the support values as ranks of \fset{}s. Then, we consider the \fset{}s common to the answer databases that we wish to compare, and represent each database as a vector of the support values corresponding to these \fset{}s. The similarity between the databases can then be measured by standard metrics such as \emph{vector cosine} (measuring the angle between the vectors in multi-dimensional space) or \emph{Pearson's Correlation Coefficient} (adds to the cosine measure a vector normalization).
+%
+%However, we further wish to leverage semantic information about \fset{}s, and specifically IC, in our similarity computation: similarity between users on a very general, low-IC \fset{} (e.g., \{\elem{Activity} \elem{doAt} \elem{Place}\}) should have less weight in determining the similarity score than a high-IC \fset{} (e.g., \{\elem{Surfing} \elem{doAt} \elem{Melbourne,\_AU}\}). Therefore we define the similarity of two databases as follows.
+%
+%\begin{definition}[Weighted cosine similarity]
+%Let $D=\langle\mathcal{A},\mathcal{S}\rangle$ and $D'=\langle\mathcal{A}',\mathcal{S}'\rangle$ be two answer databases (possibly resulting from a selection operator).
+%%Denote by $\bar{m}$ and $\bar{m}'$, respectively, the average support value in $\mathcal{S}$ and $\mathcal{S}'$.
+%Denote the intersection between them by $\mathcal{A}_{\cap}=\mathcal{A}\cap\mathcal{A}'$, and assume some arbitrary order over $\mathcal{A}_{\cap}$-s \fset{}s $A_1,A_2,\dots,A_n$. If $\mathcal{A}_{\cap}=\emptyset$, we arbitrarily define the similarity between the databases $\fullsim{D,D'}=0$. Otherwise, we define it as follows.
+%\[\fullsim{D,D'} = \frac{\sum_{i=1}^n \ic{A_i}\mathcal{S}(A_i)\mathcal{S}'(A_i)}{\sqrt{\sum_{i=1}^n \ic{A_i}\mathcal{S}(A_i)^2}\sqrt{\sum_{i=1}^n \ic{A_i}\mathcal{S}'(A_i)^2}}\]
+%%YAEL: Pearson's similarity
+%%\[\fullsim{D,D'} = \frac{\sum_{i=1}^n \ic{A_i}\left(\mathcal{S}(A_i)-\bar{m}\right)\left(\mathcal{S}'(A_i)-\bar{m}'\right)}{\sqrt{\sum_{i=1}^n \ic{A_i}\left(\mathcal{S}(A_i)-\bar{m}\right)^2}\sqrt{\sum_{i=1}^n \ic{A_i}\left(\mathcal{S}'(A_i)-\bar{m}'\right)^2}}\]
+%\end{definition}
+%
+%The definition above is based on cosine similarity, but the IC of each \fset{} is used as its weight in the sum (both in the numerator and denominator of the formula). In a similar manner, one can use IC to obtain a weighted variation of Pearson's Correlation Coefficient. One may further wish to penalize small intersections (i.e., small $\mathcal{A}_{\cap}$), which can be done, e.g., by multiplying the similarity score by the Jaccard Index $\frac{\card{\mathcal{A}_{\cap}}}{\card{\mathcal{A}\cup\mathcal{A}'}}$~\cite{??}.
+%
+
+%%%%%%%%%%%%%%%%%Collaborative Filtering%%%%%%%%%%%%
+
+
+%Note that two answer databases, especially if we apply selection over them, may contain very few or no \fset{}s in common. As in the case of IC computation, this may be handled by posing questions to the relevant users about the required \fset{}s, and/or using interpolation techniques to estimate the support values of additional \fset{}s. \scream{in the evaluation section, discuss strategies of which \fset{}s to choose.}
+%
+%In this context we further remark on computing the similarity between an answer database $D$ and a \fset{} $A$, which is enabled by \qlang{} since it may be required, e.g., to compare a user to a query part in order to identify experts. In this case we can convert the \fset into a database $D'=\langle\mathcal{A}',\mathcal{S}'\rangle$ such that $\mathcal{A}'$ consists of $A$ and all of its ancestors, and $\mathcal{S}'$ maps every \fset{} to~1. Now the similarity to $D$ can be determined using the weighted cosine similarity formula, intuitively resulting in a higher similarity score wherever $D$ contains ancestors of $A$ that have high IC and support.
+
+%\paragraph*{Similarity to query parts}
+%So far, we have discussed the similarity of \emph{concrete} terms, facts, \fset{}s and answer databases. However, in practice, we may also want to use similarity to \emph{query parts} in order to determine, e.g., which user has the best expertise with respect to a given query or answers most of the requirements of the user who posed the query. Therefore, we next describe a query conversion scheme: given a selection query $Q$ over \fset{}s and a concrete \fset $A$ (belonging to a specific user), we convert $q$ to a concrete \fset{} $q_{A}$. The similarity between $q$ and $A$ is then defined as $\fullsim{q_A,A}$. A similar conversion scheme is employed for queries over answer databases and a concrete database.
+
+
+
+\section{Computing IC Similarity}
+\label{complexity}
+We next prove the correctness of Algorithm~\ref{alg:icsim} for computing the IC similarity of two semantic units, according to Def.~\ref{def:icsim}, and analyze the complexity of the algorithm, proving Prop.~\ref{prop:comp_all}. %The complexity and correctness of computing the IC similarity of extended profile databases follows directly from these proofs and the definition of IC similarity.
+
+\begin{lemma}
+\label{lem:comp_term}
+The complexity of computing the IC similarity of \emph{two terms} $t,t'$ is $\thetaof{\card{\funct{LCA}{t,t'}}}$, after PTIME preprocessing of the partial order $\leq$ over terms.
+\end{lemma}
+\begin{proof}
+By the monotonicity of the IC predicate, it is sufficient (and necessary) to consider the LCAs of $t$ and $t'$ when seeking the maximal IC of any common ancestor of $t,t'$. For each term in $\funct{LCA}{t,t'}$ we can compute its IC and return the maximal IC value. Note that this is also necessary since the LCAs are incomparable by $\leq$ and thus their ICs are also incomparable. It is left to consider the complexity of finding the LCAs. By the result of~\cite{bender2001finding}, after PTIME processing of the partial order/DAG one can find the LCA of every two elements in it in constant time.
+\end{proof}
+
+The basic complexity result for computing terms' IC can then be used to compute the similarity of two facts, again, by first computing their LCAs.
+
+\begin{lemma}
+\label{lem:comp_fact}
+The complexity of computing the IC similarity of \emph{two facts} $f,f'$ is $\thetaof{\card{\funct{LCA}{f,f'}}}$, after PTIME preprocessing of the partial order $\leq$ over terms.
+\end{lemma}
+\begin{proof}
+We note that in the partial order over facts, the LCAs of $f,f'$ is the cartesian product of the LCAs of their terms. E.g., if $f=\{e_1~ r~ e_2\}$ and $f'=\{e'_1~ r'~ e'_2\}$ then the set of triplets $\funct{LCA}{e_1,e'_1}\times \funct{LCA}{r,r'}\times \funct{LCA}{e_2,e'_2}$ forms the LCAs of $f,f'$: first, every fact in this set $f''$ precedes both $f$ and $f'$ since each of $f''$-s terms precedes the corresponding term of $f$ or $f'$. Second, if there exists $\bar{f}$ such that $f''<\bar{f}<f$, then it cannot be the case that $\bar{f}\leq f'$ (and vice versa for $f''<\bar{f}<f'$). By $f''<\bar{f}$ at least one term of $\bar{f}$ is a descendant of a term in $f''$, but since all the terms of $f''$ are LCAs of the terms of $f,f'$ this means that the replaced term in $\bar{f}$ cannot be an ancestor of both of the corresponding terms in $f,f'$. Last, all of the facts in the aforementioned set are incomparable by $\leq$, since they are composed of incomparable terms (LCAs).
+
+Then, by Lemma~\ref{lem:comp_term} we can compute in constant time each of the LCAs of the terms composing $f,f'$. Computing their cartesian product is linear in the number of LCAs.
+\end{proof}
+
+Finally, we show the complexity of computing the similarity of two \fset{}s. For that, we first prove Lemma~\ref{lem:fset_lca}, which states that for any pair of \fset{}s there exists exactly one LCA. The proof further characterizes which \fset{} is the LCA (as explained, intuitively, in Section~\ref{sec:simexec}), thus enabling its efficient computation.
+
+\begin{proof}[(Lemma~\ref{lem:fset_lca})]
+Prop.~3.6 of~\cite{amarilli2014complexity} highlights the bijective correspondence between non-redundant sets, such as the \fset{}s in our setting, and \emph{order ideals}, namely, each \fset{} $A$ can be uniquely characterized by the set of facts $\{f\mid \exists f'\in A, f'\leq f\}$ (the facts of $A$ and all of their ancestors). The LCA of two \fset{}s $A,B$ is then the unique \fset{} $C$ that corresponds to the \emph{intersection of their order ideals}. The intersection can be expressed as $\name{OD}_C=\{f\mid \exists f'\in A,f''\in B, f'\leq f \wedge f'' \leq f\}$, and it is an order ideal since by definition, if fact $f$ is in $\name{OD}_C$, then so are also all of its ancestors.
+\end{proof}
+
+\begin{table}
+	\hspace{-5mm}
+	{\scriptsize
+		\begin{tabularx}{1.1\columnwidth}{p{0.28\columnwidth}p{0.4\columnwidth}p{0.3\columnwidth}}
+			\toprule
+			\textbf{Use Case} & \textbf{Example} & \textbf{Required \qlang{}\newline features} \\
+			\midrule
+			\textsf{1. Expert finding} & Select users who are highly linked to the key term "Database" and who frequently publish in SIGMOD and VLDB, ranked by their H-index. See Figure~\ref{fig:experts}. & Combined similarity, order by selected values\\
+			\midrule
+			\textsf{2. Link prediction} & Select co-authors of co-authors of a given researcher ranked by their (extended) profile similarity to the researcher, as her potential future collaborators. See AMiner experiment in Section~\ref{sec:experiments}. & Hard constraints, combined similarity, order by similarity\\
+			\midrule
+			\textsf{3. Profile-based\newline user recommendation} & Select users with similar (extended) profile, see, e.g., Figure~\ref{fig:qlang} and Figure~\ref{fig:SOquery}. & Hard constraints, combined similarity, order by similarity \\
+			\midrule
+			\textsf{4. Context-based\newline user recommendation} & Select users that are highly relevant to the tags ``Java'' and/or ``Python'' based on their answers since 2015. See Figure~\ref{fig:context}. & Hard constraints, combined similarity, order by similarity \\
+			\midrule
+			\textsf{5. Community\newline detection} & Select users who frequently collaborate with many of the community members. & Combined similarity, order by similarity\\
+			\bottomrule
+		\end{tabularx}
+	}
+	%     \centering
+	%    \includegraphics[width=1\linewidth]{figures/expresivness.pdf}
+	\vspace{-2mm}
+	\caption{Use cases of \qlang{}}
+	\label{fig:use cases}
+	\vspace{-3mm}
+\end{table}
+
+In what follows, $w[\tax]$ denotes the \emph{width of the term taxonomy}, i.e., the maximum size of a set of incomparable terms.
+%In Section~\ref{sec:simexec} we provided a partial proof for Proposition~\ref{prop:comp_all}. We next give a full proof for the proposition. 
+\vspace{-2mm}
+\begin{lemma}
+\label{lem:comp_fset}
+The complexity of computing the similarity of \emph{two \fset{}s} $A,B$ is $\oof{\card{A}\card{B}w[\tax]^3\log\left(\card{A}\card{B}w[\tax]\right)}$, after PTIME preprocessing of the partial order $\leq$ over terms.
+\end{lemma}
+\begin{proof}
+Assume we have preformed preprocessing on the partial order $\leq$ over \emph{terms} (as in Lemma~\ref{lem:comp_term}). To compute the single LCA (by Lemma~\ref{lem:fset_lca} above) of $A, B$ we can first compute the LCA of every pair of facts $f\in A, f'\in B$. We claim that the set of all such facts $L$ corresponds to the LCA of $A,B$, but may contain redundant facts: clearly, $L$ is contained in $\name{OD}_C$, the intersection of order ideals corresponding to $A,B$. This is since every fact in it is an ancestor of both a fact in $A$ and a fact in $B$. Next, we need to show that $\funct{LCA}{A,B}\subseteq L$. Assume by contradiction that this is not the case. Then there exists a fact $f\in\funct{LCA}{A,B}$ that does not belong to $L$. $f$ cannot be an ancestor of a fact in $L$, because then $f$ is subsumed by other fact(s) in its order ideal and would not appear in a \fset{}. This means that $f$ is an ancestor of some fact in $A$ and some fact in $B$ which is maximal by $\leq$ -- therefore it is an LCA and belongs to $L$, in contradiction with our initial assumption.
+
+It is left to remove redundant facts from $L$ to obtain $\funct{LCA}{A,B}$. This can be done, e.g., by sorting them topologically. The comparison between two facts can be done by checking whether all the terms of one fact subsume the terms of the other. Since the number of terms is fixed, and if we assume that subsumption check can be done in constant time, every comparison can be done in constant time.
+
+Let us now analyze the complexity of this algorithm. Computing the LCA of every pair of facts (computing $L$) can be done in time $\oof{\card{A}\card{B}\name{maxLCA}}$, where $\name{maxLCA}$ is the maximum number of LCA facts for a pair of facts from $A$ and $B$. This number can be bounded from above by $w[\tax]^3$: the width of the term taxonomy, $w[\tax]$ is the maximal number of LCAs two terms may have. To compute the LCA facts we at most need to compute all the combinations of the LCAs of the~3 terms, hence $w[\tax]^3$ is the maximal number of LCAs per any two facts. Now, it holds that $\card{L} \leq \card{A}\card{B}\name{maxLCA}$. To remove the redundant facts by ordering them, we need at most $\oof{\card{L}\log\card{L}}$ constant-time comparisons between facts. It is then left to compute the IC of the resulting \fset{}. Summing these numbers gives the complexity result stated above.
+\end{proof}
+
+
+
+%This concludes the proof of Prop.~\ref{prop:comp_all}.
+
+% \section{Expressiveness}
+% Choosing the right crowd members with particular expertise to carry out crowd sourced tasks is an important aspect of many applications.
+% Previous works has focus on this issue, and suggested different strategies for that problem. \qlang{}
+% is an expressive and flexible crowd selection language, which can express many of those strategies.
+
+
+% For example, Stack Overflow provides a list of the top answeres per tag, and AMiner provides lists of
+% top experts in different area of computer science, ranked by several parameters.
+% In this set of experiments, we demonstrate the ability of \sysname{} to reproduce those ranking of users, using \qlang{} queries.
+
+
+% Consider AMiner lists
+% for top experts in Database. AMiner provides several ranking according to different parameters such as: relevance, activity, H-index, activity, diversity and etc.
+% \sysname{} allows the user to select their own definition of expertise, and by using the user interface, achieving their own ranking of expert. In our experiments, for each of the earlier mention possible ranking for experts, we constructed the corresponding \qlang{} query, that select the top $10$ crowd member according to the examine parameter. We manage to reproduce all AMiner ranking almost completely, except for some missing authors due to incomplete or unclean data. 
+
+% Similarly, Stack Overflow offers top users for each tags, a ranking which based on their reputation, a
+% score represent the quality of
+% their previous answers on a particular tag. This definition of expertise can not always be the preferred one and gives an advantage for long time users. As shown earlier, for choosing the adequate crowd members to answer a question, a user with similar history/profile to the questioner
+% might be preferable, or a user who answers the most questions on several topics combined. \sysname allows the user, by the user interface, to define what parameter to considerate, and how to weight them.
+
+% In general, for each crowd task, a might different definition of experts is required. For example, for advice on restaurant in NYC, one may prefer similar users to her, or users who eats frequently in restaurants in NYC.
+% The innovation of \sysname{} is by allowing  user-defined expertise definition, which provides the user tools for selecting the relevant experts for a given crowd task.
+
+\section{Flexibility of SPARQ-U}
+\label{Expresivness sparqu}
+
+   
+   
+
+
+
+% \begin{figure}
+%      \centering
+%     \includegraphics[width=0.9\linewidth]{figures/experts.pdf}
+% \vspace{-3mm}
+%      \caption{Expert in Database. In the left column the results of the query presented in Figure \ref{fig:experts}, and in the right column experts in Database ordered by their activity as provided by AMiner}
+%       \label{fig:ranking}
+% \vspace{-4mm}
+%    \end{figure}
+
+We next demonstrate the flexibility of \qlang{} and its ability to capture common user selection scenarios, via (additional) example queries over the Stack Overflow and AMiner datasets.
+Table~\ref{fig:use cases} lists user selection scenarios, and for each such scenario it describes an example query and the features of \qlang{} that are used in this query. In particular, all the example queries use soft constraints and hence implicitly require our semantic similarity function.
+
+
+
+
+%Table~\ref{fig:use cases} collects the features needed
+%for the described use cases. In all cases, we have tested the usage of \qlang{} queries in order to select the adequate users for the intent.
+%Note that for all examples, the soft constraint are incorporated in the queries and the semantic similarity function is employed. We next describe a short description on the use cases and the corresponding \qlang{} queries.
+
+
+   
+\begin{figure}
+{\scriptsize
+\begin{Verbatim}
+SELECT ?u
+FROM basic-profile(?u) WHERE
+        \{ ?u h-index ?h. \}
+SIMILAR basic-profile(?u) TO \{?u keyTerm Databases .\}
+    WITH SIMILARITY > 0.5
+SIMILAR extended-profile(?u) TO
+        \{?u published_at SIGMOD . ?u published_at PVLDB .\}
+    WITH SIMILARITY > 0.2
+ORDER BY DESC(?h)
+\end{Verbatim}
+} \vspace{-2mm} \caption{\qlang{} query selecting database experts} \label{fig:experts}
+\vspace{-4mm}
+\end{figure}   
+\textsf{1. Expert finding.} As described in Section~\ref{sec:related}, much effort is made to determine a user's level of expertise and thereby identify the experts in some topic. Our goal is not to devise a new definition but rather enable expressing a wide range of such definitions via \qlang{}. For instance, Stack Overflow ranks experts in tags by the scores that other users gave to their answers related to that tag (i.e., reputation score). Obtaining the same ranking in \qlang{} can be done via a simple query that selects the scores of users in a give tag and orders them accordingly. When such scores are not available, experts can be identified by their \emph{similarity to selected properties} that are related to the topic in question. For example, consider selecting database experts based on the AMiner dataset. The \qlang{} query in Figure~\ref{fig:experts} selects users who are specialized in databases (or have a similar skill, see the first \textcd{SIMILAR} clause), and who frequently publish at two top conferences in the field, SIGMOD and PVLDB (see the second  \textcd{SIMILAR} clause). Among the users who match these criteria, the query returns those with the top-$10$ H-index (see the \textcd{ORDER BY} clause, where \textcd{?h} is defined in line~3). It turns out that this query is quite useful: AMiner uses a machine learning approach to determine the level of expertise \cite{Tang:2011:TLE:1938275.1938277}. We have sent the two lists of top-$10$ experts by our query and by AMiner's ranking to~$10$ researchers from the field, without explaining how they were created (the overlap of the two lists, ignoring the order, was~60\%). All of the replies preferred our rankings as more accurate.\footnote{We do not provide the lists here, since the personal judgments that we obtained may offend some of the readers. However, the lists can be easily recomputed.}
+
+%As described in Section \ref{sec:related}, much effort is
+%made to determining user's level of expertise and finding the system experts. Using \qlang{} queries, one may consider any definition of expert, and select user according to this definition.
+%Stack Overflow provides to its users a ranking of top answerers active in a single tag, based on the user's previous scores in answers related to that tag. Naturally, this ranking can be done using simple \qlang{} query.   
+%We examine several natural and intuitive strategies for experts finding over AMiner data, and expressed them using \qlang{}. We then compared to Aminer's own experts lists. One example for query is depicted in Figure \ref{fig:experts}.
+%The query selects users who are specialized at Database, or some other semantically related area, and in which frequently published at VLDB and SIGMOD, ordered in descending order by their H-index. We Compare our results to AMiner rank of experts in Database. AMiner uses a ML approach 
+%for determine the level of expertise \cite{Tang:2011:TLE:1938275.1938277}.
+%Our query resulted in same results to AMiner's ranking in $60\%$ of the cases. We then let $10$ researchers in Database to judge the differences between the two list. The majority of researchers pointed our query results were more accurate \footnote{We did not provide the two lists, to avoid conflict of interest.}.  
+
+\textsf{2. Link prediction.} This problem is mostly known from the study of links that are likely to form in a (social) network (See Section~\ref{sec:related}). The example AMiner query we have used in Section~\ref{sec:Implementation} is one example such query, which uses hard constraints to select collaborators of collaborators, then uses combined similarity to find the researchers most similar to a given researcher in terms of their (basic and extended) profiles, and finally returns the most similar such researchers. 
+
+%The well-known problem
+%of link prediction, i.e., predicting which links are likely to form in a network is also illustrated in Section \ref{sec:Implementation}.
+
+\begin{figure}
+{\scriptsize
+\begin{Verbatim}
+SELECT ?u
+FROM basic-profile(?u) WHERE
+        \{ ?u lastAccessedDate ?d. Filter(?d > 2015) .\}
+SIMILAR extended-profile(?u) TO
+        \{?u answeredOn Java . ?u answeredOn Python .\}
+    WITH SIMILARITY AS querySim > 0.2
+ORDER BY querySim
+\end{Verbatim}
+} \vspace{-2mm} \caption{\qlang{} query selecting all the Stack Overflow users who have frequently answered Java- and/or Python-related questions since 2015.} \label{fig:context}
+\vspace{-4mm}
+\end{figure}
+
+
+\textsf{3. Profile-based user recommendation} and \textsf{4. Context-based user recommendation} are two general strategies of providing, to a given user, recommendations of other relevant users from some community.\footnote{Do not confuse with similar scenarios in recommending \emph{items} to a given user.} These recommendations are based, respectively, on \emph{similarity to a target profile}, such as the profile of the given user or of her ``ideal'' match, and \emph{context} such as a set of keywords or properties provided by the user. Context-based recommendations typically also take into account the profile of the given user~\cite{dinoia2012linked,mavridis2015skill}. For example, the queries in Figure~\ref{fig:qlang} and in Figure~\ref{fig:SOquery} include profile-based recommendations since they retrieve users whose profile resembles a target user (Isabella/Basil Bourque). Figure~\ref{fig:context} presents a query that selects Stack Overflow users that are most relevant to the context of the tags ``Java'' and ``Python'', considering only data from 2015 and on.  
+%Context-based user
+%recommendation is well studied problem of recommending users, when given a set of keywords is given by a user \cite{cohen2011principles,dinoia2012linked,mavridis2015skill}. The goal is to return a high-quality ranked of users who are relevant both to the keywords and the user asking. An example of this scenario along with the \qlang{} query is illustrated in Section \ref{sec:Implementation}.
+
+
+
+
+
+
+\textsf{5. Community detection.} This is the problem of identifying a highly interlinked community in a network, possibly with respect to some context, e.g., the members of one family in a social network.
+In some cases, detecting a community from scratch requires repeatedly evaluating the relevance of each member to the others, and hence cannot be done via a single \qlang{} query, since its current semantics allows considering each candidate user only once. However, \qlang{} can be used to detect a community of users who are relevant to some topic (as in context-based recommendation) or to detect additional members of a seed community. For example, given a community in AMiner, one can use \qlang{} to query researchers that have frequently collaborated with many members of this community, by posing a soft constraint of the form \textcd{?u collaboratedWith X. ?u collaboratedWith Y.}.. where \textcd{X}, \textcd{Y} and so on are the members of the seed community. 
+
+%Lastly, node centrality and
+%community detection problems can easily be expressed via intuitive \qlang{} queries. For example, select users with maximal numbers of relations to other users (e.g select uses with maximal number of co-authors), or selecting all users regarding a specified concept (e.g select all users specialize at Database). Adding soft constraints on those queries can assist when searching for all similar users to a specified one in the question, or where a set of concept is considered. For example, consider Figure \ref{fig:community}. In the \qlang{} query presented we selecting all users who answered both Java and Python related questions, that was active in the last year, order by the frequencies of their answers.   
+
+
+
+
+
+% SPARQL query language is used to query RDF graphs, and
+% Cypher is used to query the Neo4j graph database. While
+% graph query languages are general enough to be used over
+% arbitrary graphs, they are not necessarily a best choice for
+% querying social networks. In particular, graph query languages
+% focus mostly on precise queries, which can use regular
+% path expressions (e.g., _nd all common co-authors of
+% two speci_c authors, _nd people 2-hops away from a given
+% node, _nd pairs of nodes whose connecting path matches a
+% speci_c regular expression). These languages lack the capability capability
+% to express richer imprecise queries, such as expert
+% search, friend recommendation or recognizing communities,
+% that are more in the spirit of social-network analysis.
+
+% Divorce Lawyer: Find a node in the network who is
+% a well-known expert on divorce law, and lives in the
+% same geographic vicinity as Node 72. This query combines
+% keyword search, a spatial distance predicate and
+% centrality
+
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=0.9\linewidth]{figures/system_overview.pdf}
+%	\vspace{-10mm}
+%	\caption{System Architecture}
+%	\label{fig:system_overview}
+%	\vspace{-4mm}
+%\end{figure}
+%
+%\section{System Architecture}
+%\label{system}
+%Figure \ref{fig:system_overview} provides an overview on the system component and the data repositories. 
+%
+

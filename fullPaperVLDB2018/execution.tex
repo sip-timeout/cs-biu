@@ -1,0 +1,84 @@
+\section{coverage based diversity}
+\label{sec:coverage} %In order to efficiently execute \qlang{} queries, one has to efficiently evaluate both hard and soft constraints (\textcd{WHERE} and \textcd{SIMILAR} clauses, respectively). Note
+%thatWe are now ready to define our notion of diversity, as follows.
+
+We define diversity based on user properties and their scores.  
+Scores are crucial in this respect: e.g., it makes sense to group Mexican food lovers and dislikers separately, rather than grouping all the Mexican food reviewers together. For that, we split the range of scores of each property $p\in\mathcal{P}$ into a set of \emph{non-overlapping buckets} $\beta(p)$ (the bucketing method is described in Section~\ref{sec:compute}). A \emph{group} is then the subset of users with relevant property and score, formally,
+\[g_{p,b}\colonequals \{u\in\mathcal{U}\mid D_u=\langle P_u, S_u \rangle \wedge p\in P_u \wedge  b\in\beta(p) \wedge S_u(p)\in b\}\]
+
+
+\begin{definition}
+	Let $\mathcal{G}$ be the set of all non-empty groups $g_{p,b}$ with respect to a given set of users $\mathcal{U}$ and profiles $\{D_u\}_{u\in\mathcal{U}}$.   
+	We say that a subset of the users $U\subseteq\mathcal{U}$ \emph{covers} a group $g_{p,b}$ if $|U\cap g_{p,b}|>0$, and denote the set of covered groups by $\funct{cov}{U}$. Further let $W:\mathcal{G} \To \mathbb{R}^{+}$ be a \emph{weight function} indicating the importance of each bucket. Given also a budget $B\in \mathbb{N}$,  we define \texttt{MAX-DIVERSITY} as the problem of finding a subset $U\subseteq\mathcal{U}$ such that $|U|\leq B$ and the weight of~$U$, defined as $W_{\mathcal{G}}(U)\colonequals\Sigma_{g_{p,b} \in \funct{cov}{U}}W(g_{p,b})$, is maximized.       	
+\end{definition}
+
+The weight function $W$ captures the importance of different groups. A natural choice, which we employ in our implementation, is defining the weight of a group as the \emph{number of users} in it. The purpose of this choice is to increase the likelihood of covering large groups before small ones.   
+
+
+
+\begin{example}
+	Reconsider the user profiles in Table~\ref{tab:profs} and assume that each property is divided into two buckets: scores in $[0.5,1]$ (``high'') and scores in $[0,0.25]$ (``low''). The numbers in superscript show the weights -- i.e., number of users -- on the first occurrence of each property bucket. E.g., there is only one bucket with~3 users: \elem{avgRating Mexican high}. %Properties with~2 users include \elem{livesIn Tokyo high}, \elem{visitFreq Mexican high}/\elem{low} and so on. 
+	In this case, the user group of size~2 that should be selected is \{Alice, Carol\} with sum of weights~18. %$2+1+3+2+2+2+1+1+2+2 = 18$. 
+\end{example}
+
+%We note that our metric is generally biased to select users with more properties, as they cover more buckets. However, this can be mitigated by properly selecting in specific context where selecting users with varied levels of activity is desired, by choosing to cover only relevant properties (level of activity, user rank and so on) which are available for all or most users.
+
+
+
+%Our approach for property coverage considers each property individually and indepedndently. When properties are highly correlated in some population (e.g., users who frequently visit ``cheap eats'' and rarely visit ``fine dining'' restaurants), we assume that these properties are likely to occur together in selected users, but do not account for the combination explicitly. One could more generally consider the coverage of n-sized combinations of properties. However, in our experience, the contribution of such combinations to the selection was marginal (since most combinations are too rare, and thos who are frequent are likely to be encountered in any case) while the overhead of computing them was high. Another approach might involve the grouping of users via (high-dimentional) clustering techniques, and then choosing a representative for each group~\cite{??}. However, the results of such approach, particularly in high-dimensional data, are unintuitive to a human user.
+
+
+
+%\noindent We use $\mathcal{G}$ to denote the set of all such groups. 
+
+\paragraph*{Customization and Explanations}
+The \emph{explanation} of a selected subset $U\subseteq\mathcal{U}$ is the partition of~$\mathcal{G}$ to $\langle \funct{cov}{U}, \mathcal{G}-\funct{cov}{U}$, namely, covered and non-covered groups in $\mathcal{U}$. The explanation of a selected user $u\in U$ is $\funct{cov}{\{u\}}$, namely, the groups covered by $u$'s properties. Intuitively, the properties of $\mathcal{P}$ are assumed to have meaningful names since they are used in user profiles, and score buckets can also be easily given names (``high'', ``medium''\dots), which yields meaningful names to  the groups of~$\mathcal{G}$. The client user can then see which groups are covered (and by which selected user) and which are not. (The UI of \sysname{} further enables easy and intuitive browsing through these groups, see Section~\ref{sec:system}.)
+
+A \emph{customization feedback} of the user is composed of four distinct subsets of $\mathcal{G}$, denoted $\mathcal{G}_{+},\mathcal{G}_{\textrm{--}},\mathcal{G}_{d}$ and~$\mathcal{G}_{d?}$. $\mathcal{U}$~is refined to consider only users of interest $\mathcal{U}_{\name{c}}$, who belong to every group in  $\mathcal{G}_{+}$ (if $\mathcal{G}_{+}$ contains more than one bucket of some property $p$, users need only belong to one of them) and to none in $\mathcal{G}_{\textrm{--}}$. Formally,
+\[\begin{split}
+\mathcal{U}_{\name{c}} = & \{u\in\mathcal{U}\mid\forall g_{p,b}\in \mathcal{G}_{+}, ~\exists b'\in \beta(p): ~u\in g_{p,b'} \wedge g_{p,b'} \in\mathcal{G}_{+}\} \\
+& \cap  \{u\in\mathcal{U}\mid\forall g_{p,b}\in \mathcal{G}_{\textrm{--}} : ~u\not\in g_{p,b}\}
+\end{split}\]
+
+The customized diversity problem  \texttt{MAX-DIVERSITY-C} is then to select new subset $U\subseteq\mathcal{U}_{\name{c}}$ that maximizes $W_{\mathcal{G}_{d}}(U)$, namely, the sum of weights over covered groups from  $\mathcal{G}_{d}$, breaking ties by $W_{\mathcal{G}_{d?}}(U)$. Note that \texttt{MAX-DIVERSITY-C} can be easily reduced to \texttt{MAX-DIVERSITY} by a proper selection of weight function.
+
+\begin{example}
+	Reconsider the problem of selecting a user subset of size~2 from Table~\ref{tab:profs}, but now assume the client prefers users from diverse locations and people familiar with Mexican food. This translates to a feedback where $\mathcal{G}_{+}$ consists of the two buckets \elem{high} and \elem{low} of \elem{AvgRating Mexican} (requiring the users to have any rating for Mexican food), and $\mathcal{G}_{d}$ consists of the different \elem{livesIn~<city>} properties. $\mathcal{G}_{\textrm{--}}$ and $\mathcal{G}_{d?}$ would be $\emptyset$ and $\mathcal{G}-\mathcal{G}_d$, respectively. Then, the refined user set $\mathcal{U}_{\name{c}}$ will exclude Carol who did not rate Mexican food. The best user subsets will now be \{Alice, Bob\} or \{Bob, Eve\}, which maximize the sum of weights over \elem{livesIn~<city>} properties (to~3) and among other subsets that achieve this maximum (e.g., \{Alice, David\})  the former two subsets further maximize the sum of weights over other properties (to~14).
+\end{example}
+
+
+\subsection{Diversity Computation}
+\label{sec:compute}
+
+We next consider the computation of a diverse subset of users. 
+
+\paragraph*{Computing $\mathcal{G}$.} The set of properties $\mathcal{P}$ is assumed to be given (derived from the user profiles). To compute the buckets $\beta(p)$ for any property $p\in\mathcal{P}$ we first determine the number of buckets heuristically as $\lceil\log\name{user}(p)\rceil$, where $\name{user}(p)$ is the number of users with property $p$ in their profiles. For sanity, we bound this number from above by $\name{uniq}(p)$, the number of unique scores obtained for~$p$. We then use one-dimensional clustering (based on k-means) to split the score range $[0:1]$ into buckets.
+
+% \(\max\{\min\{\name{uniq}(p), \lceil\log_{10}\name{user}(p)\rceil\},2\}\), where $\name{uniq}(p)$ is the number of unique score values obtained for $p$ and $\name{user}(p)$ is the number of users with property $p$ in their profiles. For Boolean properties we always use two buckets for~1 and~0. For other properties we use one-dimensional clustering (k-means) to split the range $[0:1]$ to buckets.
+
+\paragraph*{Solving MAX-DIVERSITY} Unsurprisingly, achieving an optimal solution is intractable unless P=NP, even for simple weight functions. The decision problem \texttt{DEC-MAX-DIVERSITY} corresponding to \texttt{MAX-DIVERSITY} is that of the existence of a subset of a given cardinality $B$ such that the sum of weights of covered groups exceeds a threshold $T$. We can then show:   
+
+\begin{proposition}
+	DEC-MAX-DIVERSITY is NP-complete in $B$.  
+\end{proposition}
+
+Despite this intractability result, our problem enables efficient approximation, due to properties of $W_{\mathcal{G}}(U)$. First, $W_{\mathcal{G}}(U)$ is \emph{submodular}, namely, for any $U\subseteq U'\subseteq \mathcal{U}$ and $u\in\mathcal{U}$ it holds that $W_{\mathcal{G}}(U\cup\{u\})-W_{\mathcal{G}}(U)\geq W_{\mathcal{G}}(U'\cup\{u\})-W_{\mathcal{G}}(U')$. Since the group weight function $W$ is non-negative, we get that $W_{\mathcal{G}}(U)$ is also non-negative ($W_{\mathcal{G}}(U)\geq 0$) and \emph{monotonous} (if $U\subseteq U'$ then $W_{\mathcal{G}}(U)\leq W_{\mathcal{G}}(U')$). The size of the groups that we consider is bounded by $B$. For such functions, a greedy algorithm that iteratively adds one user $u$ to the selected subset $U$ so as to maximize $W_{\mathcal{G}}(U\cup\{u\})$ is known to guarantee a good approximation ratio ($1-1/e$)~\cite{nemhauser1978analysis}. We implement such a greedy algorithm in \sysname{}. 
+
+
+
+%A function over a subset $U\subseteq\mathcal{U}$ is said to be \emph{submodular} if  an \emph{approximate} solution may be efficiently computed under plausible assumptions on the weight function. We say that a function is sub-modular if \scream{complete..}
+
+%\scream{Give the algorithm for sub-modular + guarantees if any + proposition that the weight function you use is sub-modular.}  
+
+%\scream{Discuss Bucketing}
+
+
+
+
+
+%
+%We say that a subset of the users $U\subseteq\mathcal{U}$ \emph{covers} a group $g_{p,b}$ if $|U\cap g_{p,b}|>0$. Ideally, one would like to cover all the groups by selecting up to some fixed bound $\top$ of users from $\mathcal{U}$. Unfortunately, the corresponding decision problem -- Can a set of groups be covered by $\top$ users? -- is equivalent to Set-Cover, and is thus NP-hard in $\top$. 
+%
+%Even if $\top$ is small enough to enable the enumeration of all $\top$ subsets of $\mathcal{U}$, it may still be impossible to cover all the groups since the data is high-dimensional ($|\mathcal{P}|>> \top$).
+%We therefore relax the requirement and aim at obtaining the ``best'' possible cover. For that, we also define a \emph{weight function} and consider the problem of selecting a group of $\top$ users that \emph{maximizes the aggregated weight of covered properties}. %Since some properties (and buckets thereof) are more frequent than others, we use the number of users in the bucket as a weight. 
+%In the current implementation of \sysname{} we choose a simple weight function that captures the \emph{number of users} in each group and aim to maximize the sum of weights of covered groups. The purpose of this choice is to increase the likelihood of covering large groups before small ones. %Note that this function ignores possible overlaps between groups. While this could be easily 

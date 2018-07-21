@@ -1,0 +1,524 @@
+
+
+
+\section{Experimental Study}
+\label{sec:Implementation} We developed a prototype engine for
+parsing and evaluating \qlang{} queries. This engine uses preprocessing of the term taxonomy to speed up LCA computation, which is at the core of similarity computation (Section \ref{sec:exec}). A further speed-up is achieved by distributing, over multiple cores, the computation of similarity between different user pairs, which is virtually independent. Finally, the engine employs a dedicated caching mechanism to compactly store intermediate results and avoid unnecessary computations, based on Observation~\ref{obs:cash}.
+% and implemented a caching mechanism that stores previous calculation results and avoids calculating unnecessary ones, . 
+The prototype is implemented in Java, using
+the Apache Jena library \cite{jena} for 
+%handling RDF data and for
+ a SPARQL engine. %and the JGraphT library (\url{http://jgrapht.org}) for graph processing operations on the ontologies.
+%Using this engine, we conducted an experimental study designed to assess the flexibility, accuracy and efficiency of our approach for real user data.
+
+
+\paragraph*{Goals}
+%We set three goals for the experimental study. 
+%Since user selection using a semantically-rich setting like ours has not been studied before, 
+Since general-purpose user selection framework has not been studied before, no standard benchmark over which one could test the full capabilities of \qlang{} was available. We have thus constructed two benchmark datasets using real-world data from the following sources: Stack
+Overflow (SO)~\cite{StackOverflow}, a large Q\&A platform
+for computer programming, and AMiner~\cite{tang2008arnetminer}, an
+academic social network containing author profiles along with collaboration
+and publication data. These datasets provide natural scenarios for user selection, which we have captured via \qlang{} queries.
+%\footnote{In fact, AMiner uses data from DBLP, which is often used in link prediction~\cite{Jeh:2002:SMS:775047.775126}, one of our experimental scenarios.} 
+%as detailed below.
+
+
+%We examined our framework as a whole, as well as the contribution of eachof its components. 
+%We focused on several typical scenarios for user
+%selection where quality could
+%be evaluated with respect to some ground truth. 
+%We compared the results of \qlang{} to
+%common alternative strategies from machine learning (SVM) and graph
+%processing (SimRank~\cite{Jeh:2002:SMS:775047.775126}).
+
+Our first goal was to \emph{evaluate the result quality} that our solution achieves, i.e., the adequacy of the selected users. We compared the results to common alternative strategies from machine learning, graph processing, and collaborative filtering. To examine
+the contribution of components within our solution,
+%, and in particular the ingredients of our dedicated similarity measure, 
+we
+implemented restricted variants of \qlang{} that do not include some
+components, or use alternative similarity measures. 
+Finally, we conducted a user study aiming to assess the relevance of results by real users.
+Our second goal was to \emph{test the system's
+running times and its scalability}. We examined the execution time of
+\qlang{} queries for
+varying input sizes.
+%As a complementary case study,
+Lastly, we examined the \emph{flexibility} of \qlang{} and its ability to express specific user selection needs in typical contexts, including recommendations, predictions and expert finding.
+
+%Our experimental results indicate that \qlang{} is expressive and scalable
+%enough to be practically used for selecting users in various
+%contexts. While our solution is declarative and generic, it  achieves high quality results, even compared to task-dedicated,
+%non-declarative alternatives. This is true even though we have manually and intuitively written the queries (as a real user would have done) rather than
+%carefully tailoring each query to outperform the competitors.
+
+
+
+
+% Note that for the following scenarios in \ref{experiments}, the \qlang{} queries were chosen intuitively and heuristically with respect to their intent, exemplifying the declarative and straightforward nature of our language. While we believe that improving the queries will yields better prediction results, we leave the \qlang{} optimization for future work.
+
+
+\subsection{Experimental Setup}
+\label{experiments} We describe how the data was extracted and
+converted into our representation, then present the different baselines tested. To allow using standard RDF tools, the system generates additional RDF data that explicitly captures information about facts and \fset{}s, e.g., \{\elem{FactSet456} \elem{hasSupport} \elem{0.01}\}. The system then converts the selection clauses in a given \qlang{} query (\textcd{From}\dots\textcd{WHERE} and \textcd{RESTRICTED TO} clauses) into SPARQL queries over the resulting RDF repository.
+All experiments were conducted on a Linux server with~$24$ cores,
+a~$2.1$GHz CPU and~$96$GB memory. 
+
+
+
+%\vspace{-4px}
+\paragraph*{Stack Overflow dataset}
+In this popular Q\&A platform, user questions are associated with a set of tags that reflect their topics.
+%each question is posed by a specific
+%user, and associated with a set of tags that reflects its topic.
+% and assists users in searching relevant questions for them.
+Among its answers, a question may have one designated answer chosen
+as the most accurate one. Each user has a 
+profile with properties such as name, registration date, reputation score, etc. We collected over~$900$K questions in~$300$ popular topics (tags), asked
+by over~$175$K users. We then gathered their
+personal profiles, and collected more than~$2.3$M previous answers
+of those users, to assemble a coherent subset. The retrieved data
+was naturally mapped into our model: we constructed the basic user profiles from the extracted profiles. 
+The extended profile
+of a user was constructed from her tags to which she
+contributed, with a support value that reflects the portion of her
+contribution to that tag, among all tags. The ontology was constructed from DBpedia~\cite{dbpedia}. We aligned each
+tag to its matching concept and used the relevant part of DBpedia taxonomy.  
+The resulting database consists of $20$M entities.
+
+
+
+%\vspace{-6px}
+\paragraph*{AMiner dataset}
+We extracted the data of~$1.7$M computer scientists 
+and considered their publications between~$2005 - 2015$ (over~$2$M papers). The basic profiles of the authors consist of their affiliation, h-index, fields of interest, and some publication data (e.g., title and year). The extended profile of each author records her
+co-authorships (with a support value reflecting the fraction of her publications with each co-author), and publication venues (with support value reflecting the fraction of her publications in each venue). The domain ontology was built as
+described above, aligning AMiner terms (affiliations, fields of
+interest, etc.) with DBpedia concepts, and constructing the
+corresponding taxonomy. The resulting database consists of $16$M entities.
+%$35295$.
+
+
+
+%\vspace{-6px}
+\paragraph*{Alternative algorithms} \label{setup}
+We have compared the results of \qlang{} to several competing baselines, as detailed in Table~\ref{table:baselines}. The first three baselines (\textbf{SPARQL}, \textbf{No Support}, \textbf{No \Fset{}s}) are restricted variants that serve to examine the contribution of our framework's components compared to the framework as a whole.
+%As mentioned above, our goal was
+%to examine the contribution of each of the individual components of \qlang{} as well as the performance of our framework as a whole. 
+%\textbf{1.SPARQL}. User selection is done by a standard SPARQL
+%query, that is, \emph{only hard constraints are employed}. This allows for evaluating the need of similarity-based soft
+%constraints in user selection. 
+%\textbf{2.No Support}. User selection is done by the same \qlang{} queries, but
+%the support values are ignored. This allows for evaluating the need of considering support values in user selection,
+%and the effect of our support-similarity measure. \textbf{3.No \Fset{}s}. User selection is done by the same \qlang{} queries, but
+%facts are considered individually and co-occurrence of facts is
+%ignored. This allows for evaluating the need for our rich data model
+%and its corresponding semantic-similarity measure. \textbf{4.SimRank}. We consider SimRank \cite{Jeh:2002:SMS:775047.775126}, a
+%similarity measure which is commonly used in social networks for
+%link prediction problems. We used an highly efficient approximation technique suggested in \cite{tian2016sling}. \textbf{5.SVM}. Users are selected using SVM, a common machine learning method for such a task.
+% We experimented with
+%regression and classification-based variants and describe here the best performing 
+%classification variant.
+%We used the scikit-learn implementation \cite{SVM}.
+%For each scenario we employed an
+%SVM classifier, where each user represents a class, and the algorithm
+%computes the probabilities of a class to be chosen.  
+%This
+%baseline is used to evaluate the ability of \qlang{} to capture
+%common user selection scenarios, which can alternatively be specified
+%as machine learning problems.
+The \textbf{SimRank} and \textbf{SVM} baselines are used as alternative similarity measures, i.e., hard constraints are still used for initial data filtering. To implement the SimRank measure, we used an efficient approximation technique suggested in~\cite{tian2016sling}, and used the scikit-learn implementation~\cite{SVM} for the SVM. 
+%The results of these tools without initial filtering were inferior in all the experiments.
+Additional similarity measures were examined, including the cosine and Jaccard
+measures used in collaborative filtering. Due to their consistently inferior results, they are omitted from presentation.
+
+
+
+\vspace{-1mm}
+\subsection{Qualitative Experiments}
+\label{sec:experiments}
+%We next present our experiments over the two datasets, along with an
+%analysis of the results and performance. 
+%To test the flexibility of \qlang{}, we collected various scenarios that are considered in user selection literature, and composed \qlang{} queries that capture these scenarios in our datasets. Notably, the use of soft constraints in all
+%scenarios was natural and often necessary. %For space constraints we defer details to~\cite{fullpaper}. 
+While \qlang{} is able to express a wide range of user selection scenarios (see Section~\ref{sec:flexibility}), to examine the adequacy of selected users we focused on specific cases for which there exists a \emph{ground truth} that enables assessing the results quality. For each scenario, we describe the used queries and compare our results with the alternatives and ground truth. %We then examine the scalability of our system.
+
+\begin{figure}
+{\scriptsize
+\begin{Verbatim}
+SELECT ?u
+FROM basic-profile(?u) WHERE
+    \{?u creationDate ?d. Filter (?d < 19.6.2015) \}
+SIMILAR basic-profile(?u) TO basic-profile(Basil_Bourque)
+    WITH SIMILARITY AS profSim > 0
+SIMILAR extended-profile(?u) TO 
+                 \{?u answeredOn Java. ?u answeredOn I/O \}
+    WITH SIMILARITY AS topicSim > 0.2
+ORDER BY AVG(profSim, topicSim) LIMIT 30
+\end{Verbatim}
+} \vspace{-6mm} 
+\caption{User selection for Stack Overflow
+question.} \label{fig:SOquery}
+%\vspace{-4mm}
+\end{figure}
+
+
+\paragraph*{Stack Overflow experiment}
+\label{SO} The setup we have focused on for the SO experiment is as follows (see details below).
+\begin{compactitem}
+\item \textbf{Task:} find users to answer a given question.
+\item \textbf{Our query:} select experts for the question topics ($=$high support) who are also similar to the asker.
+\item \textbf{Adjustments:} use only data generated before the question posting time.
+\item \textbf{Evaluation:} \% of~500 random questions where designated answerer (ground truth) appears in top-$k$ selected users.
+\end{compactitem}
+We tested several alternative \qlang{} queries including the retrieval of top-ranked users for each of the
+question's tags, i.e., retrieving the experts in a given topic. The eventually chosen query form requires, beyond relevant expertise (which was specified as a soft constraint), that the user asking the question and the one
+answering have similar interests, which presumably increases the likelihood that the latter will be willing to answer the former's question. %It seems that a ``peer'' is more likely to provide a good answer than someone with significantly higher or lower capabilities. 
+We constructed a template \qlang{} query that captures this user selection approach
+and instantiated it for different pairs of questions and
+questioners. 
+
+\begin{figure}
+	{\scriptsize
+		\begin{Verbatim}
+SELECT ?u
+FROM extended-profile(?u) WHERE
+	\{?u collaboratedWith ?v. \}
+FROM extended-profile(?v) WHERE
+	\{?v collaboratedWith Tova_Milo. \}
+SIMILAR basic-profile(?u) TO basic-profile(Tova_Milo)
+	WITH SIMILARITY AS profSim > 0
+SIMILAR extended-profile(?u) TO extended-profile(Tova_Milo)
+	WITH SIMILARITY AS topicSim > 0
+ORDER BY AVG(profSim, topicSim) LIMIT 30
+		\end{Verbatim}
+	} \vspace{-6mm} \caption{User selection for AMiner
+	question, instantiated for the user Tova Milo.} \label{fig:AminerQuery}
+%\vspace{-4mm}
+\end{figure}
+
+For example, the question
+posted on $19.6.2015$ by the user Basil Bourque: ``How do I read from a file in Java?'', tagged
+by 'Java' and 'I/O', yielded the \qlang{} query in Figure~\ref{fig:SOquery}.
+
+
+
+
+%\begin{example}
+%\label{example}
+%For the question
+%posted on $19.6.2015$ by the user Basil Bourque: ``How do I read from a file in Java?'', tagged
+%by 'Java' and 'I/O', the corresponding \qlang{} query choosing users to answer it, is depicted in Figure
+%\ref{fig:SOquery}.
+%\end{example}
+%We randomly selected $500$ questions posed in $2015$-$2016$
+%and examined the corresponding \qlang{} queries, instantiated from our template. %for choosing adequate responders to each question.
+%Each of these queries was executed over data collected \textit{before} the question was posted. 
+Recall that a question in SO has one designated
+answer, chosen as its most accurate answer. To evaluate the results quality, we examined how the designated answerer was ranked according to our query and the alternatives, and counted the
+percentage out of~500 queries where this user was among the top $k$ users selected, for varying $k$ values. For the SVM baseline, we modelled
+each user as a class and mapped  questions into those classes using the question's and asker's
+features. In the SPARQL variant, 
+users were ranked by their reputation score.
+
+
+
+Our main findings can be summarized as follows.
+\begin{compactitem}
+\item \qlang{} outperforms all the alternatives; closest is the (specially-trained) SVM.
+\item Selecting the ground truth user is generally difficult; many adequate users may not see a given question.
+\item Addressing ``cold start'' issues by completing missing information can improve the results.
+\end{compactitem}
+Figure~\ref{subfig:so_predictions} shows the results for two representative $k$ values that capture the general trend: in all cases, our solution outperforms the
+competitors, and for larger $k$ values, the results of all algorithms improve, overall maintaining the observed differences between them. In particular, for $42\%$ of the
+examined questions the \qlang{} query ranked the designated
+answerer among the top $30$ recommended users, and for $51\%$ of the
+questions among the top $100$ users.
+This is
+extremely positive given the task difficulty: our ground truth, the designated answerer, may be just one out of many users that can potentially answer the question.
+This indicates that \qlang{} can
+be used to add a more active ``answer request'' module to  SO or similar platforms.
+
+Furthermore, the three restricted
+variants of \qlang{} (SPARQL, No Support, No \Fset{}s) achieve
+inferior results, demonstrating respectively the importance of soft
+constraints and of analyzing support scores and \fset{}s. 
+SimRank also shows significantly inferior results, since unlike our similarity measure, it does not exploit semantic information. SVM is
+closer to \qlang{} in terms of quality, but unlike the customizable \qlang{}, this classifier
+was specifically trained for this scenario and cannot be trivially adapted to other scenarios.
+
+
+
+The cases
+where the designated answerers were ranked low or not
+selected at all by our query typically occurred due to missing
+data: in over $70\%$ of the cases, either the asker or the designated answerer were new users with
+little or no past activities. To further improve the results, an application owner may address such ``cold start'' problems by actively asking new
+users for missing information, or by using information from
+external sources.  %We leave this for future research.
+
+
+
+
+%\vspace{-2px}
+\paragraph*{AMiner experiment}
+\label{AMiner} For this dataset, we focus on the following typical scenario (see details below). 
+\begin{compactitem}
+\item \textbf{Task:} identify potential collaborators for a researcher (a typical link prediction problem in social networks).
+\item \textbf{Our query:} collaborators of collaborators for this researcher that also resemble her/his profile.
+\item \textbf{Adjustments:} use data up to~2013 for querying, and later collaborations as the ground truth to be predicted.
+\item \textbf{Evaluation:} (i) for~150 random researchers, the precision and recall of top-30 potential collaborators with respect to ground truth; and\newline (ii) for~27 researchers, the precision of top-10 potential collaborators in a real user study (\qlang{} only).
+\end{compactitem}
+%that involves identifying potential collaborations for a
+%given researcher --  a typical \textit{link prediction} problem in social networks. % (See~\cite{fullpaper} for other examples.)
+%Our query selects, for a given author, the top-$30$ users in her
+%``friends of friends'' community (i.e., among those users that had
+%previously collaborated with at least one of her co-authors) with the
+%most similar profiles. 
+See Figure \ref{fig:AminerQuery} for example query, using prof. Tova Milo as the target user.  %Similarity here is measured w.r.t. both the
+%basic profile (i.e., fields of interest, h-index, etc.) and the extended profile (i.e., past
+%collaborations and conference contributions).
+In this experiment, beyond the evaluation against actual collaboration data, we conduct a user study to evaluate the result quality as perceived by clients.
+%To examine the adequacy of the selected users we conducted
+%two experiments: one comparing the results to actual
+%collaboration data, and the other via a user study.
+
+For experiment (i) we split the data into two parts: one
+contains the publications up to~2013 (to be queried), and the second contains the
+publications in later years (ground truth). We focused on authors with
+$\geq10$ publications/ collaborations %and whose profile contains at least %one field of interest 
+to avoid cold start issues. 
+%We have randomly selected~$150$ such authors, and for each author we executed the corresponding query on the $\leq2013$ data and compared the results with actual collaborations in the following
+%years. 
+The SPARQL baseline here orders authors by their h-index, and
+for the SVM classifier, each user represents a class and is modelled by a vector
+of her fields of interest, past collaborations and
+publications. 
+
+
+
+Our main findings can be summarized as follows.
+\begin{compactitem}
+\item \qlang{} outperforms all the alternatives in both precision and recall; closest is SimRank, a common measure in collaboration networks.
+\item In our user study, a small set of~10 selected users was sufficient to identify relevant recommendations for the vast majority of participants.
+\item Completing missing information and correcting unclean data may serve for result improvement.
+\end{compactitem}
+The precision and recall of query results w.r.t. the ground truth,
+%(namely, how many of our predictions were fulfilled and how
+%many of the true collaborations were predicted, resp.)
+averaged over~150 random authors, are plotted in
+Figure~\ref{subfig:aminer_predictions}.
+For over~$90\%$ of the examined authors, the \qlang{} query has identified at least one true future collaborator, and for over~$85\%$ of them $\geq 3$ of the predictions were correct.
+Furthermore, for over $60\%$ of the authors, $\geq 50\%$ of
+their true future collaborators were predicted by \qlang{}.
+%, i.e.,
+%the recall was $\geq 0.5$. 
+%In contrast, the restricted variants of
+%\qlang{} achieved at most~$0.4$ precision and at most~$0.52$ recall.
+%In this experiment SimRank competes better than the former one, since it is designed for social network analysis (in this case, the collaboration network). Interestingly, the generic \qlang{} still outperforms the techniques that is specifically tailored to the given context.
+%Here again, our solution outperformed all of the alternatives, and in particular SimRank, a common used measure in the context of collaboration networks. 
+
+
+In our user study, we recruited $27$ known researchers (averaging h-index of $35$). For each researcher, we executed our \qlang{} query to select~$10$ possible collaborators, excluding past co-authors (assuming researchers would not object to collaborate with past co-authors), and asked the participants to estimate
+how many of the selected users may be potential future collaborators
+(precision). Figure~\ref{subfig:aminer_recommendation} depicts the results. Note that in this study, we could not have estimated the recall, since it would require researchers to list all of their potential future co-authors, which is naturally
+unknown at a given moment. In a real-life usage of the system, users may further personalize
+the query, adding individual filtering conditions on
+location, language, etc. Yet, even our simple, generic query obtained
+some interesting results. Indeed, $89\%$ of the participants found
+at least one recommendation relevant, 
+and $85\%$ of the participants found at least $3$ recommendations
+out of $10$ relevant.
+
+We further analyzed the false positives for this study. In
+particular, only in $3$ out of the $27$ cases, the authors found the
+recommendation irrelevant. These cases appear to be a consequence of
+incomplete data (e.g., missing facts in both the basic and extended profiles) or unclean data (e.g., authors with basic
+profiles that do not reflect their fields of interest). As mentioned
+previously, such problems may be addressed by enriching the data using tools for building profiles from social networks~\cite{Difallah:2013:PTM:2488388.2488421}.
+
+
+\vspace{-1mm}
+\subsection{Scalability Evaluation}
+%We next measure the runtime of our system, focusing on our new modules since we use an existing state-of-the-art engine to execute hard constraints. We consider the effect of three factors on the execution time: 
+%(1)~the number of users admitting the hard constraints, on which our new modules operate in practice; (2) the size of the examined profiles and (3)~the shape of the ontology (i.e., its width and depth). We noted that in the quality assessment queries (previously described), the average number of users admitted the hard constraint was $1$K and the average number of triples in each user profile in our datasets is $100$ triples. The average execution time of these queries took less then $3$ seconds. We next used these queries to examine the effect of different parameters on the execution time, while relaxing some hard constraints to enable larger number of users to pass the hard constraint phase. 
+
+Our quality assessment queries (previously described), had an average execution time of less than~$3$ seconds. 
+We have further synthetically modified different parameters of our setting, by modifying the used queries, to observe their effect on performance and scalability:
+%This was done these queries by relaxing the hard constraints to control the number of users admitting them, and examine the effect of different parameters on the execution times: %, by e.g. relaxing the hard constraints to control the number of users admitting them. 
+%We considered the following effect on execution time: 
+(1)~the number of users in the database, and in particular the percentage of users admitting the hard constraints; (2)~the size of the examined profiles and (3)~the
+shape of the ontology in terms of width and depth. For comparison, in the previous experiments, the average percentage of users that admitted the hard constraints was~$\sim$1\% in the SO experiment and lower in AMiner, each profile contained~$\sim$100 RDF triples on average, and the average width and depth of the ontology part used in each query was~$\sim$50 and ~$\sim$7, resp. In the following experiments, when varying the value of some parameter, we fix the others using these average values.
+
+ \begin{table}
+ 	\hspace{-1mm}
+ 	{\scriptsize
+ 		\begin{tabularx}{1.0\columnwidth}{p{0.25\columnwidth}p{0.38\columnwidth}p{0.26\columnwidth}}
+ 			\toprule
+ 			\textbf{Use Case} & \textbf{Example} & \textbf{Required \qlang{}\newline features} \\
+ 			\midrule
+ 			\textsf{1. Expert finding} & Select users highly linked to the key term ``Database" and who frequently publish in a top DB conference. See Figure~\ref{fig:experts}. & Combined similarity, order by selected values.\\
+ 			\midrule
+ 			\textsf{2. Link prediction} & Select co-authors of co-authors of a researcher, ranked by their profile similarity, as her potential future collaborators. See Figure~\ref{fig:AminerQuery}. & Hard constraints, combined similarity, order by similarity.\\
+ 			\midrule
+ 			\textsf{3. Profile-based\newline recommendation} & Select users with similar (extended) profile. See Figure~\ref{fig:qlang}. & Combined similarity,  restricted parts of profiles. \\
+ 			\midrule
+ 			\textsf{4. Context-based\newline recommendation} & Select users that are highly relevant to the tags ``Java'' and ``I/O'' based on their answers since 2015. See Figure~\ref{fig:SOquery}. & Hard constraints, combined similarity, order by similarity. \\
+ 			\midrule
+ 			\textsf{5. Community\newline Extension} & Select users who frequently interact with as many members of a given community. See Figure~\ref{fig:community}. & Combined similarity, order by similarity.\\
+ 			\bottomrule
+ 		\end{tabularx}
+ 	}
+ 	%     \centering
+ 	%    \includegraphics[width=1\linewidth]{figures/expresivness.pdf}
+ %	\vspace{-3mm}
+ 	\caption{Use cases of \qlang{}.}
+ 	\label{fig:use cases}
+ %\vspace{-2mm}
+ \end{table}
+
+We do not report here the running times of the SimRank and SVM baselines, since they were significantly inferior. Unlike \qlang{}, which is dynamically evaluated over the queried profile data, these alternatives require a preprocessing phase per query (sampling random walks for SimRank\footnote{Even the state-of-the-art optimizations techniques suggested for SimRank require a pre-processing phase ~\cite{tian2016sling, jiang2017reads}.}, and training a model for the SVM classifier). Re-executing this phase alone required above one minute per query, and overall could not compare with the scalability of \qlang{}.
+
+Our main findings in this evaluation are as follows.
+\begin{compactitem}
+\item The execution time of \qlang{} grows sublinearly with the size of database/user profiles, due to our caching mechanism (which also achieves a $\geq\times5$ speedup).
+\item Overall, execution takes a few seconds or less for every examined setting, allowing online query evaluation.
+\item In terms of the input taxonomy, our polynomial bound from Prop.~\ref{prop:comp_all} is not met in practice, but rather our preprocessing of taxonomy makes execution times oblivious to its shape and size.
+\end{compactitem}
+Figures~\ref{fig:running times}(a) and~\ref{fig:running times}(b) depict the average running time for SO and AMiner queries, w.r.t.\ the database size, and for different ratios of users admitting the hard constraints.  
+%In all cases, the average execution time took approximately $15$ seconds. However, in a real life scenario (as the dating service example described in the introduction), a reasonable number of potential users would be no more than couple of thousands ($5\%$ of $1.7$M is $85$K).
+%In all cases, the average execution time, over all queries and percentage of examine profiles, took $\sim$15 seconds. However, note that in many real-life scenarios (e.g.\ in collaborator prediction) no more than several thousands users admit the hard constraints, in which case the execution times of our system can reach 1-3 seconds.
+The sublinear growth (roughly square root) in execution times demonstrates the effectiveness of our caching mechanism (Section~\ref{sec:exec}). Since this mechanism leverages intermediate results to save computations, its effect is increased when the number of users, and hence the overlap between their profiles, increases. In comparison, the execution time we observed without caching (omitted from the graphs) increases linearly with the number of users, and was at least~5 times slower for any of the settings we have tested.
+
+%Interestingly, one can see the effectiveness of
+%our caching mechanism and the very moderate linear increase
+%in execution time that it entails. The achieved speedup, that was consistent across all our experiments, was approximately $5$ times faster when using caching (for lack of space, we do not present here the graphs). That is, our dedicated caching mechanism significantly affects both the absolute running times and the scalability of our computations.
+
+
+
+  %a reasonable number of potential users would be no more than couple of thousands ($5\%$ of $1.7$M is $85$K). 
+
+%To further analyze the parameters affecting the execution time
+Next, to examine the effect of the profile size on the execution times, we altered the hard constraints of the queries to include each time a fixed profile size between~$10$ and~$1000$ RDF triples. Figure~\ref{fig:running times}(c) depicts the effect of the profile size on execution time, again exhibiting a sublinear dependency achieved by our caching mechanism.%Observe that in cases where profiles consist of~$\sim$100 triples, (as common in real world scenarios) the average execution time is $\leq 3$ seconds. 
+%Observe that the profile sizes has a linear effect on execution times. However, in real-life scenarios (as in AMiner and SO datasets), this parameter does not goes beyond several hundreds, i.e., the profiles typically consist of no more than few hundreds triples. 
+%\scream{What is the bottom line? what do we want to say here? The execution time grows sublinearly with the profile size, which is good but why? our lca algorithm? caching?} 
+
+Last, we have examined the effect of the ontology shape (width and depth) on query execution times, and showed that there is no significant effect (see Figure~\ref{fig:running times} (d) for width; similar results were observed for height). This is consistent with our theoretical analysis.
+
+
+%To conclude, these experiments demonstrate that our solution is highly scalable and provides fast execution times.
+%Overall, the experiments show that the our framework is indeed efficient in evaluating user selection queries, and in particular, allows online computation of our similarity measure. %Our dedicated caching mechanism makes the solution highly scalable.
+
+\subsection{Flexibility: A Case Study}
+\label{sec:flexibility}
+
+
+We next present prominent user selection scenarios, exemplify them using queries over the SO and AMiner datasets, and analyze the use of the \qlang{} constructs in each scenario. Table \ref{fig:use cases} lists several common user selection scenarios. Each scenario is provided with a concrete example, demonstrating a typical ``information need'', and
+the features required for its formulation in \qlang{}. In particular, note that all example scenarios require the use of (combined) similarity, indicating the importance of soft constraints.  
+
+%We now look into the flexibility of \qlang{}. 
+%We collected prominent user selection scenarios in real-life applications, exemplified them using queries over the SO and AMiner datasets, and analyzed the use of the \qlang{} constructs in each scenario. 
+ 
+
+
+%In particular, all the example queries use soft constraints and hence implicitly require our semantic similarity measure.
+
+\textsf{1. Expert finding.} As described in Section~\ref{sec:related}, much effort is made to determine a user's level of expertise and thereby identify the experts in some topic. 
+%First, note that the definition of an `expert' may vary across applications. For instance, SO ranks experts in a topic by the scores that other users gave to their answers related to that tag (i.e., reputation score)
+%Our goal is not to devise a new definition but rather enable expressing a wide range of such definitions via \qlang{}. For instance, SO ranks experts in a topic by the scores that other users gave to their answers related to that tag (i.e., reputation score). 
+%Obtaining the same ranking in \qlang{} can be done via a simple query that selects the scores of users in a give tag and orders them accordingly. 
+%When such scores are not available, experts can be identified by their \emph{similarity to selected properties} that are related to the topic in question. 
+For example, consider the selection of database experts from the AMiner dataset. %An expert database researcher may be defined as a person who (a) specializes in databases (or related topics), (b) frequently publishes at a top-tier conference in the field and (c) has a high h-index. 
+Figure~\ref{fig:experts} depicts a \qlang{} query attempting to address this task by selecting researchers who specialize in a subject similar to ``Databases'' and have published in some top DB conference, ordered by their h-index.
+To verify that this query indeed retrieves database experts, we presented the top-$10$ results to~$10$ different database researchers. For comparison, we attached a list of top-$10$ database experts generated by the AMiner platform, omitting the origin of either list (AMiner/\qlang{}). 10 out of~10 participants stated that the \qlang{} ranking is more accurate. \footnote{We do not provide the lists here since they contain real researcher names.}
+ 
+
+ %It turns out that this query is quite useful: AMiner uses a machine learning approach to determine the level of expertise \cite{Tang:2011:TLE:1938275.1938277}. We have sent the two lists of top-$10$ experts by our query and by AMiner's ranking to~$10$ researchers from the field, without explaining how they were created (the overlap of the two lists, ignoring the order, was~60\%). All of the replies preferred our rankings as more accurate.\footnote{We do not provide the lists here, since the personal judgments that we obtained may offend some of the readers. However, the lists can be easily recomputed.}
+
+
+ %The \qlang{} query in Figure~\ref{fig:experts} selects users who are specialized in databases (or have a similar skill, see the first \textcd{SIMILAR} clause), and who frequently publish at two top conferences in the field, SIGMOD and EDBT (see the second \textcd{SIMILAR} clause). Among the users who match these criteria, the query returns those with the top-$10$ H-index (see the \textcd{ORDER BY} clause, where \textcd{?h} is defined in line~3). 
+
+%As described in Section \ref{sec:related}, much effort is
+%made to determining user's level of expertise and finding the system experts. Using \qlang{} queries, one may consider any definition of expert, and select user according to this definition.
+%Stack Overflow provides to its users a ranking of top answerers active in a single tag, based on the user's previous scores in answers related to that tag. Naturally, this ranking can be done using simple \qlang{} query.   
+%We examine several natural and intuitive strategies for experts finding over AMiner data, and expressed them using \qlang{}. We then compared to Aminer's own experts lists. One example for query is depicted in Figure \ref{fig:experts}.
+%The query selects users who are specialized at Database, or some other semantically related area, and in which frequently published at VLDB and SIGMOD, ordered in descending order by their H-index. We Compare our results to AMiner rank of experts in Database. AMiner uses a ML approach 
+%for determine the level of expertise \cite{Tang:2011:TLE:1938275.1938277}.
+%Our query resulted in same results to AMiner's ranking in $60\%$ of the cases. We then let $10$ researchers in Database to judge the differences between the two list. The majority of researchers pointed our query results were more accurate \footnote{We did not provide the two lists, to avoid conflict of interest.}.  
+
+\textsf{2. Link prediction.} This problem is mostly known from the study of links that are likely to form in a (social) network. The \qlang{} query we have used on the AMiner dataset in Section~\ref{sec:experiments} is one example for such query, which uses hard constraints to select collaborators of collaborators, then employs combined similarity to find the researchers most similar to a given researcher, in terms of their profiles.
+% and finally returns the most similar such researchers. 
+
+\begin{figure}
+	{\scriptsize
+\begin{Verbatim}
+SELECT ?u
+FROM basic-profile(?u) WHERE
+	\{ ?u h-index ?h. \}
+SIMILAR basic-profile(?u) TO \{?u keyTerm Databases .\}
+	WITH SIMILARITY > 0.5
+SIMILAR extended-profile(?u) TO
+	\{?u published_at Top\_DB\_Conference. \}
+	WITH SIMILARITY > 0.2
+ORDER BY DESC(?h)
+		\end{Verbatim}
+	} \vspace{-6mm} \caption{\qlang{} query selecting database experts.} \label{fig:experts}
+	%\vspace{-4mm}
+\end{figure} 
+
+\vspace{1px}  
+
+
+
+%The well-known problem
+%of link prediction, i.e., predicting which links are likely to form in a network is also illustrated in Section \ref{sec:Implementation}.
+
+%\begin{figure}
+%	{\scriptsize
+%		\begin{Verbatim}
+%		SELECT ?u
+%		FROM basic-profile(?u) WHERE
+%			\{ ?u lastAccessedDate ?d. Filter(?d > 2015) .\}
+%		SIMILAR extended-profile(?u) TO
+%		\{?u answeredOn Java . ?u answeredOn Python .\}
+%			WITH SIMILARITY AS querySim > 0.2
+%		ORDER BY querySim
+%		\end{Verbatim}
+%	} \vspace{-4mm} \caption{\qlang{} query selecting all the Stack Overflow users who have frequently answered Java- and/or %Python-related questions since 2015.} \label{fig:context}
+%	%\vspace{-4mm}
+%\end{figure}
+
+
+\textsf{3+4. Profile-based} and \textsf{Context-based} user recommendation aim to provide a given user with recommendations of other \emph{relevant users} from some repository. %\footnote{Do not confuse with similar scenarios in recommending \emph{items} to a given user.}.
+E.g., the query in Figure~\ref{fig:qlang} selects appropriate matches to a user on an online dating platform, and in Figure~\ref{fig:SOquery} the query selects users adequate for answering a professional question on a given topic. The former uses \emph{similarity to a target profile} (i.e. the profile of Isabella's ``ideal'' match in Figure~\ref{fig:qlang}). The latter query also takes the \emph{context} into account, by ranking higher candidates that frequently answered other questions in similar topics (lines~6-8 in Figure~\ref{fig:SOquery}). 
+
+ %These recommendations are based, respectively, on \emph{similarity to a target profile}, such as the profile of the given user or of her ``ideal'' match, and \emph{context} such as a set of keywords or properties provided by the user. Context-based recommendations typically also take into account the profile of the given user~\cite{dinoia2012linked,mavridis2015skill}. For example, the queries in Figure~\ref{fig:qlang} and in Figure~\ref{fig:SOquery} include profile-based recommendations since they retrieve users whose profile resembles a target user (Isabella/Basil Bourque). Figure~\ref{fig:context} presents a query that selects SO users that are most relevant to the context of the tags ``Java'' and ``Python'', considering only data from 2015 and on.  
+%Context-based user
+%recommendation is well studied problem of recommending users, when given a set of keywords is given by a user \cite{cohen2011principles,dinoia2012linked,mavridis2015skill}. The goal is to return a high-quality ranked of users who are relevant both to the keywords and the user asking. An example of this scenario along with the \qlang{} query is illustrated in Section \ref{sec:Implementation}.
+
+
+\begin{figure}
+	{\scriptsize
+		\begin{Verbatim}
+SELECT ?u
+SIMILAR extended-profile(?u) TO
+	\{?u collaboratedWith X. 
+	 ?u collaboratedWith Y. 
+	 ?u collaboratedWith Z. \}
+	WITH SIMILARITY AS collaboration
+ORDER BY collaboration
+		\end{Verbatim}
+	} \vspace{-6mm} \caption{\qlang{} query detecting additional community members.} \label{fig:community}
+	%\vspace{-4mm}
+\end{figure}
+
+\textsf{5. Community Extension.} 
+Given a Community in a social network (i.e.\ a set of highly interlinked users), \qlang{} may be used to detect additional  potential members. For example, in Figure \ref{fig:community}, given a seed collaboration community in AMiner comprising of three current members (`X',`Y', and `Z'), the \qlang{} query detects potential members by examining their past collaborations with current members, and orders the retrieved users by their similarity scores, i.e., frequency and relevance of collaborations.
+
+%This is the problem of identifying a highly interlinked community in a network, possibly with respect to some context, e.g., detect all users in a social network that belong to the same nuclear family.
+%In some cases, detecting a community having no prior knowledge requires to evaluate the relevance of each member to the others, and hence cannot be done via a single \qlang{} query, since its current semantics allows considering each candidate user only once. 
+%However, \qlang{} can be used to detect a community of users who are relevant to some topic (as in context-based recommendation) or to detect additional members of a seed community. 
+
+To conclude, we demonstrated that queries that have a simple structure in \qlang{} can capture various common scenarios of selecting users by their profiles.
+% Moreover, we showed that different strategies for user selection are easily and intuitively expressed using \qlang{}. 
+

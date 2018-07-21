@@ -1,0 +1,36 @@
+%\vspace{-2px}
+\section{User Profiles}
+
+\label{sec:prelim} 
+
+\begin{table}
+	{\small
+		\resizebox{.4\textwidth}{!}{%
+		\begin{tabularx}{\linewidth}{llllll}
+			\toprule
+			\textbf{Property} & \textbf{Alice} & \textbf{Bob} & \textbf{Carol} & \textbf{David}  & \textbf{Eve}\\
+			\midrule
+			livesIn & Tokyo${}^{(2)}$ & NYC${}^{(1)}$ & Bali${}^{(1)}$  &  Paris${}^{(1)}$   & Tokyo  \\
+			ageGroup & 50-64${}^{(1)}$ & -- & 25-34${}^{(1)}$ & -- & -- \\ 
+			avgRating Mexican & 0.95${}^{(2)}$ & 0.6${}^{(1)}$ & -- & 0.7 & 0.15${}^{(1)}$ \\
+			visitFreq Mexican & 0.8${}^{(2)}$ & 0.25${}^{(2)}$ & -- &  0.75& 0.2 \\
+			avgRating CheapEats & 0.1${}^{(2)}$ & 0.5${}^{(2)}$ & 0.6 & -- & 0.3\\
+			visitFreq CheapEats & 0.6${}^{(1)}$ & 0.85${}^{(2)}$ & 0.9 & --  & 0.2 ${}^{(1)}$ \\
+			\bottomrule
+		\end{tabularx}
+	}
+	} 
+\caption{Example user profiles}
+\label{tab:profs} 
+\end{table}
+
+To be able to procure diverse opinions from users, we first need to properly model the profiles of users.    
+Let~$\mathcal{U}$ be a population of users and~$\mathcal{P}$ be some domain of properties. Following~\cite{amsterdamer2016december}, we define the profile of a user $u\in \mathcal{U}$ as a tuple $D_u=\langle P_u, S_u \rangle$ where $P_u\subseteq\mathcal{P}$ is a set of properties relevant to $u$ and $S_u:P_u\To [0,1]$ maps each property to a score (normalized to~$[0,1]$). This score may have different interpretations depending on the type of property, e.g., true/false, user rating, and so on, and may be provided directly by $u$ or automatically derived from $u$'s activity in the website.  
+
+\begin{example}
+	Table~\ref{tab:profs} shows a few profiles from a travel website (for now, ignore the numbers in superscript). In the first two rows, \elem{livesIn~<city>} ~and~ \elem{ageGroup~<X-Y>} are true/false properties for relevant cities and age ranges. E.g., \elem{livesIn~Tokyo} is a property with score~1 (i.e., true) in Alice's profile. The third and fifth rows show scores that reflect the user average ratings for different types of restaurants, normalized to~$[0,1]$. Note that properties are usually not recorded for every user, e.g., Carol has never rated Mexican food. The fourth and sixth rows show scores reflecting the relative frequency that each of the users visits different types of restaurants.
+	%, where~1 means ``all the time'' and~0 means ``never''. 
+\end{example}
+
+In practice, user profiles can contain many properties. This may be due to a diverse activity of a user in the system (e.g., providing opinions about many types of destinations), %tracking data on different levels of granularity (e.g., Mexican food, South American food\dots) or 
+due to various analyses performed over the data (e.g., one can compute the average rating, maximum rating\dots) and so on.TODO: change data In the dataset that we have constructed from the TripAdvisor website (see Section~\ref{sec:system}), each user has up to~2189 properties. In many scenarios, due to the inherent high dimensionality of user profiles, user profiles consists of merely a subset of available properties. This selection of specific properties and subsequent analyses has a major impact on the diverse set of procured opinions and therefore choices should be carefully made with respect to the desired diversification goals in the specific domain.

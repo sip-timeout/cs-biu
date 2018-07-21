@@ -1,0 +1,70 @@
+\section{CONCLUSION AND FUTURE WORK}
+\label{sec:conc}
+
+This work presents \qlang{}, a declarative framework that allows specification of customized user
+selection criteria. Its SPARQL-based query language has embedded constructs for capturing the
+properties and similarity of (relevant parts of) user profiles, via
+a semantic-aware similarity measure. Dedicated algorithm and optimizations 
+allow for efficient query processing. Our experiments on
+real-life data indicate the effectiveness and usefulness of our approach.
+
+
+%The queries used in our experiments were manually written and
+%reflected the type of users that we intuitively believed to match
+%each scenario. An interesting future research direction would be to auto-generate \qlang{} queries for a given task (possibly also described
+%declaratively).
+
+
+% Using \sysname{} query builder interfaces, even novice
+% users can perform complex crowd selection queries, then after short
+% execution times the results are transfered automatically to the
+% hosting crowdsourcing platform.
+
+% While this work mostly focuses on
+% crowdsourcing, its approach can be useful for other
+% applications, such as social networks or recommender systems, and may
+% be employed to refine the set of users/opinions taken
+% into consideration.
+
+Interesting directions for future work include  \emph{diversification}, \emph{clustering} and \emph{classification}
+constructs, which may be built on top of our semantic notions of
+similarity. The ``cold start'' problem of an initially small profile repository can be further considered, possibly by actively asking users for 
+missing information or by using external sources. Another interesting research direction is considering the ``gray sheep'' problem \cite{ghazanfar2014leveraging}, advising users how to modify the query to get more/less results. Finally, it would be interesting to adapt our novel similarity measure to other applications, such as entity matching.
+
+% Finally, the automatic generation of \qlang{} queries from
+% user questions is another intriguing direction for future research.
+
+
+%First, auto-generationIn Section~\ref{sec:implementation}, we experimented with auto-generating, task-oriented \qlang{} queries,
+%\qlang{} can also be extended to incorporate more features, most importantly to yield \textit{diversified} crowd member results.
+%Another interesting extention would be to use \sysname{} for detecting anomalous users such as fake profiles in social networks and spammers in crowdsourcing platforms.
+%In Section~\ref{sec:similarity} we shortly discussed the \textit{cold start} problem that may arise when there is insufficient data in the system. It may be interesting to adapt existing solutions e.g. \textit{active learning} by querying users for missing data, using external resources (e.g. profiles in social networks)
+
+
+
+
+
+
+%We presented a semantically-rich, similarity metric, embedded in \qlang{} , that naturally captures similarities between crowd profiles and history.
+
+%To allow for efficient query execution, we implement in \sysname{} novel algorithms based on our generic,
+%semantically-aware definitions of crowd member similarity and expertise.
+%Experimental results with real-life crowd data demonstrate the feasibility and effectiveness of the approach
+
+%including refined preferences for crowd members' attritbutes similarity.
+
+%\sysname{} is based on an RDF data model for representing members' profiles and histories as well as an \textit{ontology} that captures the semantic relations between them.
+%To evaluate \qlang{} queries, we developed novel semantic similarity functions based on the \textit{In}
+
+
+
+
+%This tool enables composing and executing queries in a novel, SPARQL-based language, \qlang{}, that captures the desired characteristics of crowd members, including complex constructs such as similarity and expertise, in a generic manner. These queries are executed by \sysname{} over a a repository of the profiles and past answers of crowd members, by performing a semantic analysis of the knowledge provided by each crowd member.
+
+
+
+
+
+
+%\paragraph*{Acknowledgments}
+%\scream{complete}
