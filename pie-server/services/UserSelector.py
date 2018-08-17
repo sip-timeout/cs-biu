@@ -20,6 +20,7 @@ buckets_num = 3
 top_coverage_calculation = 200
 random_sample_times = 51
 selection_size = 5
+overlapping_cats_limit = 50
 
 
 def upsert(map, key, value=1):
@@ -89,6 +90,23 @@ def ensure_category_scores():
     calculate_category_scores()
 
 
+def get_overlapping_coverage(selection, ordered_cats, overlap_limit):
+    category_combinations = list(itertools.combinations(ordered_cats[:overlap_limit], 2))
+    covered_combinations = 0
+    for combination in category_combinations:
+        for user in selection:
+            covered = True
+            for category in combination:
+                if category not in [cat[0] for cat in user[2]]:
+                    covered = False
+                    break
+            if covered:
+                covered_combinations += 1
+                break
+
+    return  float(covered_combinations) / float(len(category_combinations))
+
+
 def get_category_coverage(top_for_coverage, top_covered_indication, selection):
     ordered_total_cats = sorted(category_scores.keys(), key=lambda cat: category_scores[cat], reverse=True)
     selection_cats = set(reduce(lambda x, y: x + y[2], selection, []))
@@ -101,12 +119,13 @@ def get_category_coverage(top_for_coverage, top_covered_indication, selection):
     top_category_coverage = category_coverage[:top_for_coverage]
     coverage_rate = float(len([1 for cat in top_category_coverage if cat[1]])) / top_for_coverage
 
-    return top_category_coverage, coverage_rate, top_covered, top_not_covered, selection_dict
+    overlapping_coverage = get_overlapping_coverage(selection, ordered_total_cats, overlapping_cats_limit)
+    return top_category_coverage, coverage_rate, top_covered, top_not_covered, selection_dict, overlapping_coverage
 
 
 def get_selection_obj(selection, rest_categories):
     selection_users = [{'score': user[1], 'categories': user[2][:10], 'user': user[-1]} for user in selection]
-    category_coverage, coverage, top_covered, top_not_covered, all_covered_cats = get_category_coverage(
+    category_coverage, coverage, top_covered, top_not_covered, all_covered_cats, overlapping_coverage = get_category_coverage(
         top_coverage_calculation, 20, selection)
 
     formatted_cats = sorted([[rest_cat, rest_cat in all_covered_cats] for rest_cat in rest_categories],
@@ -116,7 +135,8 @@ def get_selection_obj(selection, rest_categories):
     covered_cat_num = len(all_covered_cats)
     return {'users': selection_users, 'top_category_coverage': category_coverage,
             'category_coverage_rate': coverage, 'top_covered': top_covered, 'top_not_covered': top_not_covered,
-            'rest_categories': formatted_cats, 'selection_score': selection_score, 'cats_num': covered_cat_num}
+            'rest_categories': formatted_cats, 'selection_score': selection_score, 'cats_num': covered_cat_num,
+            'overlapping_coverage': overlapping_coverage}
 
 
 def calculate_arbitrary_selection_score(random_users, users, cat_score):
@@ -295,7 +315,8 @@ def get_selection(restaurant_name, selection_criteria):
     calculation_time = time.time() - start
     return get_selection_obj(selected_users, restaurant_cats), get_selection_obj(get_random_users(rest_users_copy),
                                                                                  restaurant_cats), get_selection_obj(
-        calculate_arbitrary_selection_score([user['user_id'] for user in get_cluster_selection(rest_users_copy)], rest_users_copy,
+        calculate_arbitrary_selection_score([user['user_id'] for user in get_cluster_selection(rest_users_copy)],
+                                            rest_users_copy,
                                             user_feedback_category_scores),
         restaurant_cats), get_selection_obj(
         calculate_arbitrary_selection_score([user['user_id'] for user in
@@ -310,7 +331,7 @@ def get_cluster_selection(users):
     return clustering.get_representatives(users, selection_size)
 
 
-def get_category_analysis(category_name, restaurant_name, selection_criteria,selection=None):
+def get_category_analysis(category_name, restaurant_name, selection_criteria, selection=None):
     users = FeatureCalculator.calculate_features()
     if not selection:
         selection = get_selection(restaurant_name, selection_criteria)
@@ -328,9 +349,9 @@ def get_category_analysis(category_name, restaurant_name, selection_criteria,sel
 
     def get_normalized_dist(dist_arr):
         arr_sum = sum(dist_arr)
-        if arr_sum==0:
-            return [0]*len(dist_arr)
-        return [(float(elem) / arr_sum)  for elem in dist_arr]
+        if arr_sum == 0:
+            return [0] * len(dist_arr)
+        return [(float(elem) / arr_sum) for elem in dist_arr]
 
     for user_name, user in users.iteritems():
         user_features = user['rest_features']

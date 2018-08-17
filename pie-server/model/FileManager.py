@@ -1,5 +1,7 @@
 import json
 
+user_limit = 60000
+
 def get_pois():
     return _file_to_dict('pois.json')
 
@@ -14,7 +16,7 @@ def get_users():
     i =0;
     for k in users:
         sub_dict[k] = users[k]
-        if i > 60000:
+        if i > user_limit:
             break
         i+=1
     return sub_dict
