@@ -116,8 +116,7 @@ def get_selection_obj(selection, rest_categories):
     covered_cat_num = len(all_covered_cats)
     return {'users': selection_users, 'top_category_coverage': category_coverage,
             'category_coverage_rate': coverage, 'top_covered': top_covered, 'top_not_covered': top_not_covered,
-            'rest_categories': formatted_cats,'selection_score':selection_score,'cats_num':covered_cat_num}
-
+            'rest_categories': formatted_cats, 'selection_score': selection_score, 'cats_num': covered_cat_num}
 
 
 def calculate_arbitrary_selection_score(random_users, users, cat_score):
@@ -237,7 +236,7 @@ def get_selection(restaurant_name, selection_criteria):
 
     def get_random_users(users):
 
-        random_users = random.sample(rest_users, selection_size)
+        random_users = random.sample(users, selection_size)
         return calculate_arbitrary_selection_score(random_users, users, user_feedback_category_scores)
 
     def validate_user(user_cats):
@@ -253,7 +252,9 @@ def get_selection(restaurant_name, selection_criteria):
         rest_users = {k: v for k, v in users.iteritems() if user_in_restaurant(v, restaurant_name)}
         remove_rest_users_data(user_feedback_category_scores, rest_users)
     else:
-        rest_users = users
+        rest_users = users.copy()
+
+    rest_users_copy = rest_users.copy()
 
     selected_users = []
     covered_cats = dict()
@@ -292,12 +293,14 @@ def get_selection(restaurant_name, selection_criteria):
 
     # return [{'score': user[1], 'categories': user[2], 'user': user[-1]} for user in selected_users]
     calculation_time = time.time() - start
-    return get_selection_obj(selected_users, restaurant_cats), get_selection_obj(get_random_users(rest_users),
+    return get_selection_obj(selected_users, restaurant_cats), get_selection_obj(get_random_users(rest_users_copy),
                                                                                  restaurant_cats), get_selection_obj(
-        calculate_arbitrary_selection_score([user['user_id'] for user in get_cluster_selection(rest_users)], rest_users,
+        calculate_arbitrary_selection_score([user['user_id'] for user in get_cluster_selection(rest_users_copy)], rest_users_copy,
                                             user_feedback_category_scores),
         restaurant_cats), get_selection_obj(
-        calculate_arbitrary_selection_score([user['user_id'] for user in sorted(rest_users.values(), key=lambda user: user['review_count'], reverse=True)[:selection_size]], rest_users,
+        calculate_arbitrary_selection_score([user['user_id'] for user in
+                                             sorted(rest_users_copy.values(), key=lambda user: user['review_count'],
+                                                    reverse=True)[:selection_size]], rest_users_copy,
                                             user_feedback_category_scores),
         restaurant_cats)
 
@@ -307,33 +310,44 @@ def get_cluster_selection(users):
     return clustering.get_representatives(users, selection_size)
 
 
-def get_category_analysis(category_name, restaurant_name, selection_criteria):
+def get_category_analysis(category_name, restaurant_name, selection_criteria,selection=None):
     users = FeatureCalculator.calculate_features()
-    selection = get_selection(restaurant_name, selection_criteria)
+    if not selection:
+        selection = get_selection(restaurant_name, selection_criteria)
     specification, mod, tp, bucket = category_name.split('_')
     cat_name = '_'.join([mod, tp])
 
-    selection_users = [user['user']['userName'] for user in selection['users']]
+    selections = {
+        'pod': {'users': [user['user']['user_id'] for user in selection[0]['users']], 'dist': [0] * buckets_num},
+        'random': {'users': [user['user']['user_id'] for user in selection[1]['users']], 'dist': [0] * buckets_num},
+        'cluster': {'users': [user['user']['user_id'] for user in selection[2]['users']], 'dist': [0] * buckets_num},
+        'top': {'users': [user['user']['user_id'] for user in selection[3]['users']], 'dist': [0] * buckets_num}}
+
     total_users_dist = [0] * buckets_num
     selection_users_dist = [0] * buckets_num
 
     def get_normalized_dist(dist_arr):
         arr_sum = sum(dist_arr)
-        return [(float(elem) / arr_sum) * 100 for elem in dist_arr]
+        if arr_sum==0:
+            return [0]*len(dist_arr)
+        return [(float(elem) / arr_sum)  for elem in dist_arr]
 
     for user_name, user in users.iteritems():
-        if 'restaurants' in user and len(user['restaurants']) > 3:
-            user_features = user['rest_features']
-            if user['restName'] == restaurant_name:
-                if cat_name in user_features and specification in user_features[cat_name]:
-                    bucket = get_bucket(user_features[cat_name][specification], cat_name)
-                    buck_num = int(bucket[-1])
-                    total_users_dist[buck_num - 1] += 1
-                    if user_name in selection_users:
-                        selection_users_dist[buck_num - 1] += 1
+        user_features = user['rest_features']
+        if cat_name in user_features and specification in user_features[cat_name]:
+            bucket = get_bucket(user_features[cat_name][specification], cat_name)
+            buck_num = int(bucket[-1])
+            total_users_dist[buck_num - 1] += 1
+            for selection_type in selections:
+                selection = selections[selection_type]
+                if user_name in selection['users']:
+                    selection['dist'][buck_num - 1] += 1
 
-    return {'total_dist': get_normalized_dist(total_users_dist),
-            'selection_dist': get_normalized_dist(selection_users_dist)}
+    return {'dist_total': get_normalized_dist(total_users_dist),
+            'dist_pod': get_normalized_dist(selections['pod']['dist']),
+            'dist_cluster': get_normalized_dist(selections['cluster']['dist']),
+            'dist_random': get_normalized_dist(selections['random']['dist']),
+            'dist_top': get_normalized_dist(selections['top']['dist'])}
 
 
 def get_prediction(restaurant_name, selection_criteria):

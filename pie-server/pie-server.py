@@ -56,9 +56,8 @@ def get_marginal_summary(results):
     return marg_sum
 
 
-def get_averages(results):
+def get_averages(results,measures):
     algos = ['pod', 'top', 'random', 'cluster']
-    measures = ['var', 'top', 'neg_dist','cov_rats_dist']
     avgs = {mes: {algo: 0.0 for algo in algos} for mes in measures}
     for _, res in results.iteritems():
         for algo in algos:
@@ -83,9 +82,9 @@ def get_distributions_diff(dist):
             if diff > 0:
                 neg_diff_sum += diff / float(total_dist[i])
             if cur_dist[i] > 0:
-                cov_rats+=1.0
+                cov_rats += 1.0
         dist_diff['neg_' + dist_type] = neg_diff_sum
-        dist_diff['cov_rats_'+dist_type] = cov_rats
+        dist_diff['cov_rats_' + dist_type] = cov_rats
 
     return dist_diff
 
@@ -148,16 +147,28 @@ def get_test():
 
     summary = results.pop('summary')
     summary['marginal'] = get_marginal_summary(results)
-    summary['avgs'] = get_averages(results)
+    summary['avgs'] = get_averages(results,['var', 'top', 'neg_dist', 'cov_rats_dist'])
     results['summary'] = summary
     return jsonify(results)
 
 
 @app.route('/experiment/quality')
 def perform_quality_test():
-    return jsonify(UserSelector.get_selection('4JNXUYY8wbaaDmk3BPzlWw',
-                                              {'forbidden_cats': [], 'dislike_cats': [], 'required_cats': [],
-                                               'like_cats': []}))
+    results = {}
+    results['selections'] = UserSelector.get_selection(None,
+                                                       {'forbidden_cats': [], 'dislike_cats': [], 'required_cats': [],
+                                                        'like_cats': []})
+
+    top_k_cats = [cat[0] for cat in results['selections'][0]['top_category_coverage'][:20]]
+
+    results['top_k'] = {
+        cat: UserSelector.get_category_analysis(cat, None,
+                                                {'forbidden_cats': [], 'dislike_cats': [], 'required_cats': [],
+                                                 'like_cats': []},selection=results['selections']) for cat in top_k_cats}
+    for cat,cat_dist in results['top_k'].iteritems():
+        results['top_k'][cat] =  get_distributions_diff(cat_dist)
+    results['avgs'] = get_averages(results['top_k'],['neg_dist'])
+    return jsonify(results)
     # return jsonify(UserSelector.get_cluster_selection())
 
 

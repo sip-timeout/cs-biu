@@ -9,7 +9,16 @@ def get_rests():
 
 
 def get_users():
-    return _file_to_dict('users.json')
+    users =  _file_to_dict('users.json')
+    sub_dict = {}
+    i =0;
+    for k in users:
+        sub_dict[k] = users[k]
+        if i > 60000:
+            break
+        i+=1
+    return sub_dict
+
 
 
 def get_rest_taxonomy():
