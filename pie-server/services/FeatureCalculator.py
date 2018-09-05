@@ -10,7 +10,7 @@ def calculate_features():
     global calculation_time
     start = time.time()
     if cached_users:
-        print 'return users from cache'
+        # print 'return users from cache'
         return cached_users
 
     users = FileManager.get_users()
@@ -35,7 +35,7 @@ def calculate_features():
 
     def calculate_rest_features(user):
 
-        #list_modifiers = ['cuisine', 'restaurant-features']
+        # list_modifiers = ['cuisine', 'restaurant-features']
         list_modifiers = ['cuisine']
         location_modifiers = ['country', 'city']
 
@@ -95,7 +95,13 @@ def calculate_features():
 
 
     # print json.dumps(sorted(unclassified_cuisines.items(),key=operator.itemgetter(1),reverse=True))
-    print unclassified_cuisines
+    # print unclassified_cuisines
     cached_users = users
     calculation_time = time.time() - start
+    print 'Number of users:' + str(len(users))
+
+    features_number_arr = [
+        (sum([len(mod_features) for mod_features in users[username]['rest_features'].values()]) + len(users[username]['bin_features'].keys()))
+        for username in users]
+    print 'Average number of features:' + str(float(sum(features_number_arr)) / float(len(features_number_arr)))
     return users

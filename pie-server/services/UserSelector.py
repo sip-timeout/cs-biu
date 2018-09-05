@@ -42,7 +42,7 @@ def ensure_category_scores():
     global category_scores
 
     if thresholds:
-        print 'return thresholds from cache'
+        # print 'return thresholds from cache'
         return
     else:
         thresholds = dict()
@@ -70,7 +70,7 @@ def ensure_category_scores():
             for i in range(1, buckets_num):
                 thresholds[key + '_' + str(i)] = sorted_arr[i * buck_size]
             thresholds[key + '_' + str(buckets_num)] = sorted_arr[-1]
-        print 'done'
+        # print 'done'
 
     def calculate_category_scores():
         for username in users:
@@ -88,6 +88,7 @@ def ensure_category_scores():
 
     calculate_thresholds()
     calculate_category_scores()
+    print 'Number of categories:'+ str(len(category_scores))
 
 
 def get_overlapping_coverage(selection, ordered_cats, overlap_limit):
@@ -104,7 +105,7 @@ def get_overlapping_coverage(selection, ordered_cats, overlap_limit):
                 covered_combinations += 1
                 break
 
-    return  float(covered_combinations) / float(len(category_combinations))
+    return float(covered_combinations) / float(len(category_combinations))
 
 
 def get_category_coverage(top_for_coverage, top_covered_indication, selection):
@@ -184,7 +185,6 @@ def user_in_restaurant(user, rest_id):
 
 def get_selection(restaurant_name, selection_criteria):
     global calculation_time
-    start = time.time()
 
     users = FeatureCalculator.calculate_features()
 
@@ -276,6 +276,8 @@ def get_selection(restaurant_name, selection_criteria):
 
     rest_users_copy = rest_users.copy()
 
+    start = time.time()
+
     selected_users = []
     covered_cats = dict()
     restaurant_cats = set()
@@ -313,6 +315,7 @@ def get_selection(restaurant_name, selection_criteria):
 
     # return [{'score': user[1], 'categories': user[2], 'user': user[-1]} for user in selected_users]
     calculation_time = time.time() - start
+    print 'PODIUM calculation time:' + str(calculation_time)
     return get_selection_obj(selected_users, restaurant_cats), get_selection_obj(get_random_users(rest_users_copy),
                                                                                  restaurant_cats), get_selection_obj(
         calculate_arbitrary_selection_score([user['user_id'] for user in get_cluster_selection(rest_users_copy)],
@@ -328,7 +331,10 @@ def get_selection(restaurant_name, selection_criteria):
 
 def get_cluster_selection(users):
     clustering = KMeansCluster()
-    return clustering.get_representatives(users, selection_size)
+    start = time.time()
+    reps =  clustering.get_representatives(users, selection_size)
+    print 'Cluster calculation time:' + str(time.time() - start)
+    return reps
 
 
 def get_category_analysis(category_name, restaurant_name, selection_criteria, selection=None):
@@ -433,7 +439,7 @@ def get_prediction(restaurant_name, selection_criteria):
         return coverage, coverage_rate
 
     def get_rating_dist(rating_arr):
-        print rating_arr
+        # print rating_arr
         dist = [0.0] * 5
         for rat in rating_arr:
             dist[int(rat) - 1] += 1.0 / len(rating_arr)

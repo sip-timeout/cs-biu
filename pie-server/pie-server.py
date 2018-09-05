@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask import jsonify
 from services import UserSelector
 from model import FileManager
+from services import FeatureCalculator
 from flask_cors import CORS, cross_origin
 import json
 import os
@@ -56,7 +57,7 @@ def get_marginal_summary(results):
     return marg_sum
 
 
-def get_averages(results,measures):
+def get_averages(results, measures):
     algos = ['pod', 'top', 'random', 'cluster']
     avgs = {mes: {algo: 0.0 for algo in algos} for mes in measures}
     for _, res in results.iteritems():
@@ -70,11 +71,11 @@ def get_averages(results,measures):
 def get_distributions_diff(dist):
     dist_diff = dict()
     total_dist = dist.pop('dist_total')
-    print total_dist
+    # print total_dist
     for dist_type, cur_dist in dist.iteritems():
         neg_diff_sum = 0
         cov_rats = 0.0
-        print dist_type, cur_dist
+        # print dist_type, cur_dist
         for i in range(0, len(total_dist)):
             if total_dist[i] == 0:
                 continue
@@ -91,6 +92,7 @@ def get_distributions_diff(dist):
 
 @app.route('/test_results')
 def get_test():
+    FileManager.user_limit = 2 ** 30
     results = {}
     summary = {'all': 0}
     if os.path.isfile('test_results'):
@@ -141,19 +143,20 @@ def get_test():
 
                 results[poi['name']].update(get_distributions_diff(prediction['distributions']))
 
-                print summary
+                # print summary
 
         results['summary'] = summary
 
     summary = results.pop('summary')
     summary['marginal'] = get_marginal_summary(results)
-    summary['avgs'] = get_averages(results,['var', 'top', 'neg_dist', 'cov_rats_dist'])
+    summary['avgs'] = get_averages(results, ['var', 'top', 'neg_dist', 'cov_rats_dist'])
     results['summary'] = summary
     return jsonify(results)
 
 
 @app.route('/experiment/quality')
 def perform_quality_test():
+    FileManager.user_limit = 60000
     results = {}
     results['selections'] = UserSelector.get_selection(None,
                                                        {'forbidden_cats': [], 'dislike_cats': [], 'required_cats': [],
@@ -164,12 +167,29 @@ def perform_quality_test():
     results['top_k'] = {
         cat: UserSelector.get_category_analysis(cat, None,
                                                 {'forbidden_cats': [], 'dislike_cats': [], 'required_cats': [],
-                                                 'like_cats': []},selection=results['selections']) for cat in top_k_cats}
-    for cat,cat_dist in results['top_k'].iteritems():
-        results['top_k'][cat] =  get_distributions_diff(cat_dist)
-    results['avgs'] = get_averages(results['top_k'],['neg_dist'])
+                                                 'like_cats': []}, selection=results['selections']) for cat in
+    top_k_cats}
+    for cat, cat_dist in results['top_k'].iteritems():
+        results['top_k'][cat] = get_distributions_diff(cat_dist)
+    results['avgs'] = get_averages(results['top_k'], ['neg_dist'])
     return jsonify(results)
     # return jsonify(UserSelector.get_cluster_selection())
+
+
+@app.route('/experiment/performance')
+def perform_performance_test():
+    user_limits = [1000, 10000, 20000, 40000, 60000]
+    # user_limits = [100,200]
+    for limit in user_limits:
+        FeatureCalculator.cached_users = None
+        UserSelector.thresholds = None
+        FileManager.user_limit = limit
+        UserSelector.get_selection(None,
+                                   {'forbidden_cats': [], 'dislike_cats': [],
+                                    'required_cats': [],
+                                    'like_cats': []})
+        print '--------------------------------------'
+    return 'Done'
 
 
 if __name__ == '__main__':
