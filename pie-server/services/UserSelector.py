@@ -70,7 +70,7 @@ def ensure_category_scores():
             for i in range(1, buckets_num):
                 thresholds[key + '_' + str(i)] = sorted_arr[i * buck_size]
             thresholds[key + '_' + str(buckets_num)] = sorted_arr[-1]
-        # print 'done'
+            # print 'done'
 
     def calculate_category_scores():
         for username in users:
@@ -86,9 +86,33 @@ def ensure_category_scores():
             for bin_feat in user['bin_features']:
                 upsert(category_scores, bin_feat)
 
+    def print_overlapping_scores():
+        def is_cat_in_user(cat, user):
+            cat_parts = cat.split('_')
+            cat_type = '_'.join(cat_parts[1:3])
+            if cat_type in user['rest_features']:
+                if cat_parts[0] in user['rest_features'][cat_type]:
+                    if get_bucket(user['rest_features'][cat_type][cat_parts[0]], cat_type) == '_'.join(cat_parts[1:4]):
+                        return True
+            return False
+
+        overlapping_cats = {}
+        ordered_cats = sorted(category_scores.keys(), key=lambda cat: category_scores[cat], reverse=True)
+        category_combinations = list(itertools.combinations(ordered_cats[:overlapping_cats_limit], 2))
+        for username in users:
+            user = users[username]
+            for combination in category_combinations:
+                if is_cat_in_user(combination[0], user) and is_cat_in_user(combination[1], user):
+                    upsert(overlapping_cats, '&'.join(list(combination)))
+
+        ordered_overlapping = sorted(overlapping_cats.keys(), key=lambda cat: overlapping_cats[cat], reverse=True)
+        for overlap in ordered_overlapping:
+            print overlap + ' ' + str(overlapping_cats[overlap])
+
     calculate_thresholds()
     calculate_category_scores()
-    print 'Number of categories:'+ str(len(category_scores))
+    # print_overlapping_scores()
+    print 'Number of categories:' + str(len(category_scores))
 
 
 def get_overlapping_coverage(selection, ordered_cats, overlap_limit):
@@ -332,7 +356,7 @@ def get_selection(restaurant_name, selection_criteria):
 def get_cluster_selection(users):
     clustering = KMeansCluster()
     start = time.time()
-    reps =  clustering.get_representatives(users, selection_size)
+    reps = clustering.get_representatives(users, selection_size)
     print 'Cluster calculation time:' + str(time.time() - start)
     return reps
 

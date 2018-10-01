@@ -178,7 +178,7 @@ def perform_quality_test():
 
 @app.route('/experiment/performance')
 def perform_performance_test():
-    user_limits = [1000, 10000, 20000, 40000, 60000]
+    user_limits = [1000, 2000, 4000, 8000, 16000,32000]
     # user_limits = [100,200]
     for limit in user_limits:
         FeatureCalculator.cached_users = None
