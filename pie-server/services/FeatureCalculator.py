@@ -38,6 +38,8 @@ def calculate_features():
         # list_modifiers = ['cuisine', 'restaurant-features']
         list_modifiers = ['cuisine']
         location_modifiers = ['country', 'city']
+        # location_modifiers = []
+        mod_types = ['avg','visit','liked']
 
         if 'restaurants' in user:
             rest_features = dict()
@@ -83,7 +85,13 @@ def calculate_features():
                 for key in rest_features[mod + '_avg']:
                     rest_features[mod + '_avg'][key] /= (rest_features[mod + '_visit'][key] * total_restaurants)
 
-            user['rest_features'] = rest_features
+            filtered_features = {}
+            for mod in location_modifiers + list_modifiers:
+                for type in mod_types:
+                    filtered_features['_'.join([mod,type])] = rest_features['_'.join([mod,type])]
+
+
+            user['rest_features'] = filtered_features
 
     for username in users:
         user = users[username]
