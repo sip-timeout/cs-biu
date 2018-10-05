@@ -26,7 +26,8 @@ def calculate_features():
             map[key] = value
 
     def calculate_binary_features(user):
-        feat_types = ['location', 'age']
+        # feat_types = ['location', 'age']
+        feat_types = []
         bin_features = dict()
         for bin_feat in feat_types:
             if bin_feat in user:
@@ -35,8 +36,8 @@ def calculate_features():
 
     def calculate_rest_features(user):
 
-        # list_modifiers = ['cuisine', 'restaurant-features']
-        list_modifiers = ['cuisine']
+        list_modifiers = ['cuisine', 'good-for']
+        # list_modifiers = ['cuisine']
         location_modifiers = ['country', 'city']
         # location_modifiers = []
         mod_types = ['avg','visit','liked']

@@ -100,15 +100,15 @@ def get_test():
     else:
         for poi in FileManager.get_pois():
             if ';' in poi['topics']:
-                try:
-                    prediction = UserSelector.get_prediction(poi['id'],
-                                                             {'forbidden_cats': [], 'dislike_cats': [],
-                                                              'required_cats': [],
-                                                              'like_cats': []})
+                # try:
+                prediction = UserSelector.get_prediction(poi['id'],
+                                                         {'forbidden_cats': [], 'dislike_cats': [],
+                                                          'required_cats': [],
+                                                          'like_cats': []})
 
-                except Exception as ex:
-                    print 'cant predict ' + poi['name'] + ' ex:' + str(ex)
-                    continue
+                # except Exception as ex:
+                #     print 'cant predict ' + poi['name'] + ' ex:' + str(ex)
+                #     continue
 
                 summary['all'] += 1
                 results[poi['name']] = {'top_pod': prediction['topic_coverage_rate'],

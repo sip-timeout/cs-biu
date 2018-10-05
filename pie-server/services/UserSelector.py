@@ -12,8 +12,8 @@ calculation_time = 0
 thresholds = None
 category_scores = None
 # bucketed_feature_modifiers = ['continent', 'country', 'cuisine', 'good-for']
-bucketed_feature_modifiers = ['cuisine','country','city']
-feature_types = ['avg','visit','liked']
+bucketed_feature_modifiers = ['cuisine', 'country', 'good-for', 'city']
+feature_types = ['avg', 'visit', 'liked']
 like_factor = 4
 rest_cat_factor = 1
 buckets_num = 3
@@ -385,7 +385,7 @@ def get_category_analysis(category_name, restaurant_name, selection_criteria, se
 
     for user_name, user in users.iteritems():
         user_features = user['rest_features']
-        if cat_name in user_features and specification in user_features[cat_name]:
+        if cat_name in user_features and specification in user_features[cat_name] and len(user['restaurants']) > 3:
             bucket = get_bucket(user_features[cat_name][specification], cat_name)
             buck_num = int(bucket[-1])
             total_users_dist[buck_num - 1] += 1
