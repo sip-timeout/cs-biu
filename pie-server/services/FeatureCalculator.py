@@ -36,9 +36,9 @@ def calculate_features():
 
     def calculate_rest_features(user):
 
-        list_modifiers = ['cuisine', 'good-for']
-        # list_modifiers = ['cuisine']
-        location_modifiers = ['country', 'city']
+        # list_modifiers = ['cuisine', 'good-for']
+        list_modifiers = ['cuisine']
+        location_modifiers = ['city']
         # location_modifiers = []
         mod_types = ['avg','visit','liked']
 

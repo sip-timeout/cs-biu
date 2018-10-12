@@ -13,8 +13,9 @@ thresholds = None
 category_scores = None
 meaningful_overlaps = None
 # bucketed_feature_modifiers = ['continent', 'country', 'cuisine', 'good-for']
-bucketed_feature_modifiers = ['cuisine', 'country', 'good-for', 'city']
-feature_types = ['avg', 'visit', 'liked']
+# bucketed_feature_modifiers = ['cuisine', 'country', 'good-for', 'city']
+bucketed_feature_modifiers = ['cuisine','city']
+feature_types = ['avg']
 like_factor = 4
 rest_cat_factor = 1
 buckets_num = 3
@@ -87,8 +88,9 @@ def ensure_category_scores():
             for bin_feat in user['bin_features']:
                 upsert(category_scores, bin_feat)
 
-    def print_overlapping_scores():
+    def calculate_meaningful_overlaps():
         global meaningful_overlaps
+
         def is_cat_in_user(cat, user):
             cat_parts = cat.split('_')
             cat_type = '_'.join(cat_parts[1:3])
@@ -101,8 +103,8 @@ def ensure_category_scores():
         overlapping_cats = {}
 
         ordered_cats = sorted(category_scores.keys(), key=lambda cat: category_scores[cat], reverse=True)
-        category_combinations = list(itertools.combinations(ordered_cats[5:overlapping_cats_limit], 2))
-        overlap_to_combination = {'&'.join(list(comb)):comb for comb in category_combinations}
+        category_combinations = list(itertools.combinations(ordered_cats[:overlapping_cats_limit], 2))
+        overlap_to_combination = {'&'.join(list(comb)): comb for comb in category_combinations}
         for username in users:
 
             user = users[username]
@@ -112,8 +114,8 @@ def ensure_category_scores():
                         upsert(overlapping_cats, '&'.join(list(combination)))
 
         threshold_score = category_scores[ordered_cats[200]]
-        print ordered_cats[200]
-        print category_scores[ordered_cats[200]]
+        # print ordered_cats[200]
+        # print category_scores[ordered_cats[200]]
         ordered_overlapping = sorted(overlapping_cats.keys(), key=lambda cat: overlapping_cats[cat], reverse=True)
 
         meaningful_overlaps = []
@@ -121,12 +123,12 @@ def ensure_category_scores():
         #     print overlap + ' ' + str(overlapping_cats[overlap])
         for overlap in ordered_overlapping:
             if overlapping_cats[overlap] > threshold_score:
-                print overlap + ' ' + str(overlapping_cats[overlap])
+                # print overlap + ' ' + str(overlapping_cats[overlap])
                 meaningful_overlaps.append(overlap_to_combination[overlap])
 
     calculate_thresholds()
     calculate_category_scores()
-    print_overlapping_scores()
+    calculate_meaningful_overlaps()
     print 'Number of categories:' + str(len(category_scores))
 
 
