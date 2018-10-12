@@ -11,6 +11,7 @@ from services.Clustering import KMeansCluster
 calculation_time = 0
 thresholds = None
 category_scores = None
+meaningful_overlaps = None
 # bucketed_feature_modifiers = ['continent', 'country', 'cuisine', 'good-for']
 bucketed_feature_modifiers = ['cuisine', 'country', 'good-for', 'city']
 feature_types = ['avg', 'visit', 'liked']
@@ -87,6 +88,7 @@ def ensure_category_scores():
                 upsert(category_scores, bin_feat)
 
     def print_overlapping_scores():
+        global meaningful_overlaps
         def is_cat_in_user(cat, user):
             cat_parts = cat.split('_')
             cat_type = '_'.join(cat_parts[1:3])
@@ -97,28 +99,41 @@ def ensure_category_scores():
             return False
 
         overlapping_cats = {}
-        ordered_cats = sorted(category_scores.keys(), key=lambda cat: category_scores[cat], reverse=True)
-        category_combinations = list(itertools.combinations(ordered_cats[:overlapping_cats_limit], 2))
-        for username in users:
-            user = users[username]
-            for combination in category_combinations:
-                if is_cat_in_user(combination[0], user) and is_cat_in_user(combination[1], user):
-                    upsert(overlapping_cats, '&'.join(list(combination)))
 
+        ordered_cats = sorted(category_scores.keys(), key=lambda cat: category_scores[cat], reverse=True)
+        category_combinations = list(itertools.combinations(ordered_cats[5:overlapping_cats_limit], 2))
+        overlap_to_combination = {'&'.join(list(comb)):comb for comb in category_combinations}
+        for username in users:
+
+            user = users[username]
+            if 'restaurants' in user and len(user['restaurants']) > 3:
+                for combination in category_combinations:
+                    if is_cat_in_user(combination[0], user) and is_cat_in_user(combination[1], user):
+                        upsert(overlapping_cats, '&'.join(list(combination)))
+
+        threshold_score = category_scores[ordered_cats[200]]
+        print ordered_cats[200]
+        print category_scores[ordered_cats[200]]
         ordered_overlapping = sorted(overlapping_cats.keys(), key=lambda cat: overlapping_cats[cat], reverse=True)
+
+        meaningful_overlaps = []
+        # for overlap in ordered_overlapping:
+        #     print overlap + ' ' + str(overlapping_cats[overlap])
         for overlap in ordered_overlapping:
-            print overlap + ' ' + str(overlapping_cats[overlap])
+            if overlapping_cats[overlap] > threshold_score:
+                print overlap + ' ' + str(overlapping_cats[overlap])
+                meaningful_overlaps.append(overlap_to_combination[overlap])
 
     calculate_thresholds()
     calculate_category_scores()
-    # print_overlapping_scores()
+    print_overlapping_scores()
     print 'Number of categories:' + str(len(category_scores))
 
 
 def get_overlapping_coverage(selection, ordered_cats, overlap_limit):
-    category_combinations = list(itertools.combinations(ordered_cats[:overlap_limit], 2))
+    # category_combinations = list(itertools.combinations(ordered_cats[:overlap_limit], 2))
     covered_combinations = 0
-    for combination in category_combinations:
+    for combination in meaningful_overlaps:
         for user in selection:
             covered = True
             for category in combination:
@@ -129,7 +144,7 @@ def get_overlapping_coverage(selection, ordered_cats, overlap_limit):
                 covered_combinations += 1
                 break
 
-    return float(covered_combinations) / float(len(category_combinations))
+    return float(covered_combinations) / float(len(meaningful_overlaps))
 
 
 def get_category_coverage(top_for_coverage, top_covered_indication, selection):
