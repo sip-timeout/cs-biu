@@ -128,12 +128,15 @@ def ensure_category_scores():
 
     calculate_thresholds()
     calculate_category_scores()
-    calculate_meaningful_overlaps()
+    # calculate_meaningful_overlaps()
     print 'Number of categories:' + str(len(category_scores))
 
 
 def get_overlapping_coverage(selection, ordered_cats, overlap_limit):
     # category_combinations = list(itertools.combinations(ordered_cats[:overlap_limit], 2))
+    if not meaningful_overlaps:
+        return 0
+
     covered_combinations = 0
     for combination in meaningful_overlaps:
         for user in selection:
