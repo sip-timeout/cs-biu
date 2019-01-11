@@ -113,4 +113,5 @@ def calculate_features():
         (sum([len(mod_features) for mod_features in users[username]['rest_features'].values()]) + len(users[username]['bin_features'].keys()))
         for username in users]
     print 'Average number of features:' + str(float(sum(features_number_arr)) / float(len(features_number_arr)))
+    print 'Max number of features:' + str(max(features_number_arr))
     return users

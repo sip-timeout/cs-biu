@@ -11,6 +11,12 @@ app = Flask(__name__)
 CORS(app)
 
 
+def upsert(map, key, value=1):
+    if key in map:
+        map[key] += value
+    else:
+        map[key] = value
+
 @app.route('/rests')
 def get_rests():
     return jsonify(FileManager.get_pois()[:50])
@@ -190,6 +196,24 @@ def perform_performance_test():
                                     'like_cats': []})
         print '--------------------------------------'
     return 'Done'
+
+@app.route('/get_users_per_rest')
+def get_user_per_rest():
+    FileManager.user_limit = 2**30
+    count_per_rest = {}
+    for user in FileManager.get_users().values():
+        if 'reviews' in user:
+            for rest_id in user['reviews']:
+                upsert(count_per_rest,rest_id)
+
+    poi_sums = []
+    for poi in FileManager.get_pois():
+        if ';' in poi['topics']:
+            poi_sums.append(count_per_rest[poi['id']])
+
+    return str(float(sum(poi_sums)) / float(len(poi_sums)))
+
+
 
 
 if __name__ == '__main__':

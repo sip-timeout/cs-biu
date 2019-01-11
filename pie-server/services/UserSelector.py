@@ -14,8 +14,8 @@ category_scores = None
 meaningful_overlaps = None
 # bucketed_feature_modifiers = ['continent', 'country', 'cuisine', 'good-for']
 # bucketed_feature_modifiers = ['cuisine', 'country', 'good-for', 'city']
-bucketed_feature_modifiers = ['cuisine','city']
-feature_types = ['avg']
+bucketed_feature_modifiers = ['cuisine', 'city']
+feature_types = ['avg','visit','liked']
 like_factor = 4
 rest_cat_factor = 1
 buckets_num = 3
@@ -359,7 +359,26 @@ def get_selection(restaurant_name, selection_criteria):
 
     # return [{'score': user[1], 'categories': user[2], 'user': user[-1]} for user in selected_users]
     calculation_time = time.time() - start
+    # print sum([user[1] for user in selected_users])
+    # print ';'.join([user[0] for user in selected_users])
     print 'PODIUM calculation time:' + str(calculation_time)
+
+    # start = time.time()
+    # max_score = 0
+    # opt_max_arg = None
+    # print 'Starting Optimal Calc'
+    # for comb in itertools.combinations(rest_users_copy, 5):
+    #     selection_score_obj = calculate_arbitrary_selection_score(comb, rest_users_copy,
+    #                                                                                    user_feedback_category_scores)
+    #
+    #     selection_score = sum([user[1] for user in selection_score_obj])
+    #     if selection_score > max_score:
+    #         max_score = selection_score
+    #         opt_max_arg = selection_score_obj
+    # print 'Optimal Calc:' + str(time.time() - start)
+    # print max_score
+    # print ';'.join([user[0] for user in opt_max_arg])
+
     return get_selection_obj(selected_users, restaurant_cats), get_selection_obj(get_random_users(rest_users_copy),
                                                                                  restaurant_cats), get_selection_obj(
         calculate_arbitrary_selection_score([user['user_id'] for user in get_cluster_selection(rest_users_copy)],

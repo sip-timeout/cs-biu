@@ -3,8 +3,14 @@
 %thatWe are now ready to define our notion of diversity, as follows.
 
 We define diversity based on user properties and their scores.  
-Scores are crucial in this respect: e.g., it makes sense to group Mexican food lovers and dislikers separately, rather than grouping all the Mexican food reviewers together. For that, we split the range of scores of each property $p\in\mathcal{P}$ into a set of \emph{non-overlapping buckets} $\beta(p)$ (the bucketing method is described in Section~\ref{sec:compute}). A \emph{group} is then the subset of users with relevant property and score, formally,
+Scores are crucial in this respect: e.g., it makes sense to group Mexican food lovers and dislikers separately, rather than grouping all the Mexican food reviewers together. For that, we split the range of scores of each property $p\in\mathcal{P}$ into a set of \emph{non-overlapping buckets} $\beta(p)$. Buckets are essentially intervals over score ranges. We have used pre-computed thresholds over the property's score range to determine the buckets, as depicted in section (TODO:add reference to section).
+\begin{example}
+	A property with the score values of [0.1 ,0.1 ,0.2 ,0.5 ,0.55 ,0.7 ,0.8], provided the thresholds [0.25, 0.6] would be divided into the following buckets: [0.1, 0.1, 0.2], [0.5, 0.55] and [0.7, 0.8]. These buckets can later be labeled for as "Low Scores", "Medium Scores" and "High Scores" for reasoning purposes.
+\end{example}
+
+A \emph{group} is then the subset of users with relevant property and score, formally,
 \[g_{p,b}\colonequals \{u\in\mathcal{U}\mid D_u=\langle P_u, S_u \rangle \wedge p\in P_u \wedge  b\in\beta(p) \wedge S_u(p)\in b\}\]
+Each group is associated with a single property and bucket, e.g. "Users who visit french restaurants frequently" and "Users who rates Georgia restaurants poorly". A user can reside in only one group per property (groups of a specific property are non-overlapping), but there is no restriction with regards to groups of other properties. Another grouping approach could aspire to divide users based on multiple properties, e.g. people who love fast food \textbf{and} hate italian food. 
 
 
 \begin{definition}
