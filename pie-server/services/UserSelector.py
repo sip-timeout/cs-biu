@@ -1,4 +1,5 @@
 import time
+import sys
 import itertools
 import random
 import numpy
@@ -15,7 +16,7 @@ meaningful_overlaps = None
 # bucketed_feature_modifiers = ['continent', 'country', 'cuisine', 'good-for']
 # bucketed_feature_modifiers = ['cuisine', 'country', 'good-for', 'city']
 bucketed_feature_modifiers = ['cuisine', 'city']
-feature_types = ['avg','visit','liked']
+feature_types = ['avg']
 like_factor = 4
 rest_cat_factor = 1
 buckets_num = 3
@@ -303,6 +304,43 @@ def get_selection(restaurant_name, selection_criteria):
         random_users = random.sample(users, selection_size)
         return calculate_arbitrary_selection_score(random_users, users, user_feedback_category_scores)
 
+    def get_distance_based_selection(users, seed_user):
+
+        user_to_cats = dict()
+        for user in users:
+            _, _, user_cats = calculate_user_score(users[user], dict(), user_feedback_category_scores)
+            user_to_cats[user] = user_cats.keys()
+
+        def get_crowd_similarity(crowd_users):
+            def jaccard_similarity(x, y):
+                intersection_cardinality = len(set.intersection(*[set(x), set(y)]))
+                union_cardinality = len(set.union(*[set(x), set(y)]))
+                return intersection_cardinality / float(union_cardinality)
+
+            pairs = itertools.combinations(crowd_users, 2)
+            aggregated_similarity = 0
+            for pair in pairs:
+                aggregated_similarity += jaccard_similarity(user_to_cats[pair[0]], user_to_cats[pair[1]])
+            return aggregated_similarity / len(crowd_users)
+
+        # selected_users = random.sample([user for user in users.keys() if len(user_to_cats[user]) > 0], 1)
+        selected_users = [[user for user in users.keys() if len(user_to_cats[user]) > 0][0]]
+        for i in range(1, selection_size):
+            min_score = sys.maxint
+            arg_min = []
+            for username in users:
+                if len(user_to_cats[username]) > 0:
+                    sim_score = get_crowd_similarity(selected_users + [username])
+                    if sim_score < min_score:
+                        min_score = sim_score
+                        arg_min = [username]
+                    elif sim_score == min_score:
+                        arg_min.append(username)
+
+            selected_users.append(max(arg_min, lambda username: len(user_to_cats[username]))[0])
+
+        return selected_users
+
     def validate_user(user_cats):
         for req_cat in selection_criteria['required_cats']:
             if not req_cat in user_cats:
@@ -389,7 +427,9 @@ def get_selection(restaurant_name, selection_criteria):
                                              sorted(rest_users_copy.values(), key=lambda user: user['review_count'],
                                                     reverse=True)[:selection_size]], rest_users_copy,
                                             user_feedback_category_scores),
-        restaurant_cats)
+        restaurant_cats), get_selection_obj(
+        calculate_arbitrary_selection_score(get_distance_based_selection(rest_users_copy, selected_users[0][0]),
+                                            rest_users_copy, user_feedback_category_scores), restaurant_cats)
 
 
 def get_cluster_selection(users):
@@ -411,7 +451,8 @@ def get_category_analysis(category_name, restaurant_name, selection_criteria, se
         'pod': {'users': [user['user']['user_id'] for user in selection[0]['users']], 'dist': [0] * buckets_num},
         'random': {'users': [user['user']['user_id'] for user in selection[1]['users']], 'dist': [0] * buckets_num},
         'cluster': {'users': [user['user']['user_id'] for user in selection[2]['users']], 'dist': [0] * buckets_num},
-        'top': {'users': [user['user']['user_id'] for user in selection[3]['users']], 'dist': [0] * buckets_num}}
+        'top': {'users': [user['user']['user_id'] for user in selection[3]['users']], 'dist': [0] * buckets_num},
+        'distance': {'users': [user['user']['user_id'] for user in selection[4]['users']], 'dist': [0] * buckets_num}}
 
     total_users_dist = [0] * buckets_num
     selection_users_dist = [0] * buckets_num
@@ -437,7 +478,8 @@ def get_category_analysis(category_name, restaurant_name, selection_criteria, se
             'dist_pod': get_normalized_dist(selections['pod']['dist']),
             'dist_cluster': get_normalized_dist(selections['cluster']['dist']),
             'dist_random': get_normalized_dist(selections['random']['dist']),
-            'dist_top': get_normalized_dist(selections['top']['dist'])}
+            'dist_top': get_normalized_dist(selections['top']['dist']),
+            'dist_distance': get_normalized_dist(selections['distance']['dist'])}
 
 
 def get_prediction(restaurant_name, selection_criteria):
@@ -554,17 +596,20 @@ def get_prediction(restaurant_name, selection_criteria):
     random_users = [user['user'] for user in selection_obj[1]['users']]
     cluster_users = [user['user'] for user in selection_obj[2]['users']]
     top_reviewers = sorted(rest_users, key=lambda user: user['review_count'], reverse=True)[:selection_size]
+    distance_users = [user['user'] for user in selection_obj[4]['users']]
 
     total_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in rest_users]
     selection_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in selection_users]
     random_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in random_users]
     cluster_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in cluster_users]
     top_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in top_reviewers]
+    distance_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in distance_users]
 
     topic_coverage, coverage_rate = get_weighted_topic_coverage(rest_users, selection_users)
     random_topic_coverage, random_coverage_rate, random_variance = get_random_stats(len(selection_users))
     cluster_topic_coverage, cluster_coverage_rate = get_weighted_topic_coverage(rest_users, cluster_users)
     top_topic_coverage, top_coverage_rate = get_weighted_topic_coverage(rest_users, top_reviewers)
+    distance_topic_coverage, distance_coverage_rate = get_weighted_topic_coverage(rest_users, distance_users)
 
     marginal_cont = get_marginal_cont()
     return {'total_variance': numpy.var(total_ratings),
@@ -572,6 +617,7 @@ def get_prediction(restaurant_name, selection_criteria):
             'random_variance': random_variance,
             'cluster_variance': numpy.var(cluster_ratings),
             'top_variance': numpy.var(top_ratings),
+            'distance_variance': numpy.var(distance_ratings),
             'topic_coverage': topic_coverage,
             'topic_coverage_rate': coverage_rate,
             'random_topic_coverage': random_topic_coverage,
@@ -580,12 +626,15 @@ def get_prediction(restaurant_name, selection_criteria):
             'cluster_topic_coverage_rate': cluster_coverage_rate,
             'top_topic_coverage': top_topic_coverage,
             'top_topic_coverage_rate': top_coverage_rate,
+            'distance_topic_coverage': distance_topic_coverage,
+            'distance_topic_coverage_rate': distance_coverage_rate,
             'distributions': {
                 'dist_total': get_rating_dist(total_ratings),
                 'dist_pod': get_rating_dist(selection_ratings),
                 'dist_random': get_rating_dist(random_ratings),
                 'dist_cluster': get_rating_dist(cluster_ratings),
-                'dist_top': get_rating_dist(top_ratings)
+                'dist_top': get_rating_dist(top_ratings),
+                'dist_distance': get_rating_dist(distance_ratings)
             },
             'marg_cont': marginal_cont,
             'selection_reviews': [user['reviews'][restaurant_name] for user in selection_users],

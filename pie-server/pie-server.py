@@ -64,7 +64,7 @@ def get_marginal_summary(results):
 
 
 def get_averages(results, measures):
-    algos = ['pod', 'top', 'random', 'cluster']
+    algos = ['pod', 'top', 'random', 'cluster','distance']
     avgs = {mes: {algo: 0.0 for algo in algos} for mes in measures}
     for _, res in results.iteritems():
         for algo in algos:
@@ -121,11 +121,13 @@ def get_test():
                                         'top_random': prediction['random_topic_coverage_rate'],
                                         'top_cluster': prediction['cluster_topic_coverage_rate'],
                                         'top_top': prediction['top_topic_coverage_rate'],
+                                        'top_distance': prediction['distance_topic_coverage_rate'],
                                         'var_pod': prediction['selection_variance'],
                                         'var_tot': prediction['total_variance'],
                                         'var_cluster': prediction['cluster_variance'],
                                         'var_random': prediction['random_variance'],
                                         'var_top': prediction['top_variance'],
+                                        'var_distance': prediction['distance_variance'],
                                         'marg_cont': prediction['marg_cont'],
                                         'top_reviews': prediction['top_reviews'],
                                         'selection_reviews': prediction['selection_reviews']}
