@@ -14,7 +14,7 @@ thresholds = None
 category_scores = None
 meaningful_overlaps = None
 # bucketed_feature_modifiers = ['continent', 'country', 'cuisine', 'good-for']
-# bucketed_feature_modifiers = ['cuisine', 'country', 'good-for', 'city']
+# bucketed_feature_modifiers = ['cuisine', 'country','city','good-for']
 bucketed_feature_modifiers = ['cuisine', 'city']
 feature_types = ['avg']
 like_factor = 4
@@ -38,6 +38,16 @@ def get_bucket(score, cat):
         buck_name = cat + '_' + str(i)
         if score <= thresholds[buck_name]:
             return buck_name
+
+def set_trival_weight():
+    for category in category_scores:
+        category_scores[category] = 1
+
+def set_EBS_weights():
+    ordered_cats = sorted(category_scores.keys(), key=lambda cat: category_scores[cat])
+    for i in range(len(category_scores)):
+        category_scores[ordered_cats[i]] = (i+1)**2
+
 
 
 def ensure_category_scores():
@@ -129,7 +139,10 @@ def ensure_category_scores():
 
     calculate_thresholds()
     calculate_category_scores()
-    # calculate_meaningful_overlaps()
+    # set_trival_weight()
+    # set_EBS_weights()
+
+    calculate_meaningful_overlaps()
     print 'Number of categories:' + str(len(category_scores))
 
 
@@ -323,8 +336,9 @@ def get_selection(restaurant_name, selection_criteria):
                 aggregated_similarity += jaccard_similarity(user_to_cats[pair[0]], user_to_cats[pair[1]])
             return aggregated_similarity / len(crowd_users)
 
-        # selected_users = random.sample([user for user in users.keys() if len(user_to_cats[user]) > 0], 1)
-        selected_users = [[user for user in users.keys() if len(user_to_cats[user]) > 0][0]]
+        selected_users = random.sample([user for user in users.keys() if len(user_to_cats[user]) > 0], 1)
+
+        # selected_users = [[user for user in users.keys() if len(user_to_cats[user]) > 0][0]]
         for i in range(1, selection_size):
             min_score = sys.maxint
             arg_min = []
