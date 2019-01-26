@@ -22,7 +22,7 @@ rest_cat_factor = 1
 buckets_num = 3
 top_coverage_calculation = 200
 random_sample_times = 51
-selection_size = 5
+selection_size = 8
 overlapping_cats_limit = 50
 
 
@@ -39,15 +39,16 @@ def get_bucket(score, cat):
         if score <= thresholds[buck_name]:
             return buck_name
 
+
 def set_trival_weight():
     for category in category_scores:
         category_scores[category] = 1
 
+
 def set_EBS_weights():
     ordered_cats = sorted(category_scores.keys(), key=lambda cat: category_scores[cat])
     for i in range(len(category_scores)):
-        category_scores[ordered_cats[i]] = (i+1)**2
-
+        category_scores[ordered_cats[i]] = (i + 1) ** 2
 
 
 def ensure_category_scores():
@@ -141,8 +142,8 @@ def ensure_category_scores():
     calculate_category_scores()
     # set_trival_weight()
     # set_EBS_weights()
-
-    calculate_meaningful_overlaps()
+    #
+    # calculate_meaningful_overlaps()
     print 'Number of categories:' + str(len(category_scores))
 
 
@@ -430,7 +431,6 @@ def get_selection(restaurant_name, selection_criteria):
     # print 'Optimal Calc:' + str(time.time() - start)
     # print max_score
     # print ';'.join([user[0] for user in opt_max_arg])
-
     return get_selection_obj(selected_users, restaurant_cats), get_selection_obj(get_random_users(rest_users_copy),
                                                                                  restaurant_cats), get_selection_obj(
         calculate_arbitrary_selection_score([user['user_id'] for user in get_cluster_selection(rest_users_copy)],
@@ -555,7 +555,14 @@ def get_prediction(restaurant_name, selection_criteria):
         coverage = [[topic, v['selection']] for topic, v in topic_coverage.iteritems() if v['total']]
         # print coverage
         coverage_rate = float(len([1 for topic in coverage if topic[1]])) / len(coverage)
-        return coverage, coverage_rate
+
+        # print selection_users
+        if 'usefulness' in selection_users[0]['reviews'][restaurant_name]:
+            relevant_reviews_usefulness = [user['reviews'][restaurant_name]['usefulness'] for user in selection_users]
+        else:
+            relevant_reviews_usefulness = [0]
+        # print relevant_reviews_usefulness
+        return coverage, coverage_rate, sum(relevant_reviews_usefulness)
 
     def get_rating_dist(rating_arr):
         # print rating_arr
@@ -569,10 +576,12 @@ def get_prediction(restaurant_name, selection_criteria):
         total_topic_coverage = list()
         total_coverage_rate = 0.0
         random_var = 0.0
+        random_usefulness = 0.0
         for i in range(0, random_sample_times):
             random_users = random.sample(rest_users, sample_size)
             random_var += numpy.var([float(user['reviews'][restaurant_name]['rating']) for user in random_users])
-            topic_coverage, coverage_rate = get_weighted_topic_coverage(rest_users, random_users)
+            topic_coverage, coverage_rate, instance_usefulness = get_weighted_topic_coverage(rest_users, random_users)
+            random_usefulness += instance_usefulness
             all_coverages.append(topic_coverage)
 
         for topic in all_coverages[0]:
@@ -581,15 +590,16 @@ def get_prediction(restaurant_name, selection_criteria):
             total_topic_coverage.append(added_topic)
             total_coverage_rate += float(added_topic[1]) / float(len(all_coverages[0]))
 
-        return total_topic_coverage, total_coverage_rate, random_var / float(random_sample_times)
+        return total_topic_coverage, total_coverage_rate, random_var / float(
+            random_sample_times), random_usefulness / float(random_sample_times)
 
     def get_marginal_cont():
         marg_cont = []
         prev_top_rate, prev_pod_rate = 0.0, 0.0
         for i in range(0, selection_size):
             stage_margin = {}
-            _, pod_rate = get_weighted_topic_coverage(rest_users, selection_users[:i + 1])
-            _, top_rate = get_weighted_topic_coverage(rest_users, top_reviewers[:i + 1])
+            _, pod_rate, _ = get_weighted_topic_coverage(rest_users, selection_users[:i + 1])
+            _, top_rate, _ = get_weighted_topic_coverage(rest_users, top_reviewers[:i + 1])
 
             stage_margin['pod'] = pod_rate - prev_pod_rate
             stage_margin['top'] = top_rate - prev_top_rate
@@ -619,11 +629,14 @@ def get_prediction(restaurant_name, selection_criteria):
     top_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in top_reviewers]
     distance_ratings = [float(user['reviews'][restaurant_name]['rating']) for user in distance_users]
 
-    topic_coverage, coverage_rate = get_weighted_topic_coverage(rest_users, selection_users)
-    random_topic_coverage, random_coverage_rate, random_variance = get_random_stats(len(selection_users))
-    cluster_topic_coverage, cluster_coverage_rate = get_weighted_topic_coverage(rest_users, cluster_users)
-    top_topic_coverage, top_coverage_rate = get_weighted_topic_coverage(rest_users, top_reviewers)
-    distance_topic_coverage, distance_coverage_rate = get_weighted_topic_coverage(rest_users, distance_users)
+    topic_coverage, coverage_rate, usefulness = get_weighted_topic_coverage(rest_users, selection_users)
+    random_topic_coverage, random_coverage_rate, random_variance, random_usefulness = get_random_stats(
+        len(selection_users))
+    cluster_topic_coverage, cluster_coverage_rate, cluster_usefulness = get_weighted_topic_coverage(rest_users,
+                                                                                                    cluster_users)
+    top_topic_coverage, top_coverage_rate, top_usefulness = get_weighted_topic_coverage(rest_users, top_reviewers)
+    distance_topic_coverage, distance_coverage_rate, distance_usefulness = get_weighted_topic_coverage(rest_users,
+                                                                                                       distance_users)
 
     marginal_cont = get_marginal_cont()
     return {'total_variance': numpy.var(total_ratings),
@@ -652,5 +665,10 @@ def get_prediction(restaurant_name, selection_criteria):
             },
             'marg_cont': marginal_cont,
             'selection_reviews': [user['reviews'][restaurant_name] for user in selection_users],
-            'top_reviews': [user['reviews'][restaurant_name] for user in top_reviewers]
+            'top_reviews': [user['reviews'][restaurant_name] for user in top_reviewers],
+            'usefulness': usefulness,
+            'random_usefulness': random_usefulness,
+            'cluster_usefulness': cluster_usefulness,
+            'top_usefulness': top_usefulness,
+            'distance_usefulness': distance_usefulness
             }

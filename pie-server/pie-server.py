@@ -130,7 +130,12 @@ def get_test():
                                         'var_distance': prediction['distance_variance'],
                                         'marg_cont': prediction['marg_cont'],
                                         'top_reviews': prediction['top_reviews'],
-                                        'selection_reviews': prediction['selection_reviews']}
+                                        'selection_reviews': prediction['selection_reviews'],
+                                        'usefulness_pod':prediction['usefulness'],
+                                        'usefulness_random': prediction['random_usefulness'],
+                                        'usefulness_cluster': prediction['cluster_usefulness'],
+                                        'usefulness_top': prediction['top_usefulness'],
+                                        'usefulness_distance': prediction['distance_usefulness']}
                 compare_results(prediction['topic_coverage_rate'], prediction['random_topic_coverage_rate'],
                                 'rand_top_bet',
                                 'rand_top_beq', summary)
@@ -157,7 +162,7 @@ def get_test():
 
     summary = results.pop('summary')
     summary['marginal'] = get_marginal_summary(results)
-    summary['avgs'] = get_averages(results, ['var', 'top', 'neg_dist', 'cov_rats_dist'])
+    summary['avgs'] = get_averages(results, ['var', 'top', 'neg_dist', 'cov_rats_dist','usefulness'])
     results['summary'] = summary
     return jsonify(results)
 
