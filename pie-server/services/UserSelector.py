@@ -16,14 +16,16 @@ meaningful_overlaps = None
 # bucketed_feature_modifiers = ['continent', 'country', 'cuisine', 'good-for']
 # bucketed_feature_modifiers = ['cuisine', 'country','city','good-for']
 bucketed_feature_modifiers = ['cuisine', 'city']
-feature_types = ['avg']
+feature_types = ['avg','visit','liked']
+# feature_types = ['avg','visit','liked']
 like_factor = 4
 rest_cat_factor = 1
 buckets_num = 3
 top_coverage_calculation = 200
 random_sample_times = 51
-selection_size = 8
+selection_size = 5
 overlapping_cats_limit = 50
+user_to_cats = dict()
 
 
 def upsert(map, key, value=1):
@@ -143,7 +145,7 @@ def ensure_category_scores():
     # set_trival_weight()
     # set_EBS_weights()
     #
-    # calculate_meaningful_overlaps()
+    calculate_meaningful_overlaps()
     print 'Number of categories:' + str(len(category_scores))
 
 
@@ -319,11 +321,14 @@ def get_selection(restaurant_name, selection_criteria):
         return calculate_arbitrary_selection_score(random_users, users, user_feedback_category_scores)
 
     def get_distance_based_selection(users, seed_user):
+        start = time.time()
+        global user_to_cats
 
-        user_to_cats = dict()
+
         for user in users:
-            _, _, user_cats = calculate_user_score(users[user], dict(), user_feedback_category_scores)
-            user_to_cats[user] = user_cats.keys()
+            if not user in user_to_cats:
+                _, _, user_cats = calculate_user_score(users[user], dict(), user_feedback_category_scores)
+                user_to_cats[user] = user_cats.keys()
 
         def get_crowd_similarity(crowd_users):
             def jaccard_similarity(x, y):
@@ -354,6 +359,7 @@ def get_selection(restaurant_name, selection_criteria):
 
             selected_users.append(max(arg_min, lambda username: len(user_to_cats[username]))[0])
 
+        print 'DISTANCE calculation time:'+str(time.time() - start)
         return selected_users
 
     def validate_user(user_cats):
@@ -495,6 +501,18 @@ def get_category_analysis(category_name, restaurant_name, selection_criteria, se
             'dist_top': get_normalized_dist(selections['top']['dist']),
             'dist_distance': get_normalized_dist(selections['distance']['dist'])}
 
+def calculate_selection_avg_overlap(selection):
+    global user_to_cats
+
+    tot_card = 0.0
+    combs = 0
+    pairs = itertools.combinations(selection, 2)
+    for pair in pairs:
+        # intersection_cardinality = len(set.intersection(*[set(x), set(y)]))
+        tot_card += len(set.intersection(*[set(user_to_cats[pair[0]['user_id']]), set(user_to_cats[pair[1]['user_id']])]))
+        combs+=1
+
+    return tot_card / float(combs)
 
 def get_prediction(restaurant_name, selection_criteria):
     def get_topic_coverage(rest_users, selection_users):
@@ -638,6 +656,12 @@ def get_prediction(restaurant_name, selection_criteria):
     distance_topic_coverage, distance_coverage_rate, distance_usefulness = get_weighted_topic_coverage(rest_users,
                                                                                                        distance_users)
 
+    selection_overlap = calculate_selection_avg_overlap(selection_users)
+    random_overlap = calculate_selection_avg_overlap(random_users)
+    cluster_overlap = calculate_selection_avg_overlap(cluster_users)
+    top_overlap = calculate_selection_avg_overlap(top_reviewers)
+    distance_overlap = calculate_selection_avg_overlap(distance_users)
+
     marginal_cont = get_marginal_cont()
     return {'total_variance': numpy.var(total_ratings),
             'selection_variance': numpy.var(selection_ratings),
@@ -670,5 +694,10 @@ def get_prediction(restaurant_name, selection_criteria):
             'random_usefulness': random_usefulness,
             'cluster_usefulness': cluster_usefulness,
             'top_usefulness': top_usefulness,
-            'distance_usefulness': distance_usefulness
+            'distance_usefulness': distance_usefulness,
+            'inter': selection_overlap,
+            'random_inter': random_overlap,
+            'cluster_inter': cluster_overlap,
+            'top_inter': top_overlap,
+            'distance_inter': distance_overlap
             }

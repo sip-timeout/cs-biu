@@ -135,7 +135,13 @@ def get_test():
                                         'usefulness_random': prediction['random_usefulness'],
                                         'usefulness_cluster': prediction['cluster_usefulness'],
                                         'usefulness_top': prediction['top_usefulness'],
-                                        'usefulness_distance': prediction['distance_usefulness']}
+                                        'usefulness_distance': prediction['distance_usefulness'],
+                                        'inter_pod': prediction['inter'],
+                                        'inter_random': prediction['random_inter'],
+                                        'inter_cluster': prediction['cluster_inter'],
+                                        'inter_top': prediction['top_inter'],
+                                        'inter_distance': prediction['distance_inter']
+                                        }
                 compare_results(prediction['topic_coverage_rate'], prediction['random_topic_coverage_rate'],
                                 'rand_top_bet',
                                 'rand_top_beq', summary)
@@ -162,7 +168,7 @@ def get_test():
 
     summary = results.pop('summary')
     summary['marginal'] = get_marginal_summary(results)
-    summary['avgs'] = get_averages(results, ['var', 'top', 'neg_dist', 'cov_rats_dist','usefulness'])
+    summary['avgs'] = get_averages(results, ['var', 'top', 'neg_dist', 'cov_rats_dist','usefulness','inter'])
     results['summary'] = summary
     return jsonify(results)
 
@@ -197,6 +203,7 @@ def perform_performance_test():
         FeatureCalculator.cached_users = None
         UserSelector.thresholds = None
         FileManager.user_limit = limit
+        UserSelector.user_to_cats = dict()
         UserSelector.get_selection(None,
                                    {'forbidden_cats': [], 'dislike_cats': [],
                                     'required_cats': [],
