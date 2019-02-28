@@ -39,7 +39,7 @@ def calculate_features():
         # list_modifiers = ['cuisine', 'good-for']
         list_modifiers = ['cuisine']
         # location_modifiers = ['city']
-        location_modifiers = ['city']
+        location_modifiers = ['restaurant-features']
         mod_types = ['avg','visit','liked']
 
         if 'restaurants' in user:
